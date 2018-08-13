@@ -9,6 +9,12 @@
 			"revisionTime": "2018-02-21T22:46:20Z"
 		},
 		{
+			"checksumSHA1": "7gsctJtxytHFF+Dbv2BtCUbR7DA=",
+			"path": "github.com/mongodb/mongo-go-driver",
+			"revision": "1f112eb435c13277350436a7737d4ced5870b657",
+			"revisionTime": "2018-08-02T19:01:37Z"
+		},
+		{
 			"checksumSHA1": "XdtijzwGRz6BNBgsd/J+d/fvN9k=",
 			"path": "github.com/newrelic/infra-integrations-sdk/args",
 			"revision": "05f41fe052b3dc8861a75b3bd8b4cef90dcb5dc4",
@@ -69,5 +75,5 @@
 			"revisionTime": "2018-06-26T19:55:58Z"
 		}
 	],
-	"rootPath": "github.com/newrelic/nri-mongodb/mongodb"
+	"rootPath": "github.com/newrelic/nri-mongodb"
 }
