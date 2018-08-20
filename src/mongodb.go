@@ -3,16 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson"
+
+	"github.com/globalsign/mgo/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
 type argumentList struct {
 	sdkArgs.DefaultArgumentList
-	Username string
-	Password string
+	Username   string `default:"" help:"The MongoDB connection user name"`
+	Password   string `default:"" help:"The MongoDB connection password"`
+	Hostname   string `default:"" help:"The MongoDB connection hostname"`
+	AuthSource string `default:"" help:"Database to connect to"`
+	Port       string `default:"" help:"Port to connect to"`
+	Insecure   bool   `default:"true" help:"Indicates whether to skip the verification of the server certificate and hostname"`
+	Ssl        bool   `default:"false" help:"Indicates whether SSL should be enabled"`
+	// SslKeyFile  string `default:"" help:"Specifies the file containing the client certificate and private key used for authentication"`
+	SslCertFile string `default:"" help:"Path to the certificate file used to identify the local connection against mongodb"`
+	SslCaCerts  string `default:"" help:"Path to the ca_certs file"`
 }
 
 const (
@@ -26,24 +37,9 @@ var (
 
 func main() {
 
-	sslopt := clientopt.SSLOpt{
-		Enabled:  true,
-		Insecure: false,
-		CaFile:   "/Users/ccheek/bluemedora/blue_medora.crt",
-	}
+	_, _ = integration.New(integrationName, integrationVersion, integration.Args(&args))
 
-	creds := clientopt.Credential{
-		AuthMechanism: "SCRAM-SHA-1",
-		AuthSource:    "newrelic",
-		Username:      "newrelic",
-		Password:      "password",
-	}
-
-	client, err := mongo.NewClientWithOptions(
-		"mongodb://mdb-rh7-rs1-r2.bluemedora.localnet:27017/newrelic",
-		clientopt.SSL(&sslopt),
-		clientopt.Auth(creds),
-	)
+	client, err := configureClient()
 	if err != nil {
 		panic(err)
 	}
@@ -78,4 +74,44 @@ func main() {
 	}
 
 	fmt.Println(dbs)
+}
+
+func configureClient() (*mongo.Client, error) {
+	opt := configureOptions()
+	creds := configureCredentials()
+	client, err := createClient(opt, creds)
+	return client, err
+}
+
+func configureOptions() clientopt.SSLOpt {
+	return clientopt.SSLOpt{
+		Enabled:                      args.Ssl,
+		ClientCertificateKeyFile:     args.SslCertFile,
+		ClientCertificateKeyPassword: func() string { return args.Password },
+		Insecure:                     args.Insecure,
+		CaFile:                       args.SslCaCerts,
+	}
+}
+
+func configureCredentials() clientopt.Credential {
+	return clientopt.Credential{
+		AuthMechanism: "SCRAM-SHA-1",
+		AuthSource:    args.AuthSource,
+		Username:      args.Username,
+		Password:      args.Password,
+	}
+}
+
+func createClient(sslopt clientopt.SSLOpt, creds clientopt.Credential) (*mongo.Client, error) {
+	url := "mongodb://" + args.Hostname + ":" + args.Port + "/" + args.AuthSource
+	client, err := mongo.NewClientWithOptions(
+		url,
+		clientopt.SSL(&sslopt),
+		clientopt.Auth(creds),
+	)
+	if err != nil {
+		log.Error("Error creating client")
+		return nil, err
+	}
+	return client, nil
 }
