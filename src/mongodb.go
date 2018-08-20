@@ -9,6 +9,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
 type argumentList struct {
@@ -16,12 +17,13 @@ type argumentList struct {
 	Username   string `default:"" help:"The MongoDB connection user name"`
 	Password   string `default:"" help:"The MongoDB connection password"`
 	Hostname   string `default:"" help:"The MongoDB connection hostname"`
-	CaFile     string `default:"" help:"Specifies the file containing the certificate authority used for SSL connections"`
 	AuthSource string `default:"" help:"Database to connect to"`
 	Port       string `default:"" help:"Port to connect to"`
-	KeyFile    string `default:"" help:"Specifies the file containing the client certificate and private key used for authentication"`
-	EnableSSL  bool   `default:"false" help:"Indicates whether SSL should be enabled"`
 	Insecure   bool   `default:"true" help:"Indicates whether to skip the verification of the server certificate and hostname"`
+	Ssl        bool   `default:"false" help:"Indicates whether SSL should be enabled"`
+	// SslKeyFile  string `default:"" help:"Specifies the file containing the client certificate and private key used for authentication"`
+	SslCertFile string `default:"" help:"Path to the certificate file used to identify the local connection against mongodb"`
+	SslCaCerts  string `default:"" help:"Path to the ca_certs file"`
 }
 
 const (
@@ -37,13 +39,9 @@ func main() {
 
 	_, _ = integration.New(integrationName, integrationVersion, integration.Args(&args))
 
-	var client *mongo.Client
-	var err error
-	if args.EnableSSL {
-		client, err = configureSSLClient()
-		if err != nil {
-			println("handle error")
-		}
+	client, err := configureClient()
+	if err != nil {
+		panic(err)
 	}
 
 	err = client.Connect(context.TODO())
@@ -51,7 +49,7 @@ func main() {
 		panic(err)
 	}
 
-	nrdb := client.Database("admin")
+	nrdb := client.Database("newrelic")
 	results, err := nrdb.RunCommand(nil, map[string]interface{}{"dbStats": 1})
 	if err != nil {
 		panic(err)
@@ -78,24 +76,24 @@ func main() {
 	fmt.Println(dbs)
 }
 
-func configureSSLClient() (*mongo.Client, error) {
-	sslopt := configureSSLOptions()
-	creds := configureSSLCredentials()
-	client, err := createSSLClient(sslopt, creds)
+func configureClient() (*mongo.Client, error) {
+	opt := configureOptions()
+	creds := configureCredentials()
+	client, err := createClient(opt, creds)
 	return client, err
 }
 
-func configureSSLOptions() clientopt.SSLOpt {
+func configureOptions() clientopt.SSLOpt {
 	return clientopt.SSLOpt{
-		Enabled:  args.EnableSSL,
-		Insecure: args.Insecure,
-		CaFile:   args.CaFile,
+		Enabled:                      args.Ssl,
+		ClientCertificateKeyFile:     args.SslCertFile,
 		ClientCertificateKeyPassword: func() string { return args.Password },
-		ClientCertificateKeyFile:     args.KeyFile,
+		Insecure:                     args.Insecure,
+		CaFile:                       args.SslCaCerts,
 	}
 }
 
-func configureSSLCredentials() clientopt.Credential {
+func configureCredentials() clientopt.Credential {
 	return clientopt.Credential{
 		AuthMechanism: "SCRAM-SHA-1",
 		AuthSource:    args.AuthSource,
@@ -104,9 +102,7 @@ func configureSSLCredentials() clientopt.Credential {
 	}
 }
 
-func createSSLClient(sslopt clientopt.SSLOpt, creds clientopt.Credential) (*mongo.Client, error) {
-	println("mongodb://" + args.Hostname + ":" + args.Port + "/" + args.AuthSource)
-	print(args.EnableSSL)
+func createClient(sslopt clientopt.SSLOpt, creds clientopt.Credential) (*mongo.Client, error) {
 	url := "mongodb://" + args.Hostname + ":" + args.Port + "/" + args.AuthSource
 	client, err := mongo.NewClientWithOptions(
 		url,
@@ -114,7 +110,7 @@ func createSSLClient(sslopt clientopt.SSLOpt, creds clientopt.Credential) (*mong
 		clientopt.Auth(creds),
 	)
 	if err != nil {
-		println(err)
+		log.Error("Error creating client")
 		return nil, err
 	}
 	return client, nil
