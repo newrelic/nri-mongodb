@@ -87,7 +87,7 @@ type serverStatusMetrics struct {
 	QueryExecutor serverStatusMetricsQueryExecutor
 	Record        serverStatusMetricsRecord
 	Repl          serverStatusMetricsRepl
-	Ttl           serverStatusMetricsTTL
+	Ttl           serverStatusMetricsTtl
 }
 
 type serverStatusMetricsCursor struct {
@@ -255,17 +255,17 @@ type serverStatusWiredTiger struct {
 }
 
 type serverStatusWiredTigerCache struct {
-	Size                   `bson:"bytes currently in the cache"                                 metric_name:"wiredtiger.cacheInBytes"                                 source_type:"gauge"`
-	FaiedEvictions         `bson:"failed eviction of pages that exceeded the in-memory maximum" metric_name:"wiredtiger.failedEvictionsPagesPerSecond"                source_type:"gauge"`
-	PageSplits             `bson:"in-memory page splits"                                        metric_name:"cacheInMemoryPageSplits"                                 source_type:"gauge"`
-	MaxSize                `bson:"maximum bytes configured"                                     metric_name:"wiredtiger.cacheMaxInBytes"                              source_type:"gauge"`
-	MaxPageSize            `bson:"maximum page size at eviction"                                metric_name:"wiredtiger.cacheMaxPageSizeEvictionInBytes"              source_type:"gauge"`
-	ModifiedPagesEvicted   `bson:"modified pages evicted"                                       metric_name:"wiredtiger.cacheModifiedPagesEvicted"                    source_type:"gauge"`
-	PagesHeld              `bson:"pages currently held in the cache"                            metric_name:"wiredtiger.cachePagesHeld"                               source_type:"gauge"`
-	PagesEvictedThreads    `bson:"pages evicted by application threads"                         metric_name:"wiredtiger.cachePagesEvictedApplicationThreadsPerSecond" source_type:"gauge"`
-	PagesEvictedMax        `bson:"pages evicted because they exceeded the in-memory maximum"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMaxPerSecond"        source_type:"rate"`
-	DirtyData              `bson:"tracked dirty bytes in the cache"                             metric_name:"wiredtiger.cacheDirtyDataInBytes"                        source_type:"gauge"`
-	UnmodifiedPagesEvicted `bson:"unmodified pages evicted"                                     metric_name:"wiredtiger.cacheUnmodifiedPagesEvicted"                  source_type:"gauge"`
+	Size                   int `bson:"bytes currently in the cache"                                 metric_name:"wiredtiger.cacheInBytes"                                 source_type:"gauge"`
+	FailedEvictions        int `bson:"failed eviction of pages that exceeded the in-memory maximum" metric_name:"wiredtiger.failedEvictionsPagesPerSecond"                source_type:"gauge"`
+	PageSplits             int `bson:"in-memory page splits"                                        metric_name:"cacheInMemoryPageSplits"                                 source_type:"gauge"`
+	MaxSize                int `bson:"maximum bytes configured"                                     metric_name:"wiredtiger.cacheMaxInBytes"                              source_type:"gauge"`
+	MaxPageSize            int `bson:"maximum page size at eviction"                                metric_name:"wiredtiger.cacheMaxPageSizeEvictionInBytes"              source_type:"gauge"`
+	ModifiedPagesEvicted   int `bson:"modified pages evicted"                                       metric_name:"wiredtiger.cacheModifiedPagesEvicted"                    source_type:"gauge"`
+	PagesHeld              int `bson:"pages currently held in the cache"                            metric_name:"wiredtiger.cachePagesHeld"                               source_type:"gauge"`
+	PagesEvictedThreads    int `bson:"pages evicted by application threads"                         metric_name:"wiredtiger.cachePagesEvictedApplicationThreadsPerSecond" source_type:"gauge"`
+	PagesEvictedMax        int `bson:"pages evicted because they exceeded the in-memory maximum"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMaxPerSecond"        source_type:"rate"`
+	DirtyData              int `bson:"tracked dirty bytes in the cache"                             metric_name:"wiredtiger.cacheDirtyDataInBytes"                        source_type:"gauge"`
+	UnmodifiedPagesEvicted int `bson:"unmodified pages evicted"                                     metric_name:"wiredtiger.cacheUnmodifiedPagesEvicted"                  source_type:"gauge"`
 }
 
 type serverStatusWiredTigerConcurrentTransactions struct {
@@ -371,10 +371,6 @@ type serverStatusLocksGlobalTimeAcquiringMicros struct {
 	IntentExclusive int `bson:"w" metric_name:"locks.globalTimeAcquiringMicrosIntentExclusive" source_type:"gauge"`
 }
 
-type serverStatusLocksGlobal struct {
-	AcquireCount serverStatusLocksDatabaseAcquireCount
-}
-
 type serverStatusLocksMetadata struct {
 	AcquireCount serverStatusLocksMetadataAcquireCount
 }
@@ -384,12 +380,12 @@ type serverStatusLocksMetadataAcquireCount struct {
 	Exclusive int `bson:"W" metric_name:"locks.metadataAcquiredShared" source_type:"gauge"`
 }
 
-type serverStatusLocksMMAPV1 struct {
-	AcquireCount        serverStatusLocksMMAPV1AcquireCount
-	TimeAcquiringMicros serverStatusLocksMMAPV1TimeAcquiringMicros
+type serverStatusLocksMMAPV1Journal struct {
+	AcquireCount        serverStatusLocksMMAPV1JournalAcquireCount
+	TimeAcquiringMicros serverStatusLocksMMAPV1JournalTimeAcquiringMicros
 }
 
-type serverStatusLocksMMAPV1AcquireCount struct {
+type serverStatusLocksMMAPV1JournalAcquireCount struct {
 	Shared          int `bson:"R" metric_name:"locks.mmapv1journalAcquiredShared"          source_type:"gauge"`
 	Exclusive       int `bson:"W" metric_name:"locks.mmapv1journalAcquiredExclusive"       source_type:"gauge"`
 	IntentShared    int `bson:"r" metric_name:"locks.mmapv1journalAcquiredIntentShared"    source_type:"gauge"`
@@ -408,12 +404,12 @@ type serverStatusLocksOplogAcquireCount struct {
 	IntentExclusive int `bson:"w" metric_name:"locks.oplogAcquiredIntentExclusive" source_type:"gauge"`
 }
 
-type serverStatusLocksOplogAcquireCount struct {
+type serverStatusLocksOplogTimeAcquiringMicros struct {
 	IntentShared    int `bson:"r" metric_name:"locks.oplogTimeAcquiringMicrosIntentShared"    source_type:"gauge"`
 	IntentExclusive int `bson:"w" metric_name:"locks.oplogTimeAcquiringMicrosIntentExclusive" source_type:"gauge"`
 }
 
-type serverStatusLocksMMAPV1TimeAcquiringMicros struct {
+type serverStatusLocksMMAPV1JournalTimeAcquiringMicros struct {
 	Shared    int `bson:"R" metric_name:"locks.mmapv1journalTimeAcquiringMicrosShared"          source_type:"gauge"`
 	Exclusive int `bson:"W" metric_name:"locks.mmapv1journalTimeAcquiringMicrosExclusive"       source_type:"gauge"`
 }
