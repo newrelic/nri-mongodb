@@ -4,19 +4,26 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/ioutil"
+	"net"
+	"os"
+
 	"github.com/globalsign/mgo"
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	"io/ioutil"
-	"net"
-	"os"
 )
 
 type argumentList struct {
 	sdkArgs.DefaultArgumentList
-	Username string
-	Password string
+	Username    string `default:"" help:"Username for the MongoDB connection"`
+	Password    string `default:"" help:"Password for the MongoDB connection"`
+	Host        string `default:"" help:"MongoDB host to connect to for monitoring"`
+	Port        string `default:"" help:"Port on which MongoDB is running"`
+	AuthSource  string `default:"" help:"Database to authenticate against"`
+	Ssl         bool   `default:"false" help:"Enable SSL"`
+	SslCertFile string `default:"" help:"Path to the certificate file used to identify the local connection against MongoDB"`
+	SslCaCerts  string `default:"" help:"Path to the ca_certs file"`
 }
 
 const (
@@ -32,41 +39,13 @@ func main() {
 
 	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		log.Error("Failed to create integration")
+		log.Error("Failed to create integration: %s", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(mongoIntegration)
-
-	roots := x509.NewCertPool()
-
-	ca, err := ioutil.ReadFile("/Users/ccheek/bluemedora/blue_medora.crt")
+	session, err := createSession()
 	if err != nil {
-		log.Error("Failed to open crt file")
-	}
-
-	roots.AppendCertsFromPEM(ca)
-
-	tlsConfig := &tls.Config{}
-	tlsConfig.RootCAs = roots
-
-	dialInfo := mgo.DialInfo{
-		Addrs:    []string{"mdb-rh7-rs1-r2.bluemedora.localnet"},
-		Username: "admin",
-		Password: "password",
-	}
-
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		if err != nil {
-			log.Error("%s", err)
-		}
-		return conn, err
-	}
-
-	session, err := mgo.DialWithInfo(&dialInfo)
-	if err != nil {
-		panic(err)
+		log.Error("Failed to create session: %s", err)
 	}
 
 	var ss serverStatus
@@ -75,5 +54,46 @@ func main() {
 		log.Error("%s", err)
 	}
 	fmt.Printf("%+v", ss)
+
+	err = mongoIntegration.Publish()
+
+}
+
+func createSession() (*mgo.Session, error) {
+
+	dialInfo := mgo.DialInfo{
+		Addrs:    []string{args.Host},
+		Username: args.Username,
+		Password: args.Password,
+	}
+
+	if args.Ssl {
+
+		roots := x509.NewCertPool()
+
+		ca, err := ioutil.ReadFile(args.SslCaCerts)
+		if err != nil {
+			log.Error("Failed to open crt file")
+		}
+
+		roots.AppendCertsFromPEM(ca)
+
+		tlsConfig := &tls.Config{}
+		tlsConfig.RootCAs = roots
+
+		dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+			conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+			if err != nil {
+				log.Error("%s", err)
+			}
+			return conn, err
+		}
+	}
+
+	session, err := mgo.DialWithInfo(&dialInfo)
+	if err != nil {
+		panic(err)
+	}
+	return session, err
 
 }
