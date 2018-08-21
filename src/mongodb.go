@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"github.com/globalsign/mgo"
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
+	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"io/ioutil"
 	"net"
+	"os"
 )
 
 type argumentList struct {
@@ -27,6 +29,14 @@ var (
 )
 
 func main() {
+
+	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
+	if err != nil {
+		log.Error("Failed to create integration")
+		os.Exit(1)
+	}
+
+	fmt.Println(mongoIntegration)
 
 	roots := x509.NewCertPool()
 

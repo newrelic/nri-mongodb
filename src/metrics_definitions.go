@@ -87,7 +87,7 @@ type serverStatusMetrics struct {
 	QueryExecutor serverStatusMetricsQueryExecutor
 	Record        serverStatusMetricsRecord
 	Repl          serverStatusMetricsRepl
-	Ttl           serverStatusMetricsTtl
+	TTL           serverStatusMetricsTTL
 }
 
 type serverStatusMetricsCursor struct {
@@ -215,16 +215,16 @@ type serverStatusMetricsReplPreloadIndexes struct {
 	TotalMillis int `metric_name:"repl.indexPreloadInMilliseconds" source_type:"gauge"`
 }
 
-type serverStatusMetricsTtl struct {
+type serverStatusMetricsTTL struct {
 	DeletedDocuments int `metric_name:"ttl.deleteDocumentsPerSecond" source_type:"rate"`
 	Passes           int `metric_name:"ttl.removeDocumentPerSecond" source_type:"rate"`
 }
 
 type serverStatusBackgroundFlushing struct {
-	Flushes    int     `metric_name:"flush.flushesDisk"           source_type:"gauge"`
-	Total_Ms   float64 `metric_name:"flush.totalInMillisends"     source_type:"gauge"`
-	Average_Ms float64 `metric_name:"flush.averageInMilliseconds" source_type:"gauge"`
-	Last_Ms    float64 `metric_name:"flush.lastInMilliseconds"    source_type:"gauge"`
+	Flushes   int     `metric_name:"flush.flushesDisk"           source_type:"gauge"`
+	TotalMs   float64 `bson:"total_ms"metric_name:"flush.totalInMillisends"     source_type:"gauge"`
+	AverageMs float64 `bson:"average_ms" metric_name:"flush.averageInMilliseconds" source_type:"gauge"`
+	LastMs    float64 `bson:"last_ms" metric_name:"flush.lastInMilliseconds"    source_type:"gauge"`
 }
 
 type serverStatusGlobalLock struct {
@@ -345,9 +345,9 @@ type serverStatusLocksDatabaseTimeAcquiringMicros struct {
 }
 
 type serverStatusLocksGlobal struct {
-	AcquireCount        serverStatusLocksDatabaseAcquireCount
-	AcquireWaitCount    serverStatusLocksDatabaseAcquireWaitCount
-	TimeAcquiringMicros serverStatusLocksDatabaseTimeAcquiringMicros
+	AcquireCount        serverStatusLocksGlobalAcquireCount
+	AcquireWaitCount    serverStatusLocksGlobalAcquireWaitCount
+	TimeAcquiringMicros serverStatusLocksGlobalTimeAcquiringMicros
 }
 
 type serverStatusLocksGlobalAcquireCount struct {
