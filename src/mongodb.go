@@ -51,7 +51,7 @@ func main() {
 	}
 
 	var ss serverStatus
-	err = session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
+	err = session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
 	if err != nil {
 		log.Error("%s", err)
 	}
@@ -94,7 +94,8 @@ func createSession() (*mgo.Session, error) {
 
 	session, err := mgo.DialWithInfo(&dialInfo)
 	if err != nil {
-		panic(err)
+		log.Error("Failed to dial Mongo instance")
+		os.Exit(1)
 	}
 	return session, err
 
