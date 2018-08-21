@@ -1,12 +1,14 @@
 package main
 
 import (
-	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
+	"github.com/globalsign/mgo"
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"io/ioutil"
+	"net"
 )
 
 type argumentList struct {
@@ -26,56 +28,42 @@ var (
 
 func main() {
 
-	sslopt := clientopt.SSLOpt{
-		Enabled:  true,
-		Insecure: false,
-		CaFile:   "/Users/ccheek/bluemedora/blue_medora.crt",
-	}
+	roots := x509.NewCertPool()
 
-	creds := clientopt.Credential{
-		AuthMechanism: "SCRAM-SHA-1",
-		AuthSource:    "newrelic",
-		Username:      "newrelic",
-		Password:      "password",
-	}
-
-	client, err := mongo.NewClientWithOptions(
-		"mongodb://mdb-rh7-rs1-r2.bluemedora.localnet:27017/newrelic",
-		clientopt.SSL(&sslopt),
-		clientopt.Auth(creds),
-	)
+	ca, err := ioutil.ReadFile("/Users/ccheek/bluemedora/blue_medora.crt")
 	if err != nil {
-		panic(err)
+		log.Error("Failed to open crt file")
 	}
 
-	err = client.Connect(context.TODO())
-	if err != nil {
-		panic(err)
+	roots.AppendCertsFromPEM(ca)
+
+	tlsConfig := &tls.Config{}
+	tlsConfig.RootCAs = roots
+
+	dialInfo := mgo.DialInfo{
+		Addrs:    []string{"mdb-rh7-rs1-r2.bluemedora.localnet"},
+		Username: "admin",
+		Password: "password",
 	}
 
-	nrdb := client.Database("newrelic")
-	results, err := nrdb.RunCommand(nil, map[string]interface{}{"dbStats": 1})
-	if err != nil {
-		panic(err)
-	}
-	resultsBytes, err := bson.Marshal(results)
-	if err != nil {
-		panic(err)
-	}
-
-	type dbStats struct {
-		Raw map[string]struct {
-			Db          string
-			Collections int
-			Views       int
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		if err != nil {
+			log.Error("%s", err)
 		}
+		return conn, err
 	}
 
-	var dbs dbStats
-	err = bson.Unmarshal(resultsBytes, &dbs)
+	session, err := mgo.DialWithInfo(&dialInfo)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(dbs)
+	var ss serverStatus
+	err = session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
+	if err != nil {
+		log.Error("%s", err)
+	}
+	fmt.Printf("%+v", ss)
+
 }
