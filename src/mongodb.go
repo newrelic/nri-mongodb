@@ -49,6 +49,7 @@ func main() {
 	if err != nil {
 		log.Error("Failed to create session: %s", err)
 	}
+	defer session.Close()
 
 	var ss serverStatus
 	err = session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
