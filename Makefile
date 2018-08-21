@@ -1,7 +1,7 @@
 NATIVEOS	 := $(shell go version | awk -F '[ /]' '{print $$4}')
 NATIVEARCH	 := $(shell go version | awk -F '[ /]' '{print $$5}')
-INTEGRATION  := $(shell basename $(shell pwd))
-BINARY_NAME   = mongodb
+INTEGRATION  := mongodb
+BINARY_NAME   = nr-$(INTEGRATION)
 GO_PKGS      := $(shell go list ./... | grep -v "/vendor/")
 GO_FILES     := ./src/
 GOTOOLS       = github.com/kardianos/govendor \
