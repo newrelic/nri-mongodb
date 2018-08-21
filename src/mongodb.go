@@ -43,6 +43,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	log.SetupLogging(args.Verbose)
+
 	session, err := createSession()
 	if err != nil {
 		log.Error("Failed to create session: %s", err)
