@@ -39,7 +39,7 @@ func main() {
 
 	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		log.Error("Failed to create integration: %s", err)
+		log.Error("Failed to create integration: %v", err)
 		os.Exit(1)
 	}
 
@@ -47,14 +47,14 @@ func main() {
 
 	session, err := createSession()
 	if err != nil {
-		log.Error("Failed to create session: %s", err)
+		log.Error("Failed to create session: %v", err)
 	}
 	defer session.Close()
 
 	var ss serverStatus
 	err = session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
 	if err != nil {
-		log.Error("%s", err)
+		log.Error("Failed to run command: %v", err)
 	}
 	fmt.Printf("%+v", ss)
 
@@ -71,31 +71,30 @@ func createSession() (*mgo.Session, error) {
 	}
 
 	if args.Ssl {
-
-		roots := x509.NewCertPool()
-
-		ca, err := ioutil.ReadFile(args.SslCaCerts)
-		if err != nil {
-			log.Error("Failed to open crt file")
-		}
-
-		roots.AppendCertsFromPEM(ca)
-
 		tlsConfig := &tls.Config{}
-		tlsConfig.RootCAs = roots
+
+		if args.SslCaCerts != "" {
+			roots := x509.NewCertPool()
+
+			ca, err := ioutil.ReadFile(args.SslCaCerts)
+			if err != nil {
+				log.Error("Failed to open crt file: %v", err)
+			}
+
+			roots.AppendCertsFromPEM(ca)
+
+			tlsConfig.RootCAs = roots
+		}
 
 		dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 			conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-			if err != nil {
-				log.Error("%s", err)
-			}
 			return conn, err
 		}
 	}
 
 	session, err := mgo.DialWithInfo(&dialInfo)
 	if err != nil {
-		log.Error("Failed to dial Mongo instance")
+		log.Error("Failed to dial Mongo instance: %v", err)
 		os.Exit(1)
 	}
 	return session, err
