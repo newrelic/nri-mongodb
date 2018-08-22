@@ -71,6 +71,8 @@ func createSession() (*mgo.Session, error) {
 		Addrs:    []string{args.Host},
 		Username: args.Username,
 		Password: args.Password,
+		Source:   args.AuthSource,
+		FailFast: true,
 	}
 
 	if args.Ssl {
