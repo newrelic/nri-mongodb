@@ -43,6 +43,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO validate arguments
+
 	log.SetupLogging(args.Verbose)
 
 	session, err := createSession()
