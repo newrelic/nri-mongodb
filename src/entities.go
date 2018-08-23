@@ -88,6 +88,16 @@ func (c ConfigCollector) GetEntity(i *integration.Integration) (*integration.Ent
 	return i.Entity(c.ConnectionInfo.Host, "config")
 }
 
+type ShardCollector struct {
+	DefaultCollector
+	ID   string
+	Host string
+}
+
+func (c ShardCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
+	return i.Entity(c.ID, "shard")
+}
+
 func getMongoses() ([]*MongosCollector, error) {
 
 	type MongosUnmarshaller []struct {
@@ -119,6 +129,51 @@ func getMongoses() ([]*MongosCollector, error) {
 	}
 
 	return mongoses, nil
+}
+
+func getShards() ([]*ShardCollector, error) {
+
+	type ShardUnmarshaller []struct {
+		ID   string `bson:"_id"`
+		Host string `bson:"host"`
+	}
+
+	connectionInfo := DefaultConnectionInfo()
+	session, err := connectionInfo.createSession()
+	if err != nil {
+		return nil, err
+	}
+
+	var su ShardUnmarshaller
+	c := session.DB("config").C("shards")
+	c.Find(map[interface{}]interface{}{}).All(&su)
+
+	var shards []*ShardCollector
+	for _, shard := range su {
+		mc := &ShardCollector{ID: shard.ID, Host: shard.Host}
+
+		shards = append(shards, mc)
+	}
+
+	return shards, nil
+}
+
+func getMongods(shard *ShardCollector) ([]*MongodCollector, error) {
+	hostPorts := extractHostsFromReplicaSetString(shard.Host)
+
+	var mongodCollectors []*MongodCollector
+	for _, hostPort := range hostPorts {
+		ci := DefaultConnectionInfo()
+		ci.Host = hostPort.Host
+		ci.Port = hostPort.Port
+
+		newMongodCollector := &MongodCollector{
+			HostCollector{ConnectionInfo: ci},
+		}
+		mongodCollectors = append(mongodCollectors, newMongodCollector)
+	}
+
+	return mongodCollectors, nil
 }
 
 func getConfigServers() ([]*ConfigCollector, error) {
@@ -160,8 +215,8 @@ func getConfigServers() ([]*ConfigCollector, error) {
 
 func extractHostPort(hostPortString string) hostPort {
 	hostPortArray := strings.SplitN(hostPortString, ":", 2)
-	if hostPortArray[1] == "" {
-		hostPortArray[1] = args.Port
+	if len(hostPortArray) == 1 {
+		return hostPort{Host: hostPortArray[0], Port: args.Port}
 	}
 
 	return hostPort{Host: hostPortArray[0], Port: hostPortArray[1]}
