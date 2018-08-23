@@ -29,7 +29,7 @@ func collectorWorker(collectorChan chan Collector, wg *sync.WaitGroup, i *integr
 
 		entity, err := collector.GetEntity(i)
 		if err != nil {
-			log.Error("Failed to create entity") // TODO figure out a way to make more useful error message
+			log.Error("Failed to create entity for collector %+v: %v", collector, err)
 		}
 
 		if args.HasInventory() {
@@ -59,6 +59,22 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 	}
 	for _, configServer := range configServers {
 		collectorChan <- configServer
+	}
+
+	shards, err := getShards()
+	if err != nil {
+		log.Error("Failed to collect list of shards: %v")
+	}
+	for _, shard := range shards {
+		collectorChan <- shard
+
+		mongods, err := getMongods(shard)
+		if err != nil {
+			log.Error("Failed to collect list of mongods for shard %s", shard.ID)
+		}
+		for _, mongod := range mongods {
+			collectorChan <- mongod
+		}
 	}
 
 }
