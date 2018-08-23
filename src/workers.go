@@ -28,16 +28,15 @@ func collectorWorker(collectorChan chan Collector, wg *sync.WaitGroup, i *integr
 		}
 
 		entity, err := collector.GetEntity(i)
+		if err != nil {
+			log.Error("Failed to create entity") // TODO figure out a way to make more useful error message
+		}
 
-		// TODO update with the new SDK changes
-		if args.Inventory || args.All() {
-			if err != nil {
-				log.Error("Failed to create entity") // TODO figure out a way to make more useful error message
-			}
+		if args.HasInventory() {
 			collector.CollectInventory(entity)
 		}
 
-		if args.Metrics || args.All() {
+		if args.HasMetrics() {
 			collector.CollectMetrics(entity)
 		}
 	}
