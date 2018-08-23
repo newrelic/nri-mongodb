@@ -44,7 +44,9 @@ func main() {
 	validateArguments()
 
 	var wg sync.WaitGroup
-	collectorChan := startCollectorWorkerPool(10, &wg, mongoIntegration)
+	// TODO change the worker pool size back to a higher number
+	// after the concurrency panic bug is fixed
+	collectorChan := startCollectorWorkerPool(1, &wg, mongoIntegration)
 
 	connectionInfo := DefaultConnectionInfo()
 	session, err := connectionInfo.createSession()
