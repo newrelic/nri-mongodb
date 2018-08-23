@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -16,6 +17,11 @@ type Collector interface {
 	CollectMetrics(*integration.Entity)
 	CollectInventory(*integration.Entity)
 	GetEntity(*integration.Integration) (*integration.Entity, error)
+}
+
+type hostPort struct {
+	Host string
+	Port string
 }
 
 type DefaultCollector struct{}
@@ -78,7 +84,7 @@ type ConfigCollector struct {
 	HostCollector
 }
 
-func (c ConfigCollector) getEntity(i *integration.Integration) (*integration.Entity, error) {
+func (c ConfigCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
 	return i.Entity(c.ConnectionInfo.Host, "config")
 }
 
@@ -100,10 +106,10 @@ func getMongoses() ([]*MongosCollector, error) {
 
 	var mongoses []*MongosCollector
 	for _, mongos := range mu {
-		host, port := extractHostPort(mongos.ID)
+		hostPort := extractHostPort(mongos.ID)
 		ci := DefaultConnectionInfo()
-		ci.Host = host
-		ci.Port = port
+		ci.Host = hostPort.Host
+		ci.Port = hostPort.Port
 
 		mc := &MongosCollector{
 			HostCollector{ConnectionInfo: ci},
@@ -115,11 +121,63 @@ func getMongoses() ([]*MongosCollector, error) {
 	return mongoses, nil
 }
 
-func extractHostPort(hostPort string) (string, string) {
-	hostPortArray := strings.SplitN(hostPort, ":", 2)
+func getConfigServers() ([]*ConfigCollector, error) {
+	type ConfigUnmarshaller struct {
+		Map struct {
+			Config string
+		}
+	}
+
+	connectionInfo := DefaultConnectionInfo()
+	session, err := connectionInfo.createSession()
+	if err != nil {
+		return nil, err
+	}
+
+	var cu ConfigUnmarshaller
+	session.Run("getShardMap", &cu)
+
+	configServersString := cu.Map.Config
+	if configServersString == "" {
+		return nil, errors.New("config hosts string not defined")
+	}
+	configHostPorts := extractHostsFromReplicaSetString(configServersString)
+
+	var configCollectors []*ConfigCollector
+	for _, configHostPort := range configHostPorts {
+		ci := DefaultConnectionInfo()
+		ci.Host = configHostPort.Host
+		ci.Port = configHostPort.Port
+
+		cc := &ConfigCollector{
+			HostCollector{ConnectionInfo: ci},
+		}
+		configCollectors = append(configCollectors, cc)
+	}
+
+	return configCollectors, nil
+}
+
+func extractHostPort(hostPortString string) hostPort {
+	hostPortArray := strings.SplitN(hostPortString, ":", 2)
 	if hostPortArray[1] == "" {
 		hostPortArray[1] = args.Port
 	}
 
-	return hostPortArray[0], hostPortArray[1]
+	return hostPort{Host: hostPortArray[0], Port: hostPortArray[1]}
+}
+
+func extractHostsFromReplicaSetString(rsString string) []hostPort {
+	if strings.Contains(rsString, "/") {
+		rsString = strings.Split(rsString, "/")[1]
+	}
+
+	hostPortStrings := strings.Split(rsString, ",")
+	var hostPorts []hostPort
+	for _, hostPortString := range hostPortStrings {
+		hostPorts = append(hostPorts, extractHostPort(hostPortString))
+	}
+
+	return hostPorts
+
 }
