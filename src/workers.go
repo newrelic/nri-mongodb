@@ -53,4 +53,12 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 		collectorChan <- mongos
 	}
 
+	configServers, err := getConfigServers()
+	if err != nil {
+		log.Error("Failed to collect list of config servers: %v", err)
+	}
+	for _, configServer := range configServers {
+		collectorChan <- configServer
+	}
+
 }
