@@ -45,7 +45,7 @@ func collectorWorker(collectorChan chan Collector, wg *sync.WaitGroup, i *integr
 func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 	defer close(collectorChan)
 
-	mongoses, err := getMongoses()
+	mongoses, err := GetMongoses(session)
 	if err != nil {
 		log.Error("Failed to collect list of Mongos hosts: %v", err)
 	}
@@ -53,7 +53,7 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 		collectorChan <- mongos
 	}
 
-	configServers, err := getConfigServers()
+	configServers, err := GetConfigServers(session)
 	if err != nil {
 		log.Error("Failed to collect list of config servers: %v", err)
 	}
@@ -61,14 +61,14 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 		collectorChan <- configServer
 	}
 
-	shards, err := getShards()
+	shards, err := GetShards(session)
 	if err != nil {
 		log.Error("Failed to collect list of shards: %v")
 	}
 	for _, shard := range shards {
 		collectorChan <- shard
 
-		mongods, err := getMongods(shard)
+		mongods, err := GetMongods(shard)
 		if err != nil {
 			log.Error("Failed to collect list of mongods for shard %s", shard.ID)
 		}
