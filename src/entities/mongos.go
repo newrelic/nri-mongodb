@@ -1,5 +1,15 @@
 package entities
 
+import (
+	"fmt"
+	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/metrics"
+)
+
 type MongosCollector struct {
 	HostCollector
 }
@@ -9,13 +19,13 @@ func (c MongosCollector) GetEntity(i *integration.Integration) (*integration.Ent
 }
 
 func (c MongosCollector) CollectMetrics(e *integration.Entity) {
-	session, err := c.ConnectionInfo.createSession()
+	session, err := c.ConnectionInfo.CreateSession()
 	if err != nil {
 		log.Error("Failed to connect to %s: %v", c.ConnectionInfo.Host, err)
 		return
 	}
 
-	var ss serverStatus
+	var ss metrics.ServerStatus
 	session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
 	ms := e.NewMetricSet("MongosSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
@@ -37,7 +47,7 @@ func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 	var mongoses []*MongosCollector
 	for _, mongos := range mu {
 		hostPort := extractHostPort(mongos.ID)
-		ci := DefaultConnectionInfo()
+		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
 

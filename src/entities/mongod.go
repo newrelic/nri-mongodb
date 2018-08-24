@@ -1,5 +1,10 @@
 package entities
 
+import (
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/connection"
+)
+
 type MongodCollector struct {
 	HostCollector
 }
@@ -13,7 +18,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 
 	var mongodCollectors []*MongodCollector
 	for _, hostPort := range hostPorts {
-		ci := DefaultConnectionInfo()
+		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
 

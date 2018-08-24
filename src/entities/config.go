@@ -1,5 +1,12 @@
 package entities
 
+import (
+	"errors"
+	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/connection"
+)
+
 type ConfigCollector struct {
 	HostCollector
 }
@@ -26,7 +33,7 @@ func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 
 	var configCollectors []*ConfigCollector
 	for _, configHostPort := range configHostPorts {
-		ci := DefaultConnectionInfo()
+		ci := connection.DefaultConnectionInfo()
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
 

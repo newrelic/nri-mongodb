@@ -3,13 +3,12 @@ package connection
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
+	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/arguments"
 	"io/ioutil"
 	"net"
 	"os"
-
-	"github.com/globalsign/mgo"
-	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
 type ConnectionInfo struct {
@@ -23,22 +22,7 @@ type ConnectionInfo struct {
 	SslInsecureSkipVerify bool
 }
 
-func DefaultConnectionInfo() *ConnectionInfo {
-	newConnection := &ConnectionInfo{
-		Username:              args.Username,
-		Password:              args.Password,
-		AuthSource:            args.AuthSource,
-		Host:                  args.Host,
-		Port:                  args.Port,
-		Ssl:                   args.Ssl,
-		SslCaCerts:            args.SslCaCerts,
-		SslInsecureSkipVerify: args.SslInsecureSkipVerify,
-	}
-
-	return newConnection
-}
-
-func (c *ConnectionInfo) createSession() (*mgo.Session, error) {
+func (c *ConnectionInfo) CreateSession() (*mgo.Session, error) {
 
 	// TODO figure out how port fits into here
 	dialInfo := mgo.DialInfo{
@@ -76,9 +60,24 @@ func (c *ConnectionInfo) createSession() (*mgo.Session, error) {
 	session, err := mgo.DialWithInfo(&dialInfo)
 	if err != nil {
 		log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
-		fmt.Printf("%+v\n", dialInfo)
 		os.Exit(1)
 	}
 	return session, err
+
+}
+
+func DefaultConnectionInfo() *ConnectionInfo {
+	connectionInfo := &ConnectionInfo{
+		Username:              arguments.GlobalArgs.Username,
+		Password:              arguments.GlobalArgs.Password,
+		AuthSource:            arguments.GlobalArgs.AuthSource,
+		Host:                  arguments.GlobalArgs.Host,
+		Port:                  arguments.GlobalArgs.Port,
+		Ssl:                   arguments.GlobalArgs.Ssl,
+		SslCaCerts:            arguments.GlobalArgs.SslCaCerts,
+		SslInsecureSkipVerify: arguments.GlobalArgs.SslInsecureSkipVerify,
+	}
+
+	return connectionInfo
 
 }

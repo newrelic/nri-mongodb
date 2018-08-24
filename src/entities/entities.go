@@ -1,11 +1,7 @@
 package entities
 
 import (
-	"errors"
-	"fmt"
-	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/log"
 	"strings"
 )
 
@@ -37,7 +33,7 @@ func (d DefaultCollector) GetEntity() string {
 func extractHostPort(hostPortString string) hostPort {
 	hostPortArray := strings.SplitN(hostPortString, ":", 2)
 	if len(hostPortArray) == 1 {
-		return hostPort{Host: hostPortArray[0], Port: args.Port}
+		return hostPort{Host: hostPortArray[0], Port: ""} // TODO use a better default port?
 	}
 
 	return hostPort{Host: hostPortArray[0], Port: hostPortArray[1]}

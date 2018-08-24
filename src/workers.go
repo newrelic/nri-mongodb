@@ -4,13 +4,15 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
+	args "github.com/newrelic/nri-mongodb/src/arguments"
+	"github.com/newrelic/nri-mongodb/src/entities"
 	"sync"
 )
 
-func startCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration.Integration) chan Collector {
+func startCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration.Integration) chan entities.Collector {
 	wg.Add(numWorkers)
 
-	collectorChan := make(chan Collector, 100)
+	collectorChan := make(chan entities.Collector, 100)
 	for j := 0; j < numWorkers; j++ {
 		go collectorWorker(collectorChan, wg, i)
 	}
@@ -18,7 +20,7 @@ func startCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration
 	return collectorChan
 }
 
-func collectorWorker(collectorChan chan Collector, wg *sync.WaitGroup, i *integration.Integration) {
+func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, i *integration.Integration) {
 	defer wg.Done()
 
 	for {
@@ -32,20 +34,20 @@ func collectorWorker(collectorChan chan Collector, wg *sync.WaitGroup, i *integr
 			log.Error("Failed to create entity for collector %+v: %v", collector, err)
 		}
 
-		if args.HasInventory() {
+		if args.GlobalArgs.HasInventory() {
 			collector.CollectInventory(entity)
 		}
 
-		if args.HasMetrics() {
+		if args.GlobalArgs.HasMetrics() {
 			collector.CollectMetrics(entity)
 		}
 	}
 }
 
-func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
+func feedWorkerPool(session *mgo.Session, collectorChan chan entities.Collector) {
 	defer close(collectorChan)
 
-	mongoses, err := GetMongoses(session)
+	mongoses, err := entities.GetMongoses(session)
 	if err != nil {
 		log.Error("Failed to collect list of Mongos hosts: %v", err)
 	}
@@ -53,7 +55,7 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 		collectorChan <- mongos
 	}
 
-	configServers, err := GetConfigServers(session)
+	configServers, err := entities.GetConfigServers(session)
 	if err != nil {
 		log.Error("Failed to collect list of config servers: %v", err)
 	}
@@ -61,14 +63,14 @@ func feedWorkerPool(session *mgo.Session, collectorChan chan Collector) {
 		collectorChan <- configServer
 	}
 
-	shards, err := GetShards(session)
+	shards, err := entities.GetShards(session)
 	if err != nil {
 		log.Error("Failed to collect list of shards: %v")
 	}
 	for _, shard := range shards {
 		collectorChan <- shard
 
-		mongods, err := GetMongods(shard)
+		mongods, err := entities.GetMongods(shard)
 		if err != nil {
 			log.Error("Failed to collect list of mongods for shard %s", shard.ID)
 		}

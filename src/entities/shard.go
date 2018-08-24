@@ -1,5 +1,10 @@
 package entities
 
+import (
+	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/integration"
+)
+
 type ShardCollector struct {
 	DefaultCollector
 	ID   string
@@ -11,11 +16,7 @@ func (c ShardCollector) GetEntity(i *integration.Integration) (*integration.Enti
 }
 
 func (c ShardCollector) CollectMetrics(e *integration.Entity) {
-	session, err := c.ConnectionInfo.createSession()
-	if err != nil {
-		log.Error("Failed to connect to %s: %v", c.ConnectionInfo.Host, err)
-		return
-	}
+	return
 }
 
 func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
