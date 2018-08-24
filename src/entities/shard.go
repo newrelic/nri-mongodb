@@ -18,16 +18,10 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 	}
 }
 
-func getShards() ([]*ShardCollector, error) {
+func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 	type ShardUnmarshaller []struct {
 		ID   string `bson:"_id"`
 		Host string `bson:"host"`
-	}
-
-	connectionInfo := DefaultConnectionInfo()
-	session, err := connectionInfo.createSession()
-	if err != nil {
-		return nil, err
 	}
 
 	var su ShardUnmarshaller

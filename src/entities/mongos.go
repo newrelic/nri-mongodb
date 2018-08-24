@@ -25,15 +25,9 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 	ms.MarshalMetrics(ss)
 }
 
-func getMongoses() ([]*MongosCollector, error) {
+func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id"`
-	}
-
-	connectionInfo := DefaultConnectionInfo()
-	session, err := connectionInfo.createSession()
-	if err != nil {
-		return nil, err
 	}
 
 	var mu MongosUnmarshaller

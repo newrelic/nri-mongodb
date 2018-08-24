@@ -8,7 +8,7 @@ func (c MongodCollector) GetEntity(i *integration.Integration) (*integration.Ent
 	return i.Entity(c.ConnectionInfo.Host, "mongod")
 }
 
-func getMongods(shard *ShardCollector) ([]*MongodCollector, error) {
+func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	hostPorts := extractHostsFromReplicaSetString(shard.Host)
 
 	var mongodCollectors []*MongodCollector

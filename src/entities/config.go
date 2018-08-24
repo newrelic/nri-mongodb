@@ -8,17 +8,11 @@ func (c ConfigCollector) GetEntity(i *integration.Integration) (*integration.Ent
 	return i.Entity(c.ConnectionInfo.Host, "config")
 }
 
-func getConfigServers() ([]*ConfigCollector, error) {
+func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 	type ConfigUnmarshaller struct {
 		Map struct {
 			Config string
 		}
-	}
-
-	connectionInfo := DefaultConnectionInfo()
-	session, err := connectionInfo.createSession()
-	if err != nil {
-		return nil, err
 	}
 
 	var cu ConfigUnmarshaller
