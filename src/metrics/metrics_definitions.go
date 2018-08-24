@@ -1,4 +1,4 @@
-package main
+package metrics
 
 type serverStatus struct {
 	Host                      *string                         `bson:"host"`
