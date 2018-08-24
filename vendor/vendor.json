@@ -57,12 +57,6 @@
 			"revisionTime": "2018-05-18T05:39:59Z"
 		},
 		{
-			"checksumSHA1": "7gsctJtxytHFF+Dbv2BtCUbR7DA=",
-			"path": "github.com/mongodb/mongo-go-driver",
-			"revision": "1f112eb435c13277350436a7737d4ced5870b657",
-			"revisionTime": "2018-08-02T19:01:37Z"
-		},
-		{
 			"checksumSHA1": "MFH1316fMarruD6ogBAi55X8o8g=",
 			"path": "github.com/newrelic/infra-integrations-sdk/args",
 			"revision": "b4be62020f15797040858b1cb9a0690d5a3cf0ee",
