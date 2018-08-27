@@ -10,7 +10,6 @@ import (
 )
 
 func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration.Integration) chan entities.Collector {
-	log.Info("Starting collection worker pool")
 	wg.Add(numWorkers)
 
 	collectorChan := make(chan entities.Collector, 100)
@@ -34,7 +33,6 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, 
 		if err != nil {
 			log.Error("Failed to create entity for collector %+v: %v", collector, err)
 		}
-		log.Info("Collecting for entity %s", entity.Metadata.Name)
 
 		if args.GlobalArgs.HasInventory() {
 			collector.CollectInventory(entity)
