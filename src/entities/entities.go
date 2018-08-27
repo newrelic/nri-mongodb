@@ -39,9 +39,13 @@ func extractHostPort(hostPortString string) hostPort {
 	return hostPort{Host: hostPortArray[0], Port: hostPortArray[1]}
 }
 
-func extractHostsFromReplicaSetString(rsString string) []hostPort {
+func parseReplicaSetString(rsString string) ([]hostPort, string) {
+
+	rsName := ""
 	if strings.Contains(rsString, "/") {
-		rsString = strings.Split(rsString, "/")[1]
+		split := strings.Split(rsString, "/")
+		rsName = split[0]
+		rsString = split[1]
 	}
 
 	hostPortStrings := strings.Split(rsString, ",")
@@ -50,6 +54,6 @@ func extractHostsFromReplicaSetString(rsString string) []hostPort {
 		hostPorts = append(hostPorts, extractHostPort(hostPortString))
 	}
 
-	return hostPorts
+	return hostPorts, rsName
 
 }
