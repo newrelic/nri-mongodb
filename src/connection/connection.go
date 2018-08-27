@@ -3,12 +3,13 @@ package connection
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/arguments"
 	"io/ioutil"
 	"net"
-	"os"
+	"time"
 )
 
 type ConnectionInfo struct {
@@ -26,11 +27,14 @@ func (c *ConnectionInfo) CreateSession() (*mgo.Session, error) {
 
 	// TODO figure out how port fits into here
 	dialInfo := mgo.DialInfo{
-		Addrs:    []string{c.Host},
-		Username: c.Username,
-		Password: c.Password,
-		Source:   c.AuthSource,
-		FailFast: true,
+		Addrs:       []string{c.Host},
+		Username:    c.Username,
+		Password:    c.Password,
+		Source:      c.AuthSource,
+		FailFast:    true,
+		Timeout:     time.Duration(2) * time.Second,
+		PoolTimeout: time.Duration(2) * time.Second,
+		ReadTimeout: time.Duration(3) * time.Second,
 	}
 
 	if c.Ssl {
@@ -57,12 +61,24 @@ func (c *ConnectionInfo) CreateSession() (*mgo.Session, error) {
 		}
 	}
 
-	session, err := mgo.DialWithInfo(&dialInfo)
-	if err != nil {
-		log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
-		os.Exit(1)
+	// TODO investigate this further. This should time out, but isn't.
+	// The current manual timeout solution is dirty
+
+	sessionChan := make(chan *mgo.Session)
+	go func() {
+		session, err := mgo.DialWithInfo(&dialInfo)
+		if err != nil {
+			log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
+		}
+		sessionChan <- session
+	}()
+
+	select {
+	case session := <-sessionChan:
+		return session, nil
+	case <-time.After(time.Second * time.Duration(3)):
+		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
 	}
-	return session, err
 
 }
 
