@@ -17,32 +17,33 @@
 		{
 			"checksumSHA1": "5paEOrPNmte9PRyvpBF8HTDjQD4=",
 			"path": "github.com/globalsign/mgo",
-			"revision": "113d3961e7311526535a1ef7042196563d442761",
-			"revisionTime": "2018-06-15T13:49:36Z"
+			"revision": "46bcd340f9a57a05cb5c6cf9b0b61b1c43f6ae06",
+			"revisionTime": "2018-08-21T10:34:16Z",
+			"version": "developer"
 		},
 		{
 			"checksumSHA1": "zdy6XflmESAiFmyptSqpUMfXSyo=",
 			"path": "github.com/globalsign/mgo/bson",
-			"revision": "113d3961e7311526535a1ef7042196563d442761",
-			"revisionTime": "2018-06-15T13:49:36Z"
+			"revision": "46bcd340f9a57a05cb5c6cf9b0b61b1c43f6ae06",
+			"revisionTime": "2018-08-21T10:34:16Z"
 		},
 		{
 			"checksumSHA1": "//bXQG4HblBwxHJDIW/PklXAxu0=",
 			"path": "github.com/globalsign/mgo/internal/json",
-			"revision": "113d3961e7311526535a1ef7042196563d442761",
-			"revisionTime": "2018-06-15T13:49:36Z"
+			"revision": "46bcd340f9a57a05cb5c6cf9b0b61b1c43f6ae06",
+			"revisionTime": "2018-08-21T10:34:16Z"
 		},
 		{
 			"checksumSHA1": "loubUcDO2QAStKIlVd7DqSeoEaw=",
 			"path": "github.com/globalsign/mgo/internal/sasl",
-			"revision": "113d3961e7311526535a1ef7042196563d442761",
-			"revisionTime": "2018-06-15T13:49:36Z"
+			"revision": "46bcd340f9a57a05cb5c6cf9b0b61b1c43f6ae06",
+			"revisionTime": "2018-08-21T10:34:16Z"
 		},
 		{
 			"checksumSHA1": "xjfEsfN7ho6dDOVeUQJhW4KzD2I=",
 			"path": "github.com/globalsign/mgo/internal/scram",
-			"revision": "113d3961e7311526535a1ef7042196563d442761",
-			"revisionTime": "2018-06-15T13:49:36Z"
+			"revision": "46bcd340f9a57a05cb5c6cf9b0b61b1c43f6ae06",
+			"revisionTime": "2018-08-21T10:34:16Z"
 		},
 		{
 			"checksumSHA1": "luu+ud4XYZhlCoNnSAwCJlbh0Bg=",
