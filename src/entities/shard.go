@@ -2,7 +2,10 @@ package entities
 
 import (
 	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
 type ShardCollector struct {
@@ -16,7 +19,31 @@ func (c ShardCollector) GetEntity(i *integration.Integration) (*integration.Enti
 }
 
 func (c ShardCollector) CollectMetrics(e *integration.Entity) {
-	return
+
+	ms := e.NewMetricSet("MongoShardSample",
+		metric.Attribute{
+			Key: "id", Value: c.ID,
+		},
+	)
+
+	replSetHosts, replSetName := parseReplicaSetString(c.Host)
+	if replSetName != "" {
+		ms.SetMetric("shard.isReplSet", true, metric.GAUGE)
+		ms.SetMetric("replset.name", replSetName, metric.ATTRIBUTE)
+
+		connectionInfo := connection.DefaultConnectionInfo()
+		connectionInfo.Host = replSetHosts[0].Host
+		connectionInfo.Port = replSetHosts[0].Port
+
+		_, err := connectionInfo.CreateSession()
+		if err != nil {
+			log.Error("Failed to connect to %s: %v", connectionInfo.Host, err)
+			return
+		}
+	} else {
+		ms.SetMetric("shard.isReplSet", false, metric.GAUGE)
+	}
+
 }
 
 func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
@@ -31,7 +58,10 @@ func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 
 	var shards []*ShardCollector
 	for _, shard := range su {
-		mc := &ShardCollector{ID: shard.ID, Host: shard.Host}
+		mc := &ShardCollector{
+			ID:   shard.ID,
+			Host: shard.Host,
+		}
 
 		shards = append(shards, mc)
 	}
