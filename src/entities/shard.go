@@ -28,8 +28,12 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 
 	replSetHosts, replSetName := parseReplicaSetString(c.Host)
 	if replSetName != "" {
-		ms.SetMetric("shard.isReplSet", true, metric.GAUGE)
-		ms.SetMetric("replset.name", replSetName, metric.ATTRIBUTE)
+		if err := ms.SetMetric("shard.isReplSet", true, metric.GAUGE); err != nil {
+			log.Error("Failed to set metric shard.isReplSet for entity %s", e.Metadata.Name)
+		}
+		if err := ms.SetMetric("replset.name", replSetName, metric.ATTRIBUTE); err != nil {
+			log.Error("Failed to set metric replset.name for entity %s", e.Metadata.Name)
+		}
 
 		connectionInfo := connection.DefaultConnectionInfo()
 		connectionInfo.Host = replSetHosts[0].Host
@@ -41,7 +45,9 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 			return
 		}
 	} else {
-		ms.SetMetric("shard.isReplSet", false, metric.GAUGE)
+		if err := ms.SetMetric("shard.isReplSet", false, metric.GAUGE); err != nil {
+			log.Error("Failed to set metric shard.isReplSet for entity %s", e.Metadata.Name)
+		}
 	}
 
 }
@@ -54,7 +60,9 @@ func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 
 	var su ShardUnmarshaller
 	c := session.DB("config").C("shards")
-	c.Find(map[interface{}]interface{}{}).All(&su)
+	if err := c.Find(map[interface{}]interface{}{}).All(&su); err != nil {
+		return nil, err
+	}
 
 	var shards []*ShardCollector
 	for _, shard := range su {

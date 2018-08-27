@@ -39,6 +39,9 @@ func main() {
 
 	wg.Wait()
 
-	mongoIntegration.Publish()
+	if err = mongoIntegration.Publish(); err != nil {
+		log.Error("Failed to publish integration: %v", err)
+		os.Exit(1)
+	}
 
 }

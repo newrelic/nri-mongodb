@@ -26,13 +26,17 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	var ss metrics.ServerStatus
-	session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
+	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 	ms := e.NewMetricSet("MongosSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	ms.MarshalMetrics(ss)
+	if err := ms.MarshalMetrics(ss); err != nil {
+		log.Error("Failed to marshal metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 }
 
 func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
@@ -42,7 +46,9 @@ func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 
 	var mu MongosUnmarshaller
 	c := session.DB("config").C("mongos")
-	c.Find(map[interface{}]interface{}{}).All(&mu)
+	if err := c.Find(map[interface{}]interface{}{}).All(&mu); err != nil {
+		return nil, err
+	}
 
 	var mongoses []*MongosCollector
 	for _, mongos := range mu {

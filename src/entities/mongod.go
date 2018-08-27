@@ -34,16 +34,25 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	var isMaster metrics.IsMaster
 	err = session.Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
 
-	ms.MarshalMetrics(isMaster)
+	if err := ms.MarshalMetrics(isMaster); err != nil {
+		log.Error("Failed to marshal isMaster metrics for entity %s: %v", e.Metadata.Name, err)
+
+	}
 
 	if isMaster.SetName != "" {
-		collectReplSetMetrics(ms, c.ConnectionInfo, session)
+		if err := collectReplSetMetrics(ms, c.ConnectionInfo, session); err != nil {
+			log.Error("Failed to collect repl set metrics for entity %s: %v", e.Metadata.Name, err)
+		}
 	}
 
 	var ss metrics.ServerStatus
-	session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
+	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 
-	ms.MarshalMetrics(ss)
+	if err := ms.MarshalMetrics(ss); err != nil {
+		log.Error("Failed to marshal metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 
 }
 

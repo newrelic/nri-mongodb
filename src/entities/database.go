@@ -28,13 +28,17 @@ func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	var dbStats metrics.DbStats
-	session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats)
+	if err := session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats); err != nil {
+		log.Error("Failed to collect dbStats metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 	ms := e.NewMetricSet("MongoDatabaseSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	ms.MarshalMetrics(dbStats)
+	if err := ms.MarshalMetrics(dbStats); err != nil {
+		log.Error("Failed to marshal dbStats metrics for entity %s: %v", e.Metadata.Name, err)
+	}
 }
 
 func GetDatabases(session *mgo.Session) ([]*DatabaseCollector, error) {
