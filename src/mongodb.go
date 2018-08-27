@@ -24,17 +24,18 @@ func main() {
 	}
 
 	log.SetupLogging(args.GlobalArgs.Verbose)
-	args.ValidateArguments(args.GlobalArgs)
+	if err := args.GlobalArgs.Validate(); err != nil {
+		log.Error("Invalid arguments: %v", err)
+		os.Exit(1)
+	}
 
 	connectionInfo := connection.DefaultConnectionInfo()
 	session, err := connectionInfo.CreateSession()
 
 	var wg sync.WaitGroup
-	// TODO change the worker pool size back to a higher number
-	// after the concurrency panic bug is fixed
-	collectorChan := startCollectorWorkerPool(1, &wg, mongoIntegration)
+	collectorChan := StartCollectorWorkerPool(50, &wg, mongoIntegration)
 
-	go feedWorkerPool(session, collectorChan)
+	go FeedWorkerPool(session, collectorChan)
 
 	wg.Wait()
 
