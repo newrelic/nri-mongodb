@@ -1,7 +1,8 @@
 package arguments
 
 import (
-	"os"
+	"errors"
+	"fmt"
 	"strconv"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
@@ -16,7 +17,7 @@ type ArgumentList struct {
 	sdkArgs.DefaultArgumentList
 	Username              string `default:"" help:"Username for the MongoDB connection"`
 	Password              string `default:"" help:"Password for the MongoDB connection"`
-	Host                  string `default:"" help:"MongoDB host to connect to for monitoring"`
+	Host                  string `default:"localhost" help:"MongoDB host to connect to for monitoring"`
 	Port                  string `default:"27017" help:"Port on which MongoDB is running"`
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
@@ -25,28 +26,26 @@ type ArgumentList struct {
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to MITM attacks, and should only be used for testing."`
 }
 
-func ValidateArguments(args ArgumentList) {
+func (args *ArgumentList) Validate() error {
 	if args.Username == "" {
-		log.Error("Must provide a username argument")
-		os.Exit(1)
+		return errors.New("must provide a username argument")
 	}
 
 	if args.Password == "" {
-		log.Error("Must provide a password argument")
-		os.Exit(1)
+		return errors.New("must provide a password argument")
 	}
 
 	if args.Host == "" {
-		log.Error("Must provide a host argument")
-		os.Exit(1)
+		return errors.New("must provide a host argument")
 	}
 
 	if _, err := strconv.Atoi(args.Port); err != nil {
-		log.Error("Invalid port %s", args.Port)
-		os.Exit(1)
+		return fmt.Errorf("invalid port %s", args.Port)
 	}
 
 	if args.SslInsecureSkipVerify {
 		log.Warn("Using insecure SSL. This connection is susceptible to man in the middle attacks.")
 	}
+
+	return nil
 }
