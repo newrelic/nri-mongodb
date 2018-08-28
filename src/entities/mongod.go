@@ -37,7 +37,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	)
 
 	var isMaster metrics.IsMaster
-	err = session.Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	err = session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
 
 	if err := ms.MarshalMetrics(isMaster); err != nil {
 		log.Error("Failed to marshal isMaster metrics for entity %s: %v", e.Metadata.Name, err)
@@ -51,7 +51,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
 	}
 
@@ -83,7 +83,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session *mgo.Session) error {
 
 	var replSetStatus metrics.ReplSetGetStatus
-	err := session.Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
+	err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
 	if err != nil {
 		return err
 	}

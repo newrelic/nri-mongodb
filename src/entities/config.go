@@ -37,7 +37,7 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 	)
 
 	var isMaster metrics.IsMaster
-	err = session.Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	err = session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
 	if err != nil {
 		log.Error("failed to collect isMaster metrics for %s", e.Metadata.Name)
 	}
@@ -53,7 +53,7 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for %s: %v", e.Metadata.Name, err)
 	}
 

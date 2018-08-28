@@ -31,7 +31,7 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
 	}
 	ms := e.NewMetricSet("MongosSample",

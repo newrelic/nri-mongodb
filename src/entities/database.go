@@ -55,7 +55,7 @@ func GetDatabases(session *mgo.Session) ([]*DatabaseCollector, error) {
 	}
 
 	var unmarshalledDatabaseList DatabaseListUnmarshaller
-	err := session.Run(map[interface{}]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList)
+	err := session.DB("admin").Run(map[interface{}]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList)
 	if err != nil {
 		return nil, err
 	}
