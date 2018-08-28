@@ -77,7 +77,7 @@ func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 			Host: shard.Host,
 		}
 
-		shards[i] := mc
+		shards[i] = mc
 	}
 
 	return shards, nil
