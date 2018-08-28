@@ -4,16 +4,21 @@ import (
 	"testing"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/test"
 )
 
 func Test_DatabaseCollector_GetEntity(t *testing.T) {
-	cc := DatabaseCollector{
-		Name: "testCollector",
-	}
-
 	i, _ := integration.New("testIntegration", "testVersion")
 
-	e, err := cc.GetEntity(i)
+	cc := DatabaseCollector{
+		DefaultCollector{
+			Integration: i,
+			Session:     test.MockSession{},
+		},
+		"testCollector",
+	}
+
+	e, err := cc.GetEntity()
 	if err != nil {
 		t.Error(err)
 	}

@@ -62,11 +62,11 @@ func Test_collectorWorker(t *testing.T) {
 	go collectorWorker(collectorChan, &wg)
 
 	collectorChan <- testCollector{
-		DefaultCollector: DefaultCollector{
+		entities.DefaultCollector{
 			Integration: i,
-			Session: 
+			// TODO Add a mock session here
 		},
-		Name: "testName",
+		"testName",
 	}
 	close(collectorChan)
 

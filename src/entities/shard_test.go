@@ -4,17 +4,21 @@ import (
 	"testing"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/test"
 )
 
 func Test_ShardCollector_GetEntity(t *testing.T) {
+	i, _ := integration.New("testIntegration", "testVersion")
 	cc := ShardCollector{
-		ID:   "testCollector",
-		Host: "testCollector",
+		DefaultCollector{
+			Integration: i,
+			Session:     test.MockSession{},
+		},
+		"testCollector",
+		"testHost",
 	}
 
-	i, _ := integration.New("testIntegration", "testVersion")
-
-	e, err := cc.GetEntity(i)
+	e, err := cc.GetEntity()
 	if err != nil {
 		t.Error(err)
 	}
