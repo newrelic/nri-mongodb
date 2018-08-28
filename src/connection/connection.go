@@ -26,9 +26,52 @@ type Info struct {
 	SslInsecureSkipVerify bool
 }
 
+// Session is an interface that can be used to mock a MongoDB session
+type Session interface {
+	DB(name string) DataLayer
+	Close()
+}
+
+// MongoSession is a struct that allows shadowing of functions for mocking
+type MongoSession struct {
+	*mgo.Session
+}
+
+// DB shadows the mgo.Session DB function
+func (s MongoSession) DB(name string) DataLayer {
+	return &MongoDatabase{Database: s.Session.DB(name)}
+}
+
+// MongoDatabase is a struct that allows shadowing of mgo.Database functions for mocking
+type MongoDatabase struct {
+	*mgo.Database
+}
+
+// C is a function that shadows the C function of a mongo collection
+func (d MongoDatabase) C(name string) Collection {
+	return &MongoCollection{Collection: d.Database.C(name)}
+}
+
+// MongoCollection is a struct that allows shadowing of functions for mocking
+type MongoCollection struct {
+	*mgo.Collection
+}
+
+// DataLayer is an interface that can be used to mock a MongoDB database
+type DataLayer interface {
+	C(name string) Collection
+	Run(cmd interface{}, result interface{}) error
+	CollectionNames() ([]string, error)
+}
+
+// Collection is an interface that can be used to mock a MongoDB collection
+type Collection interface {
+	Find(query interface{}) *mgo.Query
+}
+
 // CreateSession uses the information in ConnectionInfo to return
 // a session connected to a Mongo host
-func (c *Info) CreateSession() (*mgo.Session, error) {
+func (c *Info) CreateSession() (Session, error) {
 
 	// TODO figure out how port fits into here
 	dialInfo := mgo.DialInfo{
@@ -80,7 +123,7 @@ func (c *Info) CreateSession() (*mgo.Session, error) {
 
 	select {
 	case session := <-sessionChan:
-		return session, nil
+		return MongoSession{session}, nil
 	case <-time.After(time.Second * time.Duration(3)):
 		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
 	}
