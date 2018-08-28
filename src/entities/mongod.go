@@ -50,6 +50,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 		}
 	}
 
+	// TODO split off into functions so they can return separately
 	var ss metrics.ServerStatus
 	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
@@ -66,7 +67,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shard.Host)
 
 	mongodCollectors := make([]*MongodCollector, len(hostPorts))
-	for _, hostPort := range hostPorts {
+	for i, hostPort := range hostPorts {
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
@@ -74,7 +75,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 		newMongodCollector := &MongodCollector{
 			HostCollector{ConnectionInfo: ci},
 		}
-		mongodCollectors = append(mongodCollectors, newMongodCollector)
+		mongodCollectors[i] = newMongodCollector
 	}
 
 	return mongodCollectors, nil

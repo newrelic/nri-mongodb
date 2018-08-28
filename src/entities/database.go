@@ -61,12 +61,12 @@ func GetDatabases(session *mgo.Session) ([]*DatabaseCollector, error) {
 	}
 
 	databases := make([]*DatabaseCollector, len(unmarshalledDatabaseList.Databases))
-	for _, database := range unmarshalledDatabaseList.Databases {
+	for i, database := range unmarshalledDatabaseList.Databases {
 		newDatabase := &DatabaseCollector{
 			Name: database.Name,
 		}
 
-		databases = append(databases, newDatabase)
+		databases[i] = newDatabase
 	}
 
 	return databases, nil

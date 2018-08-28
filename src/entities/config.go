@@ -83,7 +83,7 @@ func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 	configHostPorts, _ := parseReplicaSetString(configServersString)
 
 	configCollectors := make([]*ConfigCollector, len(configHostPorts))
-	for _, configHostPort := range configHostPorts {
+	for i, configHostPort := range configHostPorts {
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
@@ -91,7 +91,7 @@ func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 		cc := &ConfigCollector{
 			HostCollector{ConnectionInfo: ci},
 		}
-		configCollectors = append(configCollectors, cc)
+		configCollectors[i] = cc
 	}
 
 	return configCollectors, nil

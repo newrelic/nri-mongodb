@@ -57,7 +57,7 @@ func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 	}
 
 	mongoses := make([]*MongosCollector, len(mu))
-	for _, mongos := range mu {
+	for i, mongos := range mu {
 		hostPort := extractHostPort(mongos.ID)
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
@@ -67,7 +67,7 @@ func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 			HostCollector{ConnectionInfo: ci},
 		}
 
-		mongoses = append(mongoses, mc)
+		mongoses[i] = mc
 	}
 
 	return mongoses, nil

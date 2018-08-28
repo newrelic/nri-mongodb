@@ -71,13 +71,13 @@ func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 	}
 
 	shards := make([]*ShardCollector, len(su))
-	for _, shard := range su {
+	for i, shard := range su {
 		mc := &ShardCollector{
 			ID:   shard.ID,
 			Host: shard.Host,
 		}
 
-		shards = append(shards, mc)
+		shards[i] := mc
 	}
 
 	return shards, nil
