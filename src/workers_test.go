@@ -13,9 +13,7 @@ import (
 func TestStartCollectorWorkerPool(t *testing.T) {
 	numWorkers := 10
 	var wg sync.WaitGroup
-	i, _ := integration.New("testIntegration", "testVersion")
-
-	entitiesChan := StartCollectorWorkerPool(numWorkers, &wg, i)
+	entitiesChan := StartCollectorWorkerPool(numWorkers, &wg)
 	close(entitiesChan)
 
 	c := make(chan struct{})
@@ -33,19 +31,23 @@ func TestStartCollectorWorkerPool(t *testing.T) {
 }
 
 type testCollector struct {
-	name string
+	entities.DefaultCollector
+	Name string
 }
 
 func (t testCollector) GetEntity() (*integration.Entity, error) {
-	return i.Entity(t.name, "testEntity")
+	return t.GetIntegration().Entity(t.Name, "testEntity")
 }
 
 func (t testCollector) CollectInventory() {
+	e, _ := t.GetEntity()
 	e.SetInventoryItem("testCategory", "testItem", "testValue")
 	return
 }
 
 func (t testCollector) CollectMetrics() {
+	e, _ := t.GetEntity()
+
 	ms := e.NewMetricSet("testSample")
 	ms.SetMetric("testMetric", 1, metric.GAUGE)
 	return
@@ -57,9 +59,15 @@ func Test_collectorWorker(t *testing.T) {
 	i, _ := integration.New("testIntegration", "testVersion")
 
 	wg.Add(1)
-	go collectorWorker(collectorChan, &wg, i)
+	go collectorWorker(collectorChan, &wg)
 
-	collectorChan <- testCollector{name: "testName"}
+	collectorChan <- testCollector{
+		DefaultCollector: DefaultCollector{
+			Integration: i,
+			Session: 
+		},
+		Name: "testName",
+	}
 	close(collectorChan)
 
 	c := make(chan struct{})

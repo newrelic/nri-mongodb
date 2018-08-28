@@ -45,6 +45,7 @@ func (d DefaultCollector) GetEntity() (*integration.Entity, error) {
 	return d.GetIntegration().Entity("", "")
 }
 
+// GetIntegration returns the integration associated with the collector
 func (d DefaultCollector) GetIntegration() *integration.Integration {
 	return d.Integration
 }

@@ -54,6 +54,10 @@ func GetCollections(dbName string, session connection.Session, integration *inte
 	collections := make([]*CollectionCollector, len(names))
 	for i, name := range names {
 		newCollection := &CollectionCollector{
+			DefaultCollector: DefaultCollector{
+				Integration: integration,
+				Session:     session,
+			},
 			Name: name,
 			DB:   dbName,
 		}

@@ -33,7 +33,7 @@ func (c ShardCollector) CollectMetrics() {
 		},
 	)
 
-	replSetHosts, replSetName := parseReplicaSetString(c.Host)
+	_, replSetName := parseReplicaSetString(c.Host)
 	if replSetName != "" {
 		if err := ms.SetMetric("shard.isReplSet", true, metric.GAUGE); err != nil {
 			log.Error("Failed to set metric shard.isReplSet for entity %s", e.Metadata.Name)
@@ -42,16 +42,6 @@ func (c ShardCollector) CollectMetrics() {
 			log.Error("Failed to set metric replset.name for entity %s", e.Metadata.Name)
 		}
 
-		connectionInfo := connection.DefaultConnectionInfo()
-		connectionInfo.Host = replSetHosts[0].Host
-		connectionInfo.Port = replSetHosts[0].Port
-
-		// TODO finish this
-		_, err := connectionInfo.CreateSession()
-		if err != nil {
-			log.Error("Failed to connect to %s: %v", connectionInfo.Host, err)
-			return
-		}
 	} else {
 		if err := ms.SetMetric("shard.isReplSet", false, metric.GAUGE); err != nil {
 			log.Error("Failed to set metric shard.isReplSet for entity %s", e.Metadata.Name)
@@ -75,9 +65,23 @@ func GetShards(session connection.Session, integration *integration.Integration)
 
 	shards := make([]*ShardCollector, len(su))
 	for i, shard := range su {
+		replSetHosts, _ := parseReplicaSetString(shard.Host)
+		connectionInfo := connection.DefaultConnectionInfo()
+		connectionInfo.Host = replSetHosts[0].Host
+		connectionInfo.Port = replSetHosts[0].Port
+
+		session, err := connectionInfo.CreateSession()
+		if err != nil {
+			return nil, err
+		}
+
 		mc := &ShardCollector{
-			ID:   shard.ID,
-			Host: shard.Host,
+			DefaultCollector{
+				Integration: integration,
+				Session:     session,
+			},
+			shard.ID,
+			shard.Host,
 		}
 
 		shards[i] = mc

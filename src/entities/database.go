@@ -61,7 +61,11 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 	databases := make([]*DatabaseCollector, len(unmarshalledDatabaseList.Databases))
 	for i, database := range unmarshalledDatabaseList.Databases {
 		newDatabase := &DatabaseCollector{
-			Name: database.Name,
+			DefaultCollector{
+				Integration: integration,
+				Session:     session,
+			},
+			database.Name,
 		}
 
 		databases[i] = newDatabase
