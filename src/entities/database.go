@@ -3,7 +3,6 @@ package entities
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -47,7 +46,7 @@ func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
-func GetDatabases(session *mgo.Session) ([]*DatabaseCollector, error) {
+func GetDatabases(session connection.Session) ([]*DatabaseCollector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {
 			Name string `bson:"name"`

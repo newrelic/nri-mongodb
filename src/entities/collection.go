@@ -3,7 +3,6 @@ package entities
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -48,7 +47,7 @@ func (c CollectionCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection
-func GetCollections(dbName string, session *mgo.Session) ([]*CollectionCollector, error) {
+func GetCollections(dbName string, session connection.Session) ([]*CollectionCollector, error) {
 	names, err := session.DB(dbName).CollectionNames()
 	if err != nil {
 		return nil, err

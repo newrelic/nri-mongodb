@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -58,7 +57,7 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetShards creates an array of ShardCollectors
-func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
+func GetShards(session connection.Session) ([]*ShardCollector, error) {
 	type ShardUnmarshaller []struct {
 		ID   string `bson:"_id"`
 		Host string `bson:"host"`

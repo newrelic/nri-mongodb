@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -81,10 +80,10 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	return mongodCollectors, nil
 }
 
-func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session *mgo.Session) error {
+func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session connection.Session) error {
 
 	var replSetStatus metrics.ReplSetGetStatus
-	err := session.Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
+	err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
 	if err != nil {
 		return err
 	}

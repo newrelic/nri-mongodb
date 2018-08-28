@@ -3,7 +3,6 @@ package entities
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -45,7 +44,7 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetMongoses returns an array of MongosCollectors which will be collected
-func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
+func GetMongoses(session connection.Session) ([]*MongosCollector, error) {
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id"`
 	}

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -64,7 +63,7 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetConfigServers returns a list of ConfigCollectors to collect
-func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
+func GetConfigServers(session connection.Session) ([]*ConfigCollector, error) {
 	type ConfigUnmarshaller struct {
 		Map struct {
 			Config string
@@ -72,7 +71,7 @@ func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 	}
 
 	var cu ConfigUnmarshaller
-	if err := session.Run("getShardMap", &cu); err != nil {
+	if err := session.DB("admin").Run("getShardMap", &cu); err != nil {
 		return nil, err
 	}
 

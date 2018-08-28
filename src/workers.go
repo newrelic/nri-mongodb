@@ -3,10 +3,10 @@ package main
 import (
 	"sync"
 
-	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	args "github.com/newrelic/nri-mongodb/src/arguments"
+	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 )
 
@@ -47,7 +47,7 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, 
 }
 
 // FeedWorkerPool feeds the workers with the collectors that contain the info needed to collect each entity
-func FeedWorkerPool(session *mgo.Session, collectorChan chan entities.Collector) {
+func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector) {
 	defer close(collectorChan)
 
 	mongoses, err := entities.GetMongoses(session)
