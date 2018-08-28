@@ -4,15 +4,17 @@ import (
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
 // Collector is an interface which represents an entity.
 // A Collector knows how to collect itself through the CollectMetrics
 // and CollectInventory methods.
 type Collector interface {
-	CollectMetrics(*integration.Entity)
-	CollectInventory(*integration.Entity)
-	GetEntity(*integration.Integration) (*integration.Entity, error)
+	CollectMetrics()
+	CollectInventory()
+	GetEntity() (*integration.Entity, error)
+	GetIntegration() *integration.Integration
 }
 
 type hostPort struct {
@@ -23,21 +25,28 @@ type hostPort struct {
 // DefaultCollector is the most basic implementation of the
 // Collector interface, and can be inherited to create a minimal
 // running version which creates no metrics or inventory
-type DefaultCollector struct{}
+type DefaultCollector struct {
+	Session     connection.Session
+	Integration *integration.Integration
+}
 
 // CollectMetrics collects no metrics
-func (d DefaultCollector) CollectMetrics(e *integration.Entity) {
+func (d DefaultCollector) CollectMetrics() {
 	return
 }
 
 // CollectInventory collects no inventory
-func (d DefaultCollector) CollectInventory(e *integration.Entity) {
+func (d DefaultCollector) CollectInventory() {
 	return
 }
 
 // GetEntity returns a dummy entity
-func (d DefaultCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity("defaultEntity", "entity")
+func (d DefaultCollector) GetEntity() (*integration.Entity, error) {
+	return d.GetIntegration().Entity("", "")
+}
+
+func (d DefaultCollector) GetIntegration() *integration.Integration {
+	return d.Integration
 }
 
 func extractHostPort(hostPortString string) hostPort {

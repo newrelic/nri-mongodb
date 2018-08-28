@@ -18,17 +18,13 @@ type ConfigCollector struct {
 }
 
 // GetEntity creates or returns an entity for the config server
-func (c ConfigCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.ConnectionInfo.Host, "config")
+func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.Name, "config")
 }
 
 // CollectMetrics collects and sets metrics for a config server
-func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
-	session, err := c.ConnectionInfo.CreateSession()
-	if err != nil {
-		log.Error("Failed to connect to %s: %v", c.ConnectionInfo.Host, err)
-		return
-	}
+func (c ConfigCollector) CollectMetrics() {
+	e, err := c.GetEntity()
 
 	ms := e.NewMetricSet("MongoConfigServerSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
@@ -36,7 +32,7 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 	)
 
 	var isMaster metrics.IsMaster
-	err = session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	err = c.Session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
 	if err != nil {
 		log.Error("failed to collect isMaster metrics for %s", e.Metadata.Name)
 	}
@@ -46,13 +42,13 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	if isMaster.SetName != nil {
-		if err := collectReplSetMetrics(ms, c.ConnectionInfo, session); err != nil {
+		if err := collectReplSetMetrics(ms, c.Session); err != nil {
 			log.Error("Failed to collect repl set metrics for %s: %v", e.Metadata.Name, err)
 		}
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := c.Session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for %s: %v", e.Metadata.Name, err)
 	}
 
@@ -63,7 +59,7 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetConfigServers returns a list of ConfigCollectors to collect
-func GetConfigServers(session connection.Session) ([]*ConfigCollector, error) {
+func GetConfigServers(session connection.Session, integration *integration.Integration) ([]*ConfigCollector, error) {
 	type ConfigUnmarshaller struct {
 		Map struct {
 			Config string
@@ -87,8 +83,19 @@ func GetConfigServers(session connection.Session) ([]*ConfigCollector, error) {
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
 
+		session, err := ci.CreateSession()
+		if err != nil {
+			return nil, err
+		}
+
 		cc := &ConfigCollector{
-			HostCollector{ConnectionInfo: ci},
+			HostCollector{
+				DefaultCollector{
+					Session:     session,
+					Integration: integration,
+				},
+				ci.Host,
+			},
 		}
 		configCollectors[i] = cc
 	}

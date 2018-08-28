@@ -13,6 +13,11 @@ import (
 	"github.com/newrelic/nri-mongodb/src/arguments"
 )
 
+// SessionBuilder is a mockable interface that allows us to mock at the connection.Info level
+type SessionBuilder interface {
+	CreateSession() (Session, error)
+}
+
 // Info is a storage struct which holds all the
 // information needed to connect to a Mongo host
 type Info struct {
@@ -38,7 +43,7 @@ type MongoSession struct {
 }
 
 // DB shadows the mgo.Session DB function
-func (s MongoSession) DB(name string) DataLayer {
+func (s *MongoSession) DB(name string) DataLayer {
 	return &MongoDatabase{Database: s.Session.DB(name)}
 }
 
@@ -48,7 +53,7 @@ type MongoDatabase struct {
 }
 
 // C is a function that shadows the C function of a mongo collection
-func (d MongoDatabase) C(name string) Collection {
+func (d *MongoDatabase) C(name string) Collection {
 	return &MongoCollection{Collection: d.Database.C(name)}
 }
 
@@ -123,7 +128,7 @@ func (c *Info) CreateSession() (Session, error) {
 
 	select {
 	case session := <-sessionChan:
-		return MongoSession{session}, nil
+		return &MongoSession{session}, nil
 	case <-time.After(time.Second * time.Duration(3)):
 		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
 	}

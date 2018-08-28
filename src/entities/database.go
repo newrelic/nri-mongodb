@@ -18,21 +18,20 @@ type DatabaseCollector struct {
 }
 
 // GetEntity creates or returns an entity for a database
-func (c DatabaseCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.Name, "database")
+func (c DatabaseCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.Name, "database")
 }
 
 // CollectMetrics collects and sets all the database's metrics
-func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
-	connectionInfo := connection.DefaultConnectionInfo()
-	session, err := connectionInfo.CreateSession()
+func (c DatabaseCollector) CollectMetrics() {
+
+	e, err := c.GetEntity()
 	if err != nil {
-		log.Error("Failed to connect to %s: %v", connectionInfo.Host, err)
-		return
+		log.Error("Failed to get entity: %v", err)
 	}
 
 	var dbStats metrics.DbStats
-	if err := session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.Session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats); err != nil {
 		log.Error("Failed to collect dbStats metrics for entity %s: %v", e.Metadata.Name, err)
 	}
 	ms := e.NewMetricSet("MongoDatabaseSample",
@@ -46,7 +45,7 @@ func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
-func GetDatabases(session connection.Session) ([]*DatabaseCollector, error) {
+func GetDatabases(session connection.Session, integration *integration.Integration) ([]*DatabaseCollector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {
 			Name string `bson:"name"`

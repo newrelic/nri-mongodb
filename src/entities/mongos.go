@@ -17,20 +17,20 @@ type MongosCollector struct {
 }
 
 // GetEntity creates or returns an entity for the mongos
-func (c MongosCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.ConnectionInfo.Host, "mongos")
+func (c MongosCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.Name, "mongos")
 }
 
 // CollectMetrics sets all the metrics for the mongos
-func (c MongosCollector) CollectMetrics(e *integration.Entity) {
-	session, err := c.ConnectionInfo.CreateSession()
+func (c MongosCollector) CollectMetrics() {
+
+	e, err := c.GetEntity()
 	if err != nil {
-		log.Error("Failed to connect to %s: %v", c.ConnectionInfo.Host, err)
-		return
+		log.Error("Failed to create entity: %v", err)
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := c.Session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
 	}
 	ms := e.NewMetricSet("MongosSample",
@@ -44,7 +44,7 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetMongoses returns an array of MongosCollectors which will be collected
-func GetMongoses(session connection.Session) ([]*MongosCollector, error) {
+func GetMongoses(session connection.Session, integration *integration.Integration) ([]*MongosCollector, error) {
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id"`
 	}
@@ -62,8 +62,19 @@ func GetMongoses(session connection.Session) ([]*MongosCollector, error) {
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
 
+		session, err := ci.CreateSession()
+		if err != nil {
+			return nil, err
+		}
+
 		mc := &MongosCollector{
-			HostCollector{ConnectionInfo: ci},
+			HostCollector{
+				DefaultCollector{
+					Session:     session,
+					Integration: integration,
+				},
+				ci.Host,
+			},
 		}
 
 		mongoses[i] = mc

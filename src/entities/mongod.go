@@ -2,7 +2,6 @@ package entities
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -18,15 +17,15 @@ type MongodCollector struct {
 }
 
 // GetEntity creates or returns an entity for the mongod
-func (c MongodCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.ConnectionInfo.Host, "mongod")
+func (c MongodCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.Name, "mongod")
 }
 
 // CollectMetrics sets all the metrics for a mongod
-func (c MongodCollector) CollectMetrics(e *integration.Entity) {
-	session, err := c.ConnectionInfo.CreateSession()
+func (c MongodCollector) CollectMetrics() {
+	e, err := c.GetEntity()
 	if err != nil {
-		log.Error("Failed to connect to %s: %v", c.ConnectionInfo.Host, err)
+		log.Error("Failed to get entity: %v", err)
 		return
 	}
 
@@ -36,7 +35,10 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	)
 
 	var isMaster metrics.IsMaster
-	err = session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	err = c.Session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	if err != nil {
+		log.Error("failed") // TODO remove this when split into functions
+	}
 
 	if err := ms.MarshalMetrics(isMaster); err != nil {
 		log.Error("Failed to marshal isMaster metrics for entity %s: %v", e.Metadata.Name, err)
@@ -44,14 +46,14 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	}
 
 	if isMaster.SetName != nil {
-		if err := collectReplSetMetrics(ms, c.ConnectionInfo, session); err != nil {
+		if err := collectReplSetMetrics(ms, c.Session); err != nil {
 			log.Error("Failed to collect repl set metrics for entity %s: %v", e.Metadata.Name, err)
 		}
 	}
 
 	// TODO split off into functions so they can return separately
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := c.Session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
 		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
 	}
 
@@ -62,7 +64,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetMongods returns an array of MongodCollectors to collect
-func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
+func GetMongods(shard *ShardCollector, integration *integration.Integration) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shard.Host)
 
 	mongodCollectors := make([]*MongodCollector, len(hostPorts))
@@ -71,8 +73,19 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
 
+		session, err := ci.CreateSession()
+		if err != nil {
+			return nil, err
+		}
+
 		newMongodCollector := &MongodCollector{
-			HostCollector{ConnectionInfo: ci},
+			HostCollector{
+				DefaultCollector{
+					Integration: integration,
+					Session:     session,
+				},
+				ci.Host,
+			},
 		}
 		mongodCollectors[i] = newMongodCollector
 	}
@@ -80,7 +93,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	return mongodCollectors, nil
 }
 
-func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session connection.Session) error {
+func collectReplSetMetrics(ms *metric.Set, session connection.Session) error {
 
 	var replSetStatus metrics.ReplSetGetStatus
 	err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
@@ -88,12 +101,7 @@ func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session connectio
 		return err
 	}
 
-	for _, host := range replSetStatus.Members {
-		if strings.HasPrefix(*host.Name, c.Host) {
-			// TODO finish this
-
-		}
-	}
+	// TODO finish this
 
 	return nil
 

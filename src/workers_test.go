@@ -36,16 +36,16 @@ type testCollector struct {
 	name string
 }
 
-func (t testCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
+func (t testCollector) GetEntity() (*integration.Entity, error) {
 	return i.Entity(t.name, "testEntity")
 }
 
-func (t testCollector) CollectInventory(e *integration.Entity) {
+func (t testCollector) CollectInventory() {
 	e.SetInventoryItem("testCategory", "testItem", "testValue")
 	return
 }
 
-func (t testCollector) CollectMetrics(e *integration.Entity) {
+func (t testCollector) CollectMetrics() {
 	ms := e.NewMetricSet("testSample")
 	ms.SetMetric("testMetric", 1, metric.GAUGE)
 	return

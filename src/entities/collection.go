@@ -19,21 +19,19 @@ type CollectionCollector struct {
 }
 
 // GetEntity creates or returns an entity for a collection
-func (c CollectionCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.Name, "collection")
+func (c CollectionCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.Name, "collection")
 }
 
 // CollectMetrics collects and sets the metrics for a collection
-func (c CollectionCollector) CollectMetrics(e *integration.Entity) {
-	connectionInfo := connection.DefaultConnectionInfo()
-	session, err := connectionInfo.CreateSession()
+func (c CollectionCollector) CollectMetrics() {
+	e, err := c.GetEntity()
 	if err != nil {
-		log.Error("Failed to connect to %s: %v", connectionInfo.Host, err)
-		return
+		log.Error("Failed to get entity: %v")
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.DB).Run(map[interface{}]interface{}{"collStats": c.Name}, &collStats); err != nil {
+	if err := c.Session.DB(c.DB).Run(map[interface{}]interface{}{"collStats": c.Name}, &collStats); err != nil {
 		log.Error("Failed to collect collStats metrics for %s: %v", e.Metadata.Name, err)
 	}
 	ms := e.NewMetricSet("MongoCollectionSample",
@@ -47,7 +45,7 @@ func (c CollectionCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection
-func GetCollections(dbName string, session connection.Session) ([]*CollectionCollector, error) {
+func GetCollections(dbName string, session connection.Session, integration *integration.Integration) ([]*CollectionCollector, error) {
 	names, err := session.DB(dbName).CollectionNames()
 	if err != nil {
 		return nil, err

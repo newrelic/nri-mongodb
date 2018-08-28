@@ -16,12 +16,16 @@ type ShardCollector struct {
 }
 
 // GetEntity creates or returns an entity for the shard
-func (c ShardCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
-	return i.Entity(c.ID, "shard")
+func (c ShardCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.ID, "shard")
 }
 
 // CollectMetrics sets all the metrics for the shard
-func (c ShardCollector) CollectMetrics(e *integration.Entity) {
+func (c ShardCollector) CollectMetrics() {
+	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to get entity: %v", err)
+	}
 
 	ms := e.NewMetricSet("MongoShardSample",
 		metric.Attribute{
@@ -57,7 +61,7 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 }
 
 // GetShards creates an array of ShardCollectors
-func GetShards(session connection.Session) ([]*ShardCollector, error) {
+func GetShards(session connection.Session, integration *integration.Integration) ([]*ShardCollector, error) {
 	type ShardUnmarshaller []struct {
 		ID   string `bson:"_id"`
 		Host string `bson:"host"`

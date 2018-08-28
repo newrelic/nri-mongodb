@@ -11,18 +11,18 @@ import (
 )
 
 // StartCollectorWorkerPool starts a pool of workers to handle collecting each entity
-func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration.Integration) chan entities.Collector {
+func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup) chan entities.Collector {
 	wg.Add(numWorkers)
 
 	collectorChan := make(chan entities.Collector, 100)
 	for j := 0; j < numWorkers; j++ {
-		go collectorWorker(collectorChan, wg, i)
+		go collectorWorker(collectorChan, wg)
 	}
 
 	return collectorChan
 }
 
-func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, i *integration.Integration) {
+func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for {
@@ -31,26 +31,21 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, 
 			return
 		}
 
-		entity, err := collector.GetEntity(i)
-		if err != nil {
-			log.Error("Failed to create entity for collector %+v: %v", collector, err)
-		}
-
 		if args.GlobalArgs.HasInventory() {
-			collector.CollectInventory(entity)
+			collector.CollectInventory()
 		}
 
 		if args.GlobalArgs.HasMetrics() {
-			collector.CollectMetrics(entity)
+			collector.CollectMetrics()
 		}
 	}
 }
 
 // FeedWorkerPool feeds the workers with the collectors that contain the info needed to collect each entity
-func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector) {
+func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
 	defer close(collectorChan)
 
-	mongoses, err := entities.GetMongoses(session)
+	mongoses, err := entities.GetMongoses(session, integration)
 	if err != nil {
 		log.Error("Failed to collect list of Mongos hosts: %v", err)
 	}
@@ -58,7 +53,7 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 		collectorChan <- mongos
 	}
 
-	configServers, err := entities.GetConfigServers(session)
+	configServers, err := entities.GetConfigServers(session, integration)
 	if err != nil {
 		log.Error("Failed to collect list of config servers: %v", err)
 	}
@@ -66,14 +61,14 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 		collectorChan <- configServer
 	}
 
-	shards, err := entities.GetShards(session)
+	shards, err := entities.GetShards(session, integration)
 	if err != nil {
 		log.Error("Failed to collect list of shards: %v")
 	}
 	for _, shard := range shards {
 		collectorChan <- shard
 
-		mongods, err := entities.GetMongods(shard)
+		mongods, err := entities.GetMongods(shard, integration)
 		if err != nil {
 			log.Error("Failed to collect list of mongods for shard %s", shard.ID)
 		}
@@ -82,14 +77,14 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 		}
 	}
 
-	databases, err := entities.GetDatabases(session)
+	databases, err := entities.GetDatabases(session, integration)
 	if err != nil {
 		log.Error("Failed to collect list of databases: %v", err)
 	}
 	for _, database := range databases {
 		collectorChan <- database
 
-		collections, err := entities.GetCollections(database.Name, session)
+		collections, err := entities.GetCollections(database.Name, session, integration)
 		if err != nil {
 			log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
 		}
