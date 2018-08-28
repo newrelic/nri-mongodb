@@ -4,15 +4,18 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/globalsign/mgo"
-	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-mongodb/src/arguments"
 	"io/ioutil"
 	"net"
 	"time"
+
+	"github.com/globalsign/mgo"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/arguments"
 )
 
-type ConnectionInfo struct {
+// Info is a storage struct which holds all the
+// information needed to connect to a Mongo host
+type Info struct {
 	Username              string
 	Password              string
 	AuthSource            string
@@ -23,7 +26,9 @@ type ConnectionInfo struct {
 	SslInsecureSkipVerify bool
 }
 
-func (c *ConnectionInfo) CreateSession() (*mgo.Session, error) {
+// CreateSession uses the information in ConnectionInfo to return
+// a session connected to a Mongo host
+func (c *Info) CreateSession() (*mgo.Session, error) {
 
 	// TODO figure out how port fits into here
 	dialInfo := mgo.DialInfo{
@@ -82,8 +87,9 @@ func (c *ConnectionInfo) CreateSession() (*mgo.Session, error) {
 
 }
 
-func DefaultConnectionInfo() *ConnectionInfo {
-	connectionInfo := &ConnectionInfo{
+// DefaultConnectionInfo returns connection info constructed from the passed-in args
+func DefaultConnectionInfo() *Info {
+	connectionInfo := &Info{
 		Username:              arguments.GlobalArgs.Username,
 		Password:              arguments.GlobalArgs.Password,
 		AuthSource:            arguments.GlobalArgs.AuthSource,

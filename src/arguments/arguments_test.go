@@ -66,6 +66,18 @@ func TestValidateArguments(t *testing.T) {
 			},
 			expectedError: true,
 		},
+		{
+			argumentList: ArgumentList{
+				Username:   "testUser",
+				Password:   "testPass",
+				Host:       "testHost",
+				Port:       "2000",
+				AuthSource: "admin",
+				Ssl:        false,
+				SslInsecureSkipVerify: true,
+			},
+			expectedError: false,
+		},
 	}
 
 	for _, tc := range testCases {

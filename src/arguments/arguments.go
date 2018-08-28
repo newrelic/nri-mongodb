@@ -10,9 +10,11 @@ import (
 )
 
 var (
+	// GlobalArgs is a global exported instantiated argument list
 	GlobalArgs ArgumentList
 )
 
+// ArgumentList is a struct that defines the arguments for the integration
 type ArgumentList struct {
 	sdkArgs.DefaultArgumentList
 	Username              string `default:"" help:"Username for the MongoDB connection"`
@@ -26,6 +28,7 @@ type ArgumentList struct {
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to MITM attacks, and should only be used for testing."`
 }
 
+// Validate validates an argument list and returns an error if something is wrong
 func (args *ArgumentList) Validate() error {
 	if args.Username == "" {
 		return errors.New("must provide a username argument")

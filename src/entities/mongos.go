@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -10,14 +11,18 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
+// MongosCollector is a storage struct which contains all the information
+// needed to collect metrics and inventory for a given mongos
 type MongosCollector struct {
 	HostCollector
 }
 
+// GetEntity creates or returns an entity for the mongos
 func (c MongosCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
 	return i.Entity(c.ConnectionInfo.Host, "mongos")
 }
 
+// CollectMetrics sets all the metrics for the mongos
 func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 	session, err := c.ConnectionInfo.CreateSession()
 	if err != nil {
@@ -39,6 +44,7 @@ func (c MongosCollector) CollectMetrics(e *integration.Entity) {
 	}
 }
 
+// GetMongoses returns an array of MongosCollectors which will be collected
 func GetMongoses(session *mgo.Session) ([]*MongosCollector, error) {
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id"`

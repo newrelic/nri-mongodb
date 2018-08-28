@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/newrelic/infra-integrations-sdk/data/metric"
-	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/nri-mongodb/src/entities"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/entities"
 )
 
 func TestStartCollectorWorkerPool(t *testing.T) {

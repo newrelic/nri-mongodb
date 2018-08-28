@@ -2,23 +2,28 @@ package entities
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/metrics"
-	"strings"
 )
 
+// MongodCollector is a storage struct with all the information needed
+// to collect metrics and inventory for a mongod
 type MongodCollector struct {
 	HostCollector
 }
 
+// GetEntity creates or returns an entity for the mongod
 func (c MongodCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
 	return i.Entity(c.ConnectionInfo.Host, "mongod")
 }
 
+// CollectMetrics sets all the metrics for a mongod
 func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 	session, err := c.ConnectionInfo.CreateSession()
 	if err != nil {
@@ -39,7 +44,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 
 	}
 
-	if isMaster.SetName != "" {
+	if isMaster.SetName != nil {
 		if err := collectReplSetMetrics(ms, c.ConnectionInfo, session); err != nil {
 			log.Error("Failed to collect repl set metrics for entity %s: %v", e.Metadata.Name, err)
 		}
@@ -56,6 +61,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 
 }
 
+// GetMongods returns an array of MongodCollectors to collect
 func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shard.Host)
 
@@ -74,7 +80,7 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	return mongodCollectors, nil
 }
 
-func collectReplSetMetrics(ms *metric.Set, c *connection.ConnectionInfo, session *mgo.Session) error {
+func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session *mgo.Session) error {
 
 	var replSetStatus metrics.ReplSetGetStatus
 	err := session.Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)

@@ -1,14 +1,16 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	args "github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/entities"
-	"sync"
 )
 
+// StartCollectorWorkerPool starts a pool of workers to handle collecting each entity
 func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup, i *integration.Integration) chan entities.Collector {
 	wg.Add(numWorkers)
 
@@ -44,6 +46,7 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup, 
 	}
 }
 
+// FeedWorkerPool feeds the workers with the collectors that contain the info needed to collect each entity
 func FeedWorkerPool(session *mgo.Session, collectorChan chan entities.Collector) {
 	defer close(collectorChan)
 

@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -10,15 +11,19 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
+// DatabaseCollector is a storage struct containing all the
+// necessary information to collect a database
 type DatabaseCollector struct {
 	DefaultCollector
 	Name string
 }
 
+// GetEntity creates or returns an entity for a database
 func (c DatabaseCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
 	return i.Entity(c.Name, "database")
 }
 
+// CollectMetrics collects and sets all the database's metrics
 func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
 	connectionInfo := connection.DefaultConnectionInfo()
 	session, err := connectionInfo.CreateSession()
@@ -41,6 +46,7 @@ func (c DatabaseCollector) CollectMetrics(e *integration.Entity) {
 	}
 }
 
+// GetDatabases returns a list of DatabaseCollectors which each collect a specific database
 func GetDatabases(session *mgo.Session) ([]*DatabaseCollector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {

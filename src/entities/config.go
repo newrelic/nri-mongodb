@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 	"fmt"
+
 	"github.com/globalsign/mgo"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -11,14 +12,18 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
+// ConfigCollector is a storage struct which holds all the
+// necessary information to collect a config  server
 type ConfigCollector struct {
 	HostCollector
 }
 
+// GetEntity creates or returns an entity for the config server
 func (c ConfigCollector) GetEntity(i *integration.Integration) (*integration.Entity, error) {
 	return i.Entity(c.ConnectionInfo.Host, "config")
 }
 
+// CollectMetrics collects and sets metrics for a config server
 func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 	session, err := c.ConnectionInfo.CreateSession()
 	if err != nil {
@@ -37,19 +42,28 @@ func (c ConfigCollector) CollectMetrics(e *integration.Entity) {
 		log.Error("failed to collect isMaster metrics for %s", e.Metadata.Name)
 	}
 
-	ms.MarshalMetrics(isMaster)
+	if err := ms.MarshalMetrics(isMaster); err != nil {
+		log.Error("Failed to marshal isMaster metrics for %s: %v", e.Metadata.Name, err)
+	}
 
-	if isMaster.SetName != "" {
-		collectReplSetMetrics(ms, c.ConnectionInfo, session)
+	if isMaster.SetName != nil {
+		if err := collectReplSetMetrics(ms, c.ConnectionInfo, session); err != nil {
+			log.Error("Failed to collect repl set metrics for %s: %v", e.Metadata.Name, err)
+		}
 	}
 
 	var ss metrics.ServerStatus
-	session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss)
+	if err := session.Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+		log.Error("Failed to collect serverStatus metrics for %s: %v", e.Metadata.Name, err)
+	}
 
-	ms.MarshalMetrics(ss)
+	if err := ms.MarshalMetrics(ss); err != nil {
+		log.Error("Failed to marshal metrics for %s: %v", e.Metadata.Name, err)
+	}
 
 }
 
+// GetConfigServers returns a list of ConfigCollectors to collect
 func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 	type ConfigUnmarshaller struct {
 		Map struct {
@@ -58,7 +72,9 @@ func GetConfigServers(session *mgo.Session) ([]*ConfigCollector, error) {
 	}
 
 	var cu ConfigUnmarshaller
-	session.Run("getShardMap", &cu)
+	if err := session.Run("getShardMap", &cu); err != nil {
+		return nil, err
+	}
 
 	configServersString := cu.Map.Config
 	if configServersString == "" {

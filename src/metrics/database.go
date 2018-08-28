@@ -1,5 +1,6 @@
 package metrics
 
+// DbStats is a struct for unmarshalling the results of the dbStats command
 type DbStats struct {
 	Objects     *int `bson:"objects"     metric_name:"stats.objects"        source_type:"gauge"`
 	StorageSize *int `bson:"storageSize" metric_name:"stats.storageInBytes" source_type:"gauge"`
