@@ -43,6 +43,7 @@ func (c ShardCollector) CollectMetrics(e *integration.Entity) {
 		connectionInfo.Host = replSetHosts[0].Host
 		connectionInfo.Port = replSetHosts[0].Port
 
+		// TODO finish this
 		_, err := connectionInfo.CreateSession()
 		if err != nil {
 			log.Error("Failed to connect to %s: %v", connectionInfo.Host, err)
@@ -69,7 +70,7 @@ func GetShards(session *mgo.Session) ([]*ShardCollector, error) {
 		return nil, err
 	}
 
-	var shards []*ShardCollector
+	shards := make([]*ShardCollector, len(su))
 	for _, shard := range su {
 		mc := &ShardCollector{
 			ID:   shard.ID,

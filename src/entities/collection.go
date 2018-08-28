@@ -54,7 +54,7 @@ func GetCollections(dbName string, session *mgo.Session) ([]*CollectionCollector
 		return nil, err
 	}
 
-	var collections []*CollectionCollector
+	collections := make([]*CollectionCollector, len(names))
 	for _, name := range names {
 		newCollection := &CollectionCollector{
 			Name: name,

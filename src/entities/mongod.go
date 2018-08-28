@@ -65,7 +65,7 @@ func (c MongodCollector) CollectMetrics(e *integration.Entity) {
 func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shard.Host)
 
-	var mongodCollectors []*MongodCollector
+	mongodCollectors := make([]*MongodCollector, len(hostPorts))
 	for _, hostPort := range hostPorts {
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
@@ -83,13 +83,14 @@ func GetMongods(shard *ShardCollector) ([]*MongodCollector, error) {
 func collectReplSetMetrics(ms *metric.Set, c *connection.Info, session *mgo.Session) error {
 
 	var replSetStatus metrics.ReplSetGetStatus
-	err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
+	err := session.Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
 	if err != nil {
 		return err
 	}
 
 	for _, host := range replSetStatus.Members {
 		if strings.HasPrefix(*host.Name, c.Host) {
+			// TODO finish this
 
 		}
 	}

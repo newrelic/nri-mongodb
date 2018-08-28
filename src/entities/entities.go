@@ -59,7 +59,7 @@ func parseReplicaSetString(rsString string) ([]hostPort, string) {
 	}
 
 	hostPortStrings := strings.Split(rsString, ",")
-	var hostPorts []hostPort
+	hostPorts := make([]hostPort, len(hostPortStrings))
 	for _, hostPortString := range hostPortStrings {
 		hostPorts = append(hostPorts, extractHostPort(hostPortString))
 	}
