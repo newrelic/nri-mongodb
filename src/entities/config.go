@@ -19,7 +19,7 @@ type ConfigCollector struct {
 // GetEntity creates or returns an entity for the config server
 func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "config") // TODO do this for the rest
+		return i.Entity(c.Name, "config")
 	}
 
 	return nil, errors.New("nil integration")
