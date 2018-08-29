@@ -9,4 +9,5 @@ type HostCollector struct {
 // CollectInventory collects all the inventory for a given host
 func (c HostCollector) CollectInventory() {
 	// TODO write inventory collection code
+	return
 }

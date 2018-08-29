@@ -33,7 +33,7 @@ func main() {
 	session, err := connectionInfo.CreateSession()
 
 	var wg sync.WaitGroup
-	collectorChan := StartCollectorWorkerPool(50, &wg)
+	collectorChan := StartCollectorWorkerPool(100, &wg)
 
 	go FeedWorkerPool(session, collectorChan, mongoIntegration)
 

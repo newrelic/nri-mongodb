@@ -7,7 +7,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
-	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 // MongodCollector is a storage struct with all the information needed
@@ -34,31 +33,23 @@ func (c MongodCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	var isMaster metrics.IsMaster
-	err = c.Session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	isReplSet, err := CollectIsMaster(c, ms)
 	if err != nil {
-		log.Error("failed") // TODO remove this when split into functions
+		log.Error("Collect failed: %v", err)
 	}
 
-	if err := ms.MarshalMetrics(isMaster); err != nil {
-		log.Error("Failed to marshal isMaster metrics for entity %s: %v", e.Metadata.Name, err)
-
-	}
-
-	if isMaster.SetName != nil {
-		if err := collectReplSetMetrics(ms, c.Session); err != nil {
-			log.Error("Failed to collect repl set metrics for entity %s: %v", e.Metadata.Name, err)
+	if isReplSet {
+		if err := CollectReplSetMetrics(c, ms); err != nil {
+			log.Error("Collect failed: %v", err)
 		}
 	}
 
-	// TODO split off into functions so they can return separately
-	var ss metrics.ServerStatus
-	if err := c.Session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
-		log.Error("Failed to collect serverStatus metrics for entity %s: %v", e.Metadata.Name, err)
+	if err := CollectServerStatus(c, ms); err != nil {
+		log.Error("Collect failed: %v", err)
 	}
 
-	if err := ms.MarshalMetrics(ss); err != nil {
-		log.Error("Failed to marshal metrics for entity %s: %v", e.Metadata.Name, err)
+	if err := CollectTop(c); err != nil {
+		log.Error("Collect failed: %v", err)
 	}
 
 }
@@ -91,18 +82,4 @@ func GetMongods(shard *ShardCollector, integration *integration.Integration) ([]
 	}
 
 	return mongodCollectors, nil
-}
-
-func collectReplSetMetrics(ms *metric.Set, session connection.Session) error {
-
-	var replSetStatus metrics.ReplSetGetStatus
-	err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus)
-	if err != nil {
-		return err
-	}
-
-	// TODO finish this
-
-	return nil
-
 }
