@@ -36,7 +36,11 @@ type testCollector struct {
 }
 
 func (t testCollector) GetEntity() (*integration.Entity, error) {
-	return t.GetIntegration().Entity(t.Name, "testEntity")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "test") // TODO do this for the rest
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 func (t testCollector) CollectInventory() {

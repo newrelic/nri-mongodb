@@ -17,7 +17,11 @@ type ShardCollector struct {
 
 // GetEntity creates or returns an entity for the shard
 func (c ShardCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.ID, "shard")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "shard") // TODO do this for the rest
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics sets all the metrics for the shard

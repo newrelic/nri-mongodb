@@ -18,7 +18,11 @@ type ConfigCollector struct {
 
 // GetEntity creates or returns an entity for the config server
 func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.Name, "config")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "config") // TODO do this for the rest
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics collects and sets metrics for a config server

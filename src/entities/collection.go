@@ -19,7 +19,11 @@ type CollectionCollector struct {
 
 // GetEntity creates or returns an entity for a collection
 func (c CollectionCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.Name, "collection")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "collection")
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics collects and sets the metrics for a collection
@@ -37,7 +41,6 @@ func (c CollectionCollector) CollectMetrics() {
 
 	if err := CollectCollStats(c, ms); err != nil {
 		log.Error("Collect failed: %v", err)
-		return
 	}
 
 }

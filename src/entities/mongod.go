@@ -17,7 +17,11 @@ type MongodCollector struct {
 
 // GetEntity creates or returns an entity for the mongod
 func (c MongodCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.Name, "mongod")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "mongos")
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics sets all the metrics for a mongod
