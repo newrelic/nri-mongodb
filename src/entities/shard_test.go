@@ -32,3 +32,18 @@ func Test_ShardCollector_GetEntity(t *testing.T) {
 	}
 
 }
+
+func Test_ShardCollector_CollectMetrics(t *testing.T) {
+	i, _ := integration.New("test", "0.0.1")
+	cc := ShardCollector{
+		DefaultCollector{
+			Integration: i,
+			Session:     test.MockSession{},
+		},
+		"testID",
+		"testHost",
+	}
+
+	cc.CollectMetrics()
+
+}

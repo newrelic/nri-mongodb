@@ -34,19 +34,17 @@ func Test_CollectionCollector_GetEntity(t *testing.T) {
 
 }
 
-/*
- *func Test_CollectionCollector_CollectMetrics(t *testing.T) {
- *  cc := CollectionCollector{
- *    Name: "testCollector",
- *    DB:   "testDB",
- *  }
- *
- *  i, _ := integration.New("testIntegration", "testVersion")
- *
- *  e, err := cc.GetEntity(i)
- *  if err != nil {
- *    t.Error(err)
- *  }
- *
- *}
- */
+func Test_CollectionCollector_CollectMetrics(t *testing.T) {
+	i, _ := integration.New("test", "0.0.1")
+	cc := CollectionCollector{
+		DefaultCollector{
+			Integration: i,
+			Session:     test.MockSession{},
+		},
+		"testCollection",
+		"testDatabase",
+	}
+
+	cc.CollectMetrics()
+
+}
