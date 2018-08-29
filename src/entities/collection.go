@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"

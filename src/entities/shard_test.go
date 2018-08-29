@@ -23,7 +23,7 @@ func Test_ShardCollector_GetEntity(t *testing.T) {
 		t.Error(err)
 	}
 
-	if e.Metadata.Name != "testCollector" {
+	if e.Metadata.Name != "testHost" {
 		t.Errorf("Expected entity name testCollector, got %s", e.Metadata.Name)
 	}
 

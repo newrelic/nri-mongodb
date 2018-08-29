@@ -29,7 +29,6 @@ func (d MockDB) C(name string) connection.Collection {
 // Run runs a command on a mock DB
 func (d MockDB) Run(cmd interface{}, result interface{}) error {
 	return nil
-
 }
 
 // CollectionNames returns a mocked array of collection names
@@ -42,6 +41,5 @@ type MockCollection struct{}
 
 // Find runs a query on a mock collection
 func (c MockCollection) Find(query interface{}) *mgo.Query {
-	// TODO figure out how to mock a Query
 	return nil
 }

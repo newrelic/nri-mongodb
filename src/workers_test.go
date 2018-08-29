@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -36,8 +37,8 @@ type testCollector struct {
 }
 
 func (t testCollector) GetEntity() (*integration.Entity, error) {
-	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "test")
+	if i := t.GetIntegration(); i != nil {
+		return i.Entity(t.Name, "test")
 	}
 
 	return nil, errors.New("nil integration")

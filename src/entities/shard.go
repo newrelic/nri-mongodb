@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"errors"
+
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -18,7 +20,7 @@ type ShardCollector struct {
 // GetEntity creates or returns an entity for the shard
 func (c ShardCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "shard")
+		return i.Entity(c.Host, "shard")
 	}
 
 	return nil, errors.New("nil integration")

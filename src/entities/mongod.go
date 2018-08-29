@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
@@ -18,7 +19,7 @@ type MongodCollector struct {
 // GetEntity creates or returns an entity for the mongod
 func (c MongodCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "mongos")
+		return i.Entity(c.Name, "mongod")
 	}
 
 	return nil, errors.New("nil integration")
