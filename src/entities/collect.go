@@ -16,7 +16,7 @@ func CollectServerStatus(c Collector, ms *metric.Set) error {
 	}
 
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(map[string]interface{}{"serverStatus": 1}, &ss); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -35,7 +35,7 @@ func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 	}
 
 	var isMaster metrics.IsMaster
-	err = session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	err = session.DB("admin").Run(map[string]interface{}{"isMaster": 1}, &isMaster)
 	if err != nil {
 		return false, fmt.Errorf("run isMaster failed: %v", err)
 	}
@@ -56,7 +56,7 @@ func CollectReplSetMetrics(c Collector, ms *metric.Set) error {
 	}
 
 	var replSetStatus metrics.ReplSetGetStatus
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"replSetGetStatus": 1}, &replSetStatus); err != nil {
+	if err := session.DB("admin").Run(map[string]interface{}{"replSetGetStatus": 1}, &replSetStatus); err != nil {
 		return err
 	}
 	// TODO Finish this
@@ -78,7 +78,7 @@ func CollectTop(c Collector) error {
 	}
 
 	var topMetrics metrics.Top
-	if err := session.DB("admin").Run(map[interface{}]interface{}{"top": 1}, &topMetrics); err != nil {
+	if err := session.DB("admin").Run(map[string]interface{}{"top": 1}, &topMetrics); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -111,7 +111,7 @@ func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.DB).Run(map[interface{}]interface{}{"collStats": c.Name}, &collStats); err != nil {
+	if err := session.DB(c.DB).Run(map[string]interface{}{"collStats": c.Name}, &collStats); err != nil {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
@@ -122,9 +122,10 @@ func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 	return nil
 }
 
+// CollectDbStats collects dbStats
 func CollectDbStats(c DatabaseCollector, ms *metric.Set) error {
 	var dbStats metrics.DbStats
-	if err := c.Session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.Session.DB(c.Name).Run(map[string]interface{}{"dbStats": 1}, &dbStats); err != nil {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 

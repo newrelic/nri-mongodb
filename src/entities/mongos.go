@@ -51,7 +51,7 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 
 	var mu MongosUnmarshaller
 	c := session.DB("config").C("mongos")
-	if err := c.Find(map[interface{}]interface{}{}).All(&mu); err != nil {
+	if err := c.Find(map[string]interface{}{}).All(&mu); err != nil {
 		return nil, err
 	}
 

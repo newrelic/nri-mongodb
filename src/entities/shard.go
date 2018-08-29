@@ -63,7 +63,7 @@ func GetShards(session connection.Session, integration *integration.Integration)
 
 	var su ShardUnmarshaller
 	c := session.DB("config").C("shards")
-	if err := c.Find(map[interface{}]interface{}{}).All(&su); err != nil {
+	if err := c.Find(map[string]interface{}{}).All(&su); err != nil {
 		return nil, err
 	}
 
