@@ -3,7 +3,6 @@ package connection
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 	"io/ioutil"
 	"net"
 	"time"
@@ -78,9 +77,12 @@ type Collection interface {
 // a session connected to a Mongo host
 func (c *Info) CreateSession() (Session, error) {
 
-	// TODO figure out how port fits into here
+	host := c.Host
+	if c.Port != "" {
+		host += ":" + c.Port
+	}
 	dialInfo := mgo.DialInfo{
-		Addrs:       []string{c.Host},
+		Addrs:       []string{host},
 		Username:    c.Username,
 		Password:    c.Password,
 		Source:      c.AuthSource,
@@ -114,25 +116,11 @@ func (c *Info) CreateSession() (Session, error) {
 		}
 	}
 
-	// TODO investigate this further. This should time out, but isn't.
-	// The current manual timeout solution is dirty
-
-	sessionChan := make(chan *mgo.Session)
-	go func() {
-		session, err := mgo.DialWithInfo(&dialInfo)
-		if err != nil {
-			log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
-		}
-		sessionChan <- session
-	}()
-
-	select {
-	case session := <-sessionChan:
-		return &MongoSession{session}, nil
-	case <-time.After(time.Second * time.Duration(3)):
-		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
+	session, err := mgo.DialWithInfo(&dialInfo)
+	if err != nil {
+		return nil, err
 	}
-
+	return &MongoSession{session}, nil
 }
 
 // DefaultConnectionInfo returns connection info constructed from the passed-in args
