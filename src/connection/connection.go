@@ -13,22 +13,13 @@ import (
 	"github.com/newrelic/nri-mongodb/src/arguments"
 )
 
+/*
+ * Mockable Interfaces
+ */
+
 // SessionBuilder is a mockable interface that allows us to mock at the connection.Info level
 type SessionBuilder interface {
 	CreateSession() (Session, error)
-}
-
-// Info is a storage struct which holds all the
-// information needed to connect to a Mongo host
-type Info struct {
-	Username              string
-	Password              string
-	AuthSource            string
-	Host                  string
-	Port                  string
-	Ssl                   bool
-	SslCaCerts            string
-	SslInsecureSkipVerify bool
 }
 
 // Session is an interface that can be used to mock a MongoDB session
@@ -36,6 +27,22 @@ type Session interface {
 	DB(name string) DataLayer
 	Close()
 }
+
+// Collection is an interface that can be used to mock a MongoDB collection
+type Collection interface {
+	Find(query interface{}) *mgo.Query
+}
+
+// DataLayer is an interface that can be used to mock a MongoDB database
+type DataLayer interface {
+	C(name string) Collection
+	Run(cmd interface{}, result interface{}) error
+	CollectionNames() ([]string, error)
+}
+
+/*
+ * Implementations of the mockable interfaces
+ */
 
 // MongoSession is a struct that allows shadowing of functions for mocking
 type MongoSession struct {
@@ -62,16 +69,18 @@ type MongoCollection struct {
 	*mgo.Collection
 }
 
-// DataLayer is an interface that can be used to mock a MongoDB database
-type DataLayer interface {
-	C(name string) Collection
-	Run(cmd interface{}, result interface{}) error
-	CollectionNames() ([]string, error)
-}
-
-// Collection is an interface that can be used to mock a MongoDB collection
-type Collection interface {
-	Find(query interface{}) *mgo.Query
+// Info is a storage struct which holds all the
+// information needed to connect to a Mongo host.
+// It implements the SessionBuilder interface
+type Info struct {
+	Username              string
+	Password              string
+	AuthSource            string
+	Host                  string
+	Port                  string
+	Ssl                   bool
+	SslCaCerts            string
+	SslInsecureSkipVerify bool
 }
 
 // CreateSession uses the information in ConnectionInfo to return
@@ -102,6 +111,7 @@ func (c *Info) CreateSession() (Session, error) {
 
 }
 
+// generateDialInfo creates a dialInfo struct from a connection.Info struct
 func (c *Info) generateDialInfo() *mgo.DialInfo {
 	// TODO figure out how port fits into here
 	dialInfo := &mgo.DialInfo{
@@ -122,11 +132,13 @@ func (c *Info) generateDialInfo() *mgo.DialInfo {
 	return dialInfo
 }
 
+// addSSL adds SSL to a dialInfo struct
 func addSSL(d *mgo.DialInfo, SslInsecureSkipVerify bool, SslCaCerts string) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: SslInsecureSkipVerify,
 	}
 
+	// If the user has defined a CA certificate file
 	if SslCaCerts != "" {
 		roots := x509.NewCertPool()
 
@@ -140,6 +152,7 @@ func addSSL(d *mgo.DialInfo, SslInsecureSkipVerify bool, SslCaCerts string) {
 		tlsConfig.RootCAs = roots
 	}
 
+	// Use TLS to dial the server
 	d.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
 		return conn, err

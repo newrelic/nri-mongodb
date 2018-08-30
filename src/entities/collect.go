@@ -10,16 +10,20 @@ import (
 
 // CollectServerStatus collects serverStatus metrics
 func CollectServerStatus(c Collector, ms *metric.Set) error {
+
+	// Retrieve the session for the collector
 	session, err := c.GetSession()
 	if err != nil {
 		return fmt.Errorf("invalid session: %v", err)
 	}
 
+	// Collect and unmarshal the result
 	var ss metrics.ServerStatus
 	if err := session.DB("admin").Run(map[string]interface{}{"serverStatus": 1}, &ss); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
+	// Insert the metrics into the metric set
 	if err := ms.MarshalMetrics(ss); err != nil {
 		return fmt.Errorf("marshal metrics on serverStatus failed: %v", err)
 	}
@@ -27,38 +31,47 @@ func CollectServerStatus(c Collector, ms *metric.Set) error {
 	return nil
 }
 
-// CollectIsMaster collects isMaster metrics
+// CollectIsMaster collects isMaster metrics. Returns a boolean which
+// is true if the session is connected to a replica set
 func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
+
+	// Retrieve the session for the collector
 	session, err := c.GetSession()
 	if err != nil {
 		return false, fmt.Errorf("invalid session: %v", err)
 	}
 
+	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
-	err = session.DB("admin").Run(map[string]interface{}{"isMaster": 1}, &isMaster)
-	if err != nil {
+	if err := session.DB("admin").Run(map[string]interface{}{"isMaster": 1}, &isMaster); err != nil {
 		return false, fmt.Errorf("run isMaster failed: %v", err)
 	}
 
+	// Insert the metrics into the metric set
 	if err := ms.MarshalMetrics(isMaster); err != nil {
 		return false, fmt.Errorf("marshal metrics on isMaster failed: %v", err)
 	}
 
+	// Return whether the node is part of a replica set and an error
 	return isMaster.SetName != nil, nil
 
 }
 
 // CollectReplSetMetrics collects replica set metrics
 func CollectReplSetMetrics(c Collector, ms *metric.Set) error {
+
+	// Retrieve the session for the collector
 	session, err := c.GetSession()
 	if err != nil {
 		return fmt.Errorf("invalid session: %v", err)
 	}
 
+	// Collect and unmarshal the metrics
 	var replSetStatus metrics.ReplSetGetStatus
 	if err := session.DB("admin").Run(map[string]interface{}{"replSetGetStatus": 1}, &replSetStatus); err != nil {
 		return err
 	}
+
 	// TODO Finish this
 
 	return nil
