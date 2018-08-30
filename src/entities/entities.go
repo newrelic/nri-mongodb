@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -15,6 +16,7 @@ type Collector interface {
 	CollectInventory()
 	GetEntity() (*integration.Entity, error)
 	GetIntegration() *integration.Integration
+	GetSession() (connection.Session, error)
 }
 
 type hostPort struct {
@@ -48,6 +50,15 @@ func (d DefaultCollector) GetEntity() (*integration.Entity, error) {
 // GetIntegration returns the integration associated with the collector
 func (d DefaultCollector) GetIntegration() *integration.Integration {
 	return d.Integration
+}
+
+// GetSession returns the session associated with the collector
+func (d DefaultCollector) GetSession() (connection.Session, error) {
+	if d.Session != nil {
+		return d.Session, nil
+	}
+
+	return nil, errors.New("session is nil")
 }
 
 func extractHostPort(hostPortString string) hostPort {

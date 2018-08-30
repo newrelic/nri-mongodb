@@ -34,3 +34,19 @@ func Test_MongosCollector_GetEntity(t *testing.T) {
 	}
 
 }
+
+func Test_MongosCollector_CollectMetrics(t *testing.T) {
+	i, _ := integration.New("test", "0.0.1")
+	cc := MongosCollector{
+		HostCollector{
+			DefaultCollector{
+				Integration: i,
+				Session:     test.MockSession{},
+			},
+			"testCollector",
+		},
+	}
+
+	cc.CollectMetrics()
+
+}

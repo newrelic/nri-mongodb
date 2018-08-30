@@ -7,7 +7,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
-	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 // DatabaseCollector is a storage struct containing all the
@@ -30,17 +29,13 @@ func (c DatabaseCollector) CollectMetrics() {
 		log.Error("Failed to get entity: %v", err)
 	}
 
-	var dbStats metrics.DbStats
-	if err := c.Session.DB(c.Name).Run(map[interface{}]interface{}{"dbStats": 1}, &dbStats); err != nil {
-		log.Error("Failed to collect dbStats metrics for entity %s: %v", e.Metadata.Name, err)
-	}
 	ms := e.NewMetricSet("MongoDatabaseSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := ms.MarshalMetrics(dbStats); err != nil {
-		log.Error("Failed to marshal dbStats metrics for entity %s: %v", e.Metadata.Name, err)
+	if err := CollectDbStats(c, ms); err != nil {
+		log.Error("Collect failed: %s", err)
 	}
 }
 
@@ -53,7 +48,7 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 	}
 
 	var unmarshalledDatabaseList DatabaseListUnmarshaller
-	err := session.DB("admin").Run(map[interface{}]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList)
+	err := session.DB("admin").Run(map[string]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList)
 	if err != nil {
 		return nil, err
 	}

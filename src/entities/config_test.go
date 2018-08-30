@@ -34,3 +34,19 @@ func Test_ConfigCollector_GetEntity(t *testing.T) {
 	}
 
 }
+
+func Test_ConfigCollector_CollectMetrics(t *testing.T) {
+	i, _ := integration.New("test", "0.0.1")
+	cc := ConfigCollector{
+		HostCollector{
+			DefaultCollector{
+				Integration: i,
+				Session:     test.MockSession{},
+			},
+			"testCollector",
+		},
+	}
+
+	cc.CollectMetrics()
+
+}

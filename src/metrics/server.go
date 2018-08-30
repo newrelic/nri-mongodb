@@ -101,14 +101,17 @@ type ServerStatusMetrics struct {
 
 // ServerStatusMetricsCursor is a storage struct
 type ServerStatusMetricsCursor struct {
-	TimedOut *int                           `bson:"timedOut" metric_name:"cursor.timedOutPerSecond" source_type:"rate"`
-	Open     *ServerStatusMetricsCursorOpen `bson:"open"`
+	// TODO determine whether they actually want this separately
+	//TimedOut          *int                           `bson:"timedOut" metric_name:"cursor.timedOut" source_type:"gauge"`
+	TimedOutPerSecond *int                           `bson:"timedOut" metric_name:"cursor.timedOutPerSecond" source_type:"rate"`
+	Open              *ServerStatusMetricsCursorOpen `bson:"open"`
 }
 
 // ServerStatusMetricsCursorOpen is a storage struct
 type ServerStatusMetricsCursorOpen struct {
-	Total  *int `bson:"total"  metric_name:"cursor.openTotal"  source_type:"gauge"`
-	Pinned *int `bson:"pinned" metric_name:"cursor.openPinned" source_type:"gauge"`
+	Total     *int `bson:"total"  metric_name:"cursor.openTotal"  source_type:"gauge"`
+	Pinned    *int `bson:"pinned" metric_name:"cursor.openPinned" source_type:"gauge"`
+	NoTimeout *int `bson:"noTimeout" metric_name:"cursor.openNoTimeout" source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommands is a storage struct

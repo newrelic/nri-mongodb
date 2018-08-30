@@ -3,6 +3,7 @@ package connection
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"time"
@@ -77,50 +78,74 @@ type Collection interface {
 // a session connected to a Mongo host
 func (c *Info) CreateSession() (Session, error) {
 
+	dialInfo := c.generateDialInfo()
+
+	// TODO investigate this further. This should time out, but isn't.
+	// The current manual timeout solution is dirty
+
+	sessionChan := make(chan *mgo.Session)
+	go func() {
+		session, err := mgo.DialWithInfo(dialInfo)
+		if err != nil {
+			log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
+			return
+		}
+		sessionChan <- session
+	}()
+
+	select {
+	case session := <-sessionChan:
+		return &MongoSession{session}, nil
+	case <-time.After(time.Second * time.Duration(3)):
+		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
+	}
+}
+
+func (c *Info) generateDialInfo() *mgo.DialInfo {
 	host := c.Host
 	if c.Port != "" {
 		host += ":" + c.Port
 	}
-	dialInfo := mgo.DialInfo{
+	dialInfo := &mgo.DialInfo{
 		Addrs:       []string{host},
 		Username:    c.Username,
 		Password:    c.Password,
 		Source:      c.AuthSource,
 		FailFast:    true,
-		Timeout:     time.Duration(2) * time.Second,
-		PoolTimeout: time.Duration(2) * time.Second,
-		ReadTimeout: time.Duration(3) * time.Second,
+		Timeout:     time.Duration(10) * time.Second,
+		PoolTimeout: time.Duration(10) * time.Second,
+		ReadTimeout: time.Duration(10) * time.Second,
 	}
 
 	if c.Ssl {
-		tlsConfig := &tls.Config{
-			InsecureSkipVerify: c.SslInsecureSkipVerify,
-		}
-
-		if c.SslCaCerts != "" {
-			roots := x509.NewCertPool()
-
-			ca, err := ioutil.ReadFile(c.SslCaCerts)
-			if err != nil {
-				log.Error("Failed to open crt file: %v", err)
-			}
-
-			roots.AppendCertsFromPEM(ca)
-
-			tlsConfig.RootCAs = roots
-		}
-
-		dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-			conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-			return conn, err
-		}
+		addSSL(dialInfo, c.SslInsecureSkipVerify, c.SslCaCerts)
 	}
 
-	session, err := mgo.DialWithInfo(&dialInfo)
-	if err != nil {
-		return nil, err
+	return dialInfo
+}
+
+func addSSL(d *mgo.DialInfo, SslInsecureSkipVerify bool, SslCaCerts string) {
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: SslInsecureSkipVerify,
 	}
-	return &MongoSession{session}, nil
+
+	if SslCaCerts != "" {
+		roots := x509.NewCertPool()
+
+		ca, err := ioutil.ReadFile(SslCaCerts)
+		if err != nil {
+			log.Error("Failed to open crt file: %v", err)
+		}
+
+		roots.AppendCertsFromPEM(ca)
+
+		tlsConfig.RootCAs = roots
+	}
+
+	d.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		return conn, err
+	}
 }
 
 // DefaultConnectionInfo returns connection info constructed from the passed-in args
@@ -137,5 +162,4 @@ func DefaultConnectionInfo() *Info {
 	}
 
 	return connectionInfo
-
 }

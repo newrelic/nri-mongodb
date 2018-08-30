@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"errors"
+
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -17,7 +19,11 @@ type ShardCollector struct {
 
 // GetEntity creates or returns an entity for the shard
 func (c ShardCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.ID, "shard")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Host, "shard")
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics sets all the metrics for the shard
@@ -59,7 +65,7 @@ func GetShards(session connection.Session, integration *integration.Integration)
 
 	var su ShardUnmarshaller
 	c := session.DB("config").C("shards")
-	if err := c.Find(map[interface{}]interface{}{}).All(&su); err != nil {
+	if err := c.Find(map[string]interface{}{}).All(&su); err != nil {
 		return nil, err
 	}
 

@@ -8,7 +8,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
-	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 // ConfigCollector is a storage struct which holds all the
@@ -19,7 +18,11 @@ type ConfigCollector struct {
 
 // GetEntity creates or returns an entity for the config server
 func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.Name, "config")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.Name, "config")
+	}
+
+	return nil, errors.New("nil integration")
 }
 
 // CollectMetrics collects and sets metrics for a config server
@@ -31,31 +34,20 @@ func (c ConfigCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	var isMaster metrics.IsMaster
-	err = c.Session.DB("admin").Run(map[interface{}]interface{}{"isMaster": 1}, &isMaster)
+	isReplSet, err := CollectIsMaster(c, ms)
 	if err != nil {
-		log.Error("failed to collect isMaster metrics for %s", e.Metadata.Name)
+		log.Error("Collect failed: %v", err)
 	}
 
-	if err := ms.MarshalMetrics(isMaster); err != nil {
-		log.Error("Failed to marshal isMaster metrics for %s: %v", e.Metadata.Name, err)
-	}
-
-	if isMaster.SetName != nil {
-		if err := collectReplSetMetrics(ms, c.Session); err != nil {
-			log.Error("Failed to collect repl set metrics for %s: %v", e.Metadata.Name, err)
+	if isReplSet {
+		if err := CollectReplSetMetrics(c, ms); err != nil {
+			log.Error("Collect failed: %v", err)
 		}
 	}
 
-	var ss metrics.ServerStatus
-	if err := c.Session.DB("admin").Run(map[interface{}]interface{}{"serverStatus": 1}, &ss); err != nil {
-		log.Error("Failed to collect serverStatus metrics for %s: %v", e.Metadata.Name, err)
+	if err := CollectServerStatus(c, ms); err != nil {
+		log.Error("Collect failed: %v", err)
 	}
-
-	if err := ms.MarshalMetrics(ss); err != nil {
-		log.Error("Failed to marshal metrics for %s: %v", e.Metadata.Name, err)
-	}
-
 }
 
 // GetConfigServers returns a list of ConfigCollectors to collect
@@ -77,15 +69,16 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 	}
 	configHostPorts, _ := parseReplicaSetString(configServersString)
 
-	configCollectors := make([]*ConfigCollector, len(configHostPorts))
-	for i, configHostPort := range configHostPorts {
+	var configCollectors []*ConfigCollector // Creation can fail, so can't pre-allocate
+	for _, configHostPort := range configHostPorts {
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
 
 		session, err := ci.CreateSession()
 		if err != nil {
-			return nil, err
+			log.Error("Failed to connect to config server %s", ci.Host)
+			continue
 		}
 
 		cc := &ConfigCollector{
@@ -97,7 +90,7 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 				ci.Host,
 			},
 		}
-		configCollectors[i] = cc
+		configCollectors = append(configCollectors, cc)
 	}
 
 	return configCollectors, nil
