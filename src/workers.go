@@ -104,17 +104,14 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 			log.Error("Failed to collect list of shards: %v")
 		}
 		for _, shard := range shards {
-			log.Info(shard.Host)
-			collectorChan <- shard
-
 			// Create Mongod Collectors
 			getWg.Add(1)
-			go func(localShard *entities.ShardCollector) {
+			go func(localShard string) {
 				defer getWg.Done()
 
-				mongods, err := entities.GetMongods(localShard.Host, integration)
+				mongods, err := entities.GetMongods(localShard, integration)
 				if err != nil {
-					log.Error("Failed to collect list of mongods for shard %s", shard.ID)
+					log.Error("Failed to collect list of mongods for shard %s", localShard)
 				}
 				for _, mongod := range mongods {
 					collectorChan <- mongod
