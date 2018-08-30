@@ -57,8 +57,8 @@ func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 }
 
-// CollectReplSetMetrics collects replica set metrics
-func CollectReplSetMetrics(c Collector, ms *metric.Set) error {
+// CollectReplGetStatus collects replica set metrics
+func CollectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 	// Retrieve the session for the collector
 	session, err := c.GetSession()
@@ -72,7 +72,46 @@ func CollectReplSetMetrics(c Collector, ms *metric.Set) error {
 		return err
 	}
 
-	// TODO Finish this
+	for _, member := range replSetStatus.Members {
+		if member.Name == nil {
+			continue
+		}
+		if strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
+			if err := ms.MarshalMetrics(member); err != nil {
+				return fmt.Errorf("marshal metrics on replSetGetStatus failed: %v", err)
+			}
+		}
+	}
+
+	return nil
+
+}
+
+// CollectReplGetConfig collects replica set metrics
+func CollectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
+
+	// Retrieve the session for the collector
+	session, err := c.GetSession()
+	if err != nil {
+		return fmt.Errorf("invalid session: %v", err)
+	}
+
+	// Collect and unmarshal the metrics
+	var replSetConfig metrics.ReplSetGetConfig
+	if err := session.DB("admin").Run(map[string]interface{}{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+		return err
+	}
+
+	for _, member := range replSetConfig.Config.Members {
+		if member.Host == nil {
+			continue
+		}
+		if strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
+			if err := ms.MarshalMetrics(member); err != nil {
+				return fmt.Errorf("marshal metrics on replSetGetConfig failed: %v", err)
+			}
+		}
+	}
 
 	return nil
 

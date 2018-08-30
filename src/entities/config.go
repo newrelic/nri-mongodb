@@ -40,7 +40,11 @@ func (c ConfigCollector) CollectMetrics() {
 	}
 
 	if isReplSet {
-		if err := CollectReplSetMetrics(c, ms); err != nil {
+		if err := CollectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
+			log.Error("Collect failed: %v", err)
+		}
+
+		if err := CollectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 	}
