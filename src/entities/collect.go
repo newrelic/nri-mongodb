@@ -45,7 +45,6 @@ func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 	}
 
 	return isMaster.SetName != nil, nil
-
 }
 
 // CollectReplSetMetrics collects replica set metrics
