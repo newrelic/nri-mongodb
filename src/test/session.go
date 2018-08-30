@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
@@ -28,6 +29,23 @@ func (d MockDB) C(name string) connection.Collection {
 
 // Run runs a command on a mock DB
 func (d MockDB) Run(cmd interface{}, result interface{}) error {
+	m := cmd.(map[string]interface{})
+	for key := range m {
+		switch key {
+		case "serverStatus":
+			marshalled, _ := bson.Marshal(map[string]interface{}{
+				"host":    "testhost",
+				"version": "testversion",
+				"process": "testprocess",
+				"PID":     3538,
+				"Uptime":  12345,
+			})
+			err := bson.Unmarshal(marshalled, result)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
