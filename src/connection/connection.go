@@ -78,6 +78,7 @@ type Info struct {
 	AuthSource            string
 	Host                  string
 	Port                  string
+	Direct                bool
 	Ssl                   bool
 	SslCaCerts            string
 	SslInsecureSkipVerify bool
@@ -104,6 +105,7 @@ func (c *Info) CreateSession() (Session, error) {
 
 	select {
 	case session := <-sessionChan:
+		session.SetMode(mgo.PrimaryPreferred, true)
 		return &MongoSession{session}, nil
 	case <-time.After(time.Second * time.Duration(3)):
 		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
@@ -119,6 +121,7 @@ func (c *Info) generateDialInfo() *mgo.DialInfo {
 		Username:    c.Username,
 		Password:    c.Password,
 		Source:      c.AuthSource,
+		Direct:      c.Direct,
 		FailFast:    true,
 		Timeout:     time.Duration(10) * time.Second,
 		PoolTimeout: time.Duration(10) * time.Second,
@@ -167,6 +170,7 @@ func DefaultConnectionInfo() *Info {
 		AuthSource:            arguments.GlobalArgs.AuthSource,
 		Host:                  arguments.GlobalArgs.Host,
 		Port:                  arguments.GlobalArgs.Port,
+		Direct:                false,
 		Ssl:                   arguments.GlobalArgs.Ssl,
 		SslCaCerts:            arguments.GlobalArgs.SslCaCerts,
 		SslInsecureSkipVerify: arguments.GlobalArgs.SslInsecureSkipVerify,

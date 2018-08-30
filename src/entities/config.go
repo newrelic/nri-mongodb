@@ -78,6 +78,7 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
+		ci.Direct = true
 
 		session, err := ci.CreateSession()
 		if err != nil {

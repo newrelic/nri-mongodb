@@ -72,8 +72,7 @@ func GetMongods(shardHostString string, integration *integration.Integration) ([
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = hostPort.Host
 		ci.Port = hostPort.Port
-
-		log.Info(ci.Host)
+		ci.Direct = true
 
 		session, err := ci.CreateSession()
 		if err != nil {
