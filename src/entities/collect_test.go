@@ -70,11 +70,16 @@ func TestCollectIsMaster(t *testing.T) {
 		t.Error(err)
 	}
 
-	// expected := map[string]interface{}{
-	// TODO find definition and see what we want to collect
-	// }
+	expected := map[string]interface{}{
+		"replset.isMaster":    true,
+		"replset.isSecondary": true,
+		"key":        "value",
+		"event_type": "testmetricset",
+	}
 
-	// actual := ms.Metrics
+	actual := ms.Metrics
+	assert.Equal(t, expected, actual)
+	// 	assert.True(t, reflect.DeepEqual(actual, expected))
 }
 
 func TestCollectReplSetMetrics(t *testing.T) {
@@ -129,6 +134,19 @@ func TestCollectTop(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	//not entirely sure what actual should be, since we never create ms like in the other tests
+
+	// expected := map[string]interface{}{
+	// 	"totals": map[string]interface{}{
+	// 		"total": map[string]interface{}{
+	// 			"usage.totalInMilliseconds": 0,
+	// 			"usage.totalPerSecond":      0,
+	// 		},
+	// 	},
+	// }
+	// actual := ms.Metrics
+	// assert.Equal(t, expected, actual)
 }
 
 func TestCollectCollStats(t *testing.T) {
@@ -151,6 +169,17 @@ func TestCollectCollStats(t *testing.T) {
 		t.Error(err)
 	}
 
+	expected := map[string]interface{}{
+		"collection.sizeInBytes":       2157.0,
+		"collection.avgObjSizeInBytes": 719.0,
+		"collection.count":             3.0,
+		"collection.capped":            0.0,
+		"event_type":                   "testmetricset",
+	}
+	actual := ms.Metrics
+
+	assert.Equal(t, expected, actual)
+
 }
 
 func TestCollectDbStats(t *testing.T) {
@@ -171,5 +200,16 @@ func TestCollectDbStats(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	expected := map[string]interface{}{
+		"stats.objects":        5.0,
+		"stats.storageInBytes": 7.0,
+		"stats.indexInBytes":   8.0,
+		"stats.indexes":        4.0,
+		"stats.dataInBytes":    6.0,
+		"event_type":           "testmetricset",
+	}
+	actual := ms.Metrics
+	assert.Equal(t, expected, actual)
 
 }

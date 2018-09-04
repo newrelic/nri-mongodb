@@ -51,13 +51,19 @@ func (d MockDB) Run(cmd interface{}, result interface{}) error {
 			if err != nil {
 				return err
 			}
-		// TODO need to find the definition for these to create marshal object
+
 		case "isMaster":
-			marshalled, _ := bson.Marshal(map[string]interface{}{})
+			marshalled, _ := bson.Marshal(map[string]interface{}{
+				"replset": map[string]interface{}{
+					"ismaster":  true,
+					"secondary": true,
+				},
+			})
 			err := bson.Unmarshal(marshalled, result)
 			if err != nil {
 				return err
 			}
+
 		case "replSetMetrics":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
 				"members": []map[string]interface{}{
@@ -77,11 +83,9 @@ func (d MockDB) Run(cmd interface{}, result interface{}) error {
 		case "top":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
 				"totals": map[string]interface{}{
-					"admin.system.roles": map[string]interface{}{
-						"total": map[string]interface{}{
-							"time":  608,
-							"count": 1,
-						},
+					"total": map[string]interface{}{
+						"time":  608,
+						"count": 1,
 					},
 				},
 			})
@@ -103,10 +107,10 @@ func (d MockDB) Run(cmd interface{}, result interface{}) error {
 		case "dbStats":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
 				"objects":     5,
-				"dataSize":    2231,
-				"storageSize": 73728,
+				"dataSize":    6,
+				"storageSize": 7,
 				"indexes":     4,
-				"indexSize":   73728,
+				"indexSize":   8,
 			})
 			err := bson.Unmarshal(marshalled, result)
 			if err != nil {
