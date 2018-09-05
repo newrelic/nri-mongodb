@@ -1,7 +1,8 @@
 package test
 
 import (
-	"github.com/globalsign/mgo"
+	"reflect"
+
 	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
@@ -29,11 +30,11 @@ func (d MockDB) C(name string) connection.Collection {
 
 // Run runs a command on a mock DB
 func (d MockDB) Run(cmd interface{}, result interface{}) error {
-	m := cmd.(map[string]interface{})
-	for key := range m {
-		switch key {
+	m := reflect.ValueOf(cmd)
+	for _, key := range m.MapKeys() {
+		switch key.String() {
 		case "serverStatus":
-			marshalled, _ := bson.Marshal(map[string]interface{}{
+			marshalled, _ := bson.Marshal(bson.M{
 				"host":    "testhost",
 				"version": "testversion",
 				"process": "testprocess",
@@ -57,7 +58,7 @@ func (d MockDB) CollectionNames() ([]string, error) {
 // MockCollection is a mock collection
 type MockCollection struct{}
 
-// Find runs a query on a mock collection
-func (c MockCollection) Find(query interface{}) *mgo.Query {
+// FindAll runs a query on a mock collection
+func (c MockCollection) FindAll(result interface{}) error {
 	return nil
 }

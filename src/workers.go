@@ -63,90 +63,94 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) 
 func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
 	defer close(collectorChan)
 
-	// Create a wait group for each of the Get____ calls
-	var getWg sync.WaitGroup
+	// Create a wait group for each of the get*Collectors calls
+	getWg := new(sync.WaitGroup)
 
-	// Create Mongos Collectors
 	getWg.Add(1)
-	go func() {
-		defer getWg.Done()
+	go createMongosCollectors(getWg, session, collectorChan, integration)
 
-		mongoses, err := entities.GetMongoses(session, integration)
-		if err != nil {
-			log.Error("Failed to collect list of Mongos hosts: %v", err)
-		}
-		for _, mongos := range mongoses {
-			collectorChan <- mongos
-		}
-	}()
-
-	// Create Config Server Collectors
 	getWg.Add(1)
-	go func() {
-		defer getWg.Done()
+	go createConfigCollectors(getWg, session, collectorChan, integration)
 
-		configServers, err := entities.GetConfigServers(session, integration)
-		if err != nil {
-			log.Error("Failed to collect list of config servers: %v", err)
-		}
-		for _, configServer := range configServers {
-			collectorChan <- configServer
-		}
-	}()
-
-	// Create Shard Collectors and their associated Mongod Collectors
 	getWg.Add(1)
-	go func() {
-		defer getWg.Done()
+	go createShardCollectors(getWg, session, collectorChan, integration)
 
-		shards, err := entities.GetShards(session, integration)
-		if err != nil {
-			log.Error("Failed to collect list of shards: %v")
-		}
-		for _, shard := range shards {
-			// Create Mongod Collectors
-			getWg.Add(1)
-			go func(localShard string) {
-				defer getWg.Done()
-
-				mongods, err := entities.GetMongods(localShard, integration)
-				if err != nil {
-					log.Error("Failed to collect list of mongods for shard %s", localShard)
-				}
-				for _, mongod := range mongods {
-					collectorChan <- mongod
-				}
-			}(shard)
-		}
-	}()
-
-	// Create Database Collectors and associated Collection Collectors
 	getWg.Add(1)
-	go func() {
-		defer getWg.Done()
-
-		databases, err := entities.GetDatabases(session, integration)
-		if err != nil {
-			log.Error("Failed to collect list of databases: %v", err)
-		}
-		for _, database := range databases {
-			collectorChan <- database
-
-			// Create Collection Collectors
-			getWg.Add(1)
-			go func(database *entities.DatabaseCollector) {
-				defer getWg.Done()
-				collections, err := entities.GetCollections(database.Name, session, integration)
-				if err != nil {
-					log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
-				}
-
-				for _, collection := range collections {
-					collectorChan <- collection
-				}
-			}(database)
-		}
-	}()
+	go createDatabaseCollectors(getWg, session, collectorChan, integration)
 
 	getWg.Wait()
+}
+
+func createMongosCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	mongoses, err := entities.GetMongoses(session, integration)
+	if err != nil {
+		log.Error("Failed to collect list of Mongos hosts: %v", err)
+	}
+	for _, mongos := range mongoses {
+		collectorChan <- mongos
+	}
+}
+
+func createConfigCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	configServers, err := entities.GetConfigServers(session, integration)
+	if err != nil {
+		log.Error("Failed to collect list of config servers: %v", err)
+	}
+	for _, configServer := range configServers {
+		collectorChan <- configServer
+	}
+}
+
+func createShardCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	shards, err := entities.GetShards(session, integration)
+	if err != nil {
+		log.Error("Failed to collect list of shards: %v")
+	}
+	for _, shard := range shards {
+		// Create Mongod Collectors
+		wg.Add(1)
+		go func(localShard string) {
+			defer wg.Done()
+
+			mongods, err := entities.GetMongods(localShard, integration)
+			if err != nil {
+				log.Error("Failed to collect list of mongods for shard %s", localShard)
+			}
+			for _, mongod := range mongods {
+				collectorChan <- mongod
+			}
+		}(shard)
+	}
+}
+
+func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	databases, err := entities.GetDatabases(session, integration)
+	if err != nil {
+		log.Error("Failed to collect list of databases: %v", err)
+	}
+	for _, database := range databases {
+		collectorChan <- database
+
+		// Create Collection Collectors
+		wg.Add(1)
+		go func(database *entities.DatabaseCollector) {
+			defer wg.Done()
+			collections, err := entities.GetCollections(database.Name, session, integration)
+			if err != nil {
+				log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
+			}
+
+			for _, collection := range collections {
+				collectorChan <- collection
+			}
+		}(database)
+	}
 }

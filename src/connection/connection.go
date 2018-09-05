@@ -30,7 +30,7 @@ type Session interface {
 
 // Collection is an interface that can be used to mock a MongoDB collection
 type Collection interface {
-	Find(query interface{}) *mgo.Query
+	FindAll(result interface{}) error
 }
 
 // DataLayer is an interface that can be used to mock a MongoDB database
@@ -51,7 +51,7 @@ type MongoSession struct {
 
 // DB shadows the mgo.Session DB function
 func (s *MongoSession) DB(name string) DataLayer {
-	return &MongoDatabase{Database: s.Session.DB(name)}
+	return &MongoDatabase{s.Session.DB(name)}
 }
 
 // MongoDatabase is a struct that allows shadowing of mgo.Database functions for mocking
@@ -61,12 +61,17 @@ type MongoDatabase struct {
 
 // C is a function that shadows the C function of a mongo collection
 func (d *MongoDatabase) C(name string) Collection {
-	return &MongoCollection{Collection: d.Database.C(name)}
+	return &MongoCollection{d.Database.C(name)}
 }
 
 // MongoCollection is a struct that allows shadowing of functions for mocking
 type MongoCollection struct {
-	*mgo.Collection
+	col *mgo.Collection
+}
+
+// FindAll marshals all items in the collection into result
+func (c *MongoCollection) FindAll(result interface{}) error {
+	return c.col.Find(nil).All(result)
 }
 
 // Info is a storage struct which holds all the
@@ -78,7 +83,6 @@ type Info struct {
 	AuthSource            string
 	Host                  string
 	Port                  string
-	Direct                bool
 	Ssl                   bool
 	SslCaCerts            string
 	SslInsecureSkipVerify bool
@@ -94,20 +98,21 @@ func (c *Info) CreateSession() (Session, error) {
 	// The current manual timeout solution is dirty
 
 	sessionChan := make(chan *mgo.Session)
+	errChan := make(chan error)
 	go func() {
-		session, err := mgo.DialWithInfo(dialInfo)
-		if err != nil {
-			log.Error("Failed to dial Mongo instance %s: %v", dialInfo.Addrs[0], err)
-			return
+		if session, err := mgo.DialWithInfo(dialInfo); err != nil {
+			errChan <- err
+		} else {
+			sessionChan <- session
 		}
-		sessionChan <- session
 	}()
 
 	select {
 	case session := <-sessionChan:
-		session.SetMode(mgo.PrimaryPreferred, true)
 		return &MongoSession{session}, nil
-	case <-time.After(time.Second * time.Duration(3)):
+	case err := <-errChan:
+		return nil, err
+	case <-time.After(dialInfo.Timeout + (time.Duration(1) * time.Second)):
 		return nil, fmt.Errorf("connection to %s timed out", dialInfo.Addrs[0])
 	}
 
@@ -115,17 +120,23 @@ func (c *Info) CreateSession() (Session, error) {
 
 // generateDialInfo creates a dialInfo struct from a connection.Info struct
 func (c *Info) generateDialInfo() *mgo.DialInfo {
-	// TODO figure out how port fits into here
+	host := c.Host
+	if c.Port != "" {
+		host += ":" + c.Port
+	}
 	dialInfo := &mgo.DialInfo{
-		Addrs:       []string{c.Host},
+		Addrs:       []string{host},
 		Username:    c.Username,
 		Password:    c.Password,
 		Source:      c.AuthSource,
-		Direct:      c.Direct,
+		Direct:      true,
 		FailFast:    true,
 		Timeout:     time.Duration(10) * time.Second,
 		PoolTimeout: time.Duration(10) * time.Second,
 		ReadTimeout: time.Duration(10) * time.Second,
+		ReadPreference: &mgo.ReadPreference{
+			Mode: mgo.PrimaryPreferred,
+		},
 	}
 
 	if c.Ssl {
@@ -147,7 +158,7 @@ func addSSL(d *mgo.DialInfo, SslInsecureSkipVerify bool, SslCaCerts string) {
 
 		ca, err := ioutil.ReadFile(SslCaCerts)
 		if err != nil {
-			log.Error("Failed to open crt file: %v", err)
+			log.Error("Failed to open SSL CA Certs file: %v", err)
 		}
 
 		roots.AppendCertsFromPEM(ca)
@@ -170,7 +181,6 @@ func DefaultConnectionInfo() *Info {
 		AuthSource:            arguments.GlobalArgs.AuthSource,
 		Host:                  arguments.GlobalArgs.Host,
 		Port:                  arguments.GlobalArgs.Port,
-		Direct:                false,
 		Ssl:                   arguments.GlobalArgs.Ssl,
 		SslCaCerts:            arguments.GlobalArgs.SslCaCerts,
 		SslInsecureSkipVerify: arguments.GlobalArgs.SslInsecureSkipVerify,

@@ -19,7 +19,7 @@ func CollectServerStatus(c Collector, ms *metric.Set) error {
 
 	// Collect and unmarshal the result
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(map[string]interface{}{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(cmd{"serverStatus": 1}, &ss); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -43,7 +43,7 @@ func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
-	if err := session.DB("admin").Run(map[string]interface{}{"isMaster": 1}, &isMaster); err != nil {
+	if err := session.DB("admin").Run(cmd{"isMaster": 1}, &isMaster); err != nil {
 		return false, fmt.Errorf("run isMaster failed: %v", err)
 	}
 
@@ -68,18 +68,16 @@ func CollectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetStatus metrics.ReplSetGetStatus
-	if err := session.DB("admin").Run(map[string]interface{}{"replSetGetStatus": 1}, &replSetStatus); err != nil {
+	if err := session.DB("admin").Run(cmd{"replSetGetStatus": 1}, &replSetStatus); err != nil {
 		return err
 	}
 
 	for _, member := range replSetStatus.Members {
-		if member.Name == nil {
+		if !strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
 			continue
 		}
-		if strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
-			if err := ms.MarshalMetrics(member); err != nil {
-				return fmt.Errorf("marshal metrics on replSetGetStatus failed: %v", err)
-			}
+		if err := ms.MarshalMetrics(member); err != nil {
+			return fmt.Errorf("marshal metrics on replSetGetStatus failed: %v", err)
 		}
 	}
 
@@ -98,18 +96,16 @@ func CollectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetConfig metrics.ReplSetGetConfig
-	if err := session.DB("admin").Run(map[string]interface{}{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+	if err := session.DB("admin").Run(cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
 		return err
 	}
 
 	for _, member := range replSetConfig.Config.Members {
-		if member.Host == nil {
+		if !strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
 			continue
 		}
-		if strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
-			if err := ms.MarshalMetrics(member); err != nil {
-				return fmt.Errorf("marshal metrics on replSetGetConfig failed: %v", err)
-			}
+		if err := ms.MarshalMetrics(member); err != nil {
+			return fmt.Errorf("marshal metrics on replSetGetConfig failed: %v", err)
 		}
 	}
 
@@ -130,13 +126,14 @@ func CollectTop(c Collector) error {
 	}
 
 	var topMetrics metrics.Top
-	if err := session.DB("admin").Run(map[string]interface{}{"top": 1}, &topMetrics); err != nil {
+	if err := session.DB("admin").Run(cmd{"top": 1}, &topMetrics); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
 	for key, collectionStats := range topMetrics.Totals {
-		databaseName := strings.SplitN(key, ".", 2)[0]
-		collectionName := strings.SplitN(key, ".", 2)[1]
+		splitKey := strings.SplitN(key, ".", 2)
+		databaseName := splitKey[0]
+		collectionName := splitKey[1]
 
 		ms := e.NewMetricSet("MongodTopSample",
 			metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
@@ -157,13 +154,18 @@ func CollectTop(c Collector) error {
 // CollectCollStats collects collStats
 func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 
+	// Ignore system collections as they're likely not wanted and probably don't have permission anyway
+	if strings.HasPrefix(c.Name, "system.") {
+		return nil
+	}
+
 	session, err := c.GetSession()
 	if err != nil {
 		return fmt.Errorf("invalid session: %v", err)
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.DB).Run(map[string]interface{}{"collStats": c.Name}, &collStats); err != nil {
+	if err := session.DB(c.DB).Run(cmd{"collStats": c.Name}, &collStats); err != nil {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
@@ -177,7 +179,7 @@ func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 // CollectDbStats collects dbStats
 func CollectDbStats(c DatabaseCollector, ms *metric.Set) error {
 	var dbStats metrics.DbStats
-	if err := c.Session.DB(c.Name).Run(map[string]interface{}{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.Session.DB(c.Name).Run(cmd{"dbStats": 1}, &dbStats); err != nil {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 

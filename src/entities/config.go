@@ -28,6 +28,10 @@ func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
 // CollectMetrics collects and sets metrics for a config server
 func (c ConfigCollector) CollectMetrics() {
 	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to create entity: %v", err)
+		return
+	}
 
 	ms := e.NewMetricSet("MongoConfigServerSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
@@ -73,16 +77,15 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 	}
 	configHostPorts, _ := parseReplicaSetString(configServersString)
 
-	var configCollectors []*ConfigCollector // Creation can fail, so can't pre-allocate
+	configCollectors := make([]*ConfigCollector, 0, len(configHostPorts))
 	for _, configHostPort := range configHostPorts {
 		ci := connection.DefaultConnectionInfo()
 		ci.Host = configHostPort.Host
 		ci.Port = configHostPort.Port
-		ci.Direct = true
 
 		session, err := ci.CreateSession()
 		if err != nil {
-			log.Error("Failed to connect to config server %s", ci.Host)
+			log.Error("Failed to connect to config server %s: %v", ci.Host, err)
 			continue
 		}
 

@@ -48,14 +48,16 @@ func Test_generateDialInfo(t *testing.T) {
 	dialInfo := info.generateDialInfo()
 
 	expectedDialInfo := &mgo.DialInfo{
-		Addrs:       []string{"localhost"},
-		Username:    "",
-		Password:    "",
-		Source:      "admin",
-		FailFast:    true,
-		Timeout:     time.Duration(10) * time.Second,
-		PoolTimeout: time.Duration(10) * time.Second,
-		ReadTimeout: time.Duration(10) * time.Second,
+		Addrs:          []string{"localhost:27017"},
+		Username:       "",
+		Password:       "",
+		Source:         "admin",
+		Direct:         true,
+		FailFast:       true,
+		Timeout:        time.Duration(10) * time.Second,
+		PoolTimeout:    time.Duration(10) * time.Second,
+		ReadTimeout:    time.Duration(10) * time.Second,
+		ReadPreference: &mgo.ReadPreference{Mode: mgo.PrimaryPreferred},
 	}
 
 	if !reflect.DeepEqual(dialInfo, expectedDialInfo) {

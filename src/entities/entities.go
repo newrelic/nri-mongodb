@@ -8,6 +8,8 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
+type cmd map[string]interface{}
+
 // Collector is an interface which represents an entity.
 // A Collector knows how to collect itself through the CollectMetrics
 // and CollectInventory methods.
@@ -44,7 +46,7 @@ func (d DefaultCollector) CollectInventory() {
 
 // GetEntity returns a dummy entity
 func (d DefaultCollector) GetEntity() (*integration.Entity, error) {
-	return d.GetIntegration().Entity("", "")
+	return nil, errors.New("entity is unknown")
 }
 
 // GetIntegration returns the integration associated with the collector
@@ -64,7 +66,7 @@ func (d DefaultCollector) GetSession() (connection.Session, error) {
 func extractHostPort(hostPortString string) hostPort {
 	hostPortArray := strings.SplitN(hostPortString, ":", 2)
 	if len(hostPortArray) == 1 {
-		return hostPort{Host: hostPortArray[0], Port: ""} // TODO use a better default port?
+		return hostPort{Host: hostPortArray[0], Port: "27017"}
 	}
 
 	return hostPort{Host: hostPortArray[0], Port: hostPortArray[1]}

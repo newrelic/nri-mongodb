@@ -14,13 +14,12 @@ func GetShards(session connection.Session, integration *integration.Integration)
 
 	var su ShardUnmarshaller
 	c := session.DB("config").C("shards")
-	if err := c.Find(map[string]interface{}{}).All(&su); err != nil {
+	if err := c.FindAll(&su); err != nil {
 		return nil, err
 	}
 
 	shards := make([]string, len(su))
 	for i, shard := range su {
-
 		shards[i] = shard.Host
 	}
 
