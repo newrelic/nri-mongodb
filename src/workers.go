@@ -5,12 +5,12 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	args "github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 )
 
 // StartCollectorWorkerPool starts a pool of workers to handle collecting each entity
+// and returns a channel of collectors which the workers read off of
 func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup) chan entities.Collector {
 	wg.Add(numWorkers)
 
@@ -22,28 +22,66 @@ func StartCollectorWorkerPool(numWorkers int, wg *sync.WaitGroup) chan entities.
 	return collectorChan
 }
 
+// collectorWorker reads a collector from the collector chan, then asynchronously
+// collects that object's inventory and metrics
 func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) {
 	defer wg.Done()
 
+	// Loop until collectorChan is empty and closed
 	for {
 		collector, ok := <-collectorChan
 		if !ok {
 			return
 		}
 
-		if args.GlobalArgs.HasInventory() {
-			collector.CollectInventory()
+		// Create a waitGroup for collecting inventory and metrics
+		var inventoryMetricsWg sync.WaitGroup
+
+		if args.HasInventory() {
+			inventoryMetricsWg.Add(1)
+			go func() {
+				defer inventoryMetricsWg.Done()
+				collector.CollectInventory()
+			}()
 		}
 
-		if args.GlobalArgs.HasMetrics() {
-			collector.CollectMetrics()
+		if args.HasMetrics() {
+			inventoryMetricsWg.Add(1)
+			go func() {
+				defer inventoryMetricsWg.Done()
+				collector.CollectMetrics()
+			}()
 		}
+
+		// Wait until inventory and metrics are done collecting
+		inventoryMetricsWg.Wait()
 	}
 }
 
 // FeedWorkerPool feeds the workers with the collectors that contain the info needed to collect each entity
 func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
 	defer close(collectorChan)
+
+	// Create a wait group for each of the get*Collectors calls
+	getWg := new(sync.WaitGroup)
+
+	getWg.Add(1)
+	go createMongosCollectors(getWg, session, collectorChan, integration)
+
+	getWg.Add(1)
+	go createConfigCollectors(getWg, session, collectorChan, integration)
+
+	getWg.Add(1)
+	go createShardCollectors(getWg, session, collectorChan, integration)
+
+	getWg.Add(1)
+	go createDatabaseCollectors(getWg, session, collectorChan, integration)
+
+	getWg.Wait()
+}
+
+func createMongosCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
 
 	mongoses, err := entities.GetMongoses(session, integration)
 	if err != nil {
@@ -52,6 +90,10 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	for _, mongos := range mongoses {
 		collectorChan <- mongos
 	}
+}
+
+func createConfigCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
 
 	configServers, err := entities.GetConfigServers(session, integration)
 	if err != nil {
@@ -60,22 +102,34 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	for _, configServer := range configServers {
 		collectorChan <- configServer
 	}
+}
+
+func createShardCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
 
 	shards, err := entities.GetShards(session, integration)
 	if err != nil {
 		log.Error("Failed to collect list of shards: %v")
 	}
 	for _, shard := range shards {
-		collectorChan <- shard
+		// Create Mongod Collectors
+		wg.Add(1)
+		go func(localShard string) {
+			defer wg.Done()
 
-		mongods, err := entities.GetMongods(shard, integration)
-		if err != nil {
-			log.Error("Failed to collect list of mongods for shard %s", shard.ID)
-		}
-		for _, mongod := range mongods {
-			collectorChan <- mongod
-		}
+			mongods, err := entities.GetMongods(session, localShard, integration)
+			if err != nil {
+				log.Error("Failed to collect list of mongods for shard %s", localShard)
+			}
+			for _, mongod := range mongods {
+				collectorChan <- mongod
+			}
+		}(shard)
 	}
+}
+
+func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
 
 	databases, err := entities.GetDatabases(session, integration)
 	if err != nil {
@@ -84,13 +138,18 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	for _, database := range databases {
 		collectorChan <- database
 
-		collections, err := entities.GetCollections(database.Name, session, integration)
-		if err != nil {
-			log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
-		}
+		// Create Collection Collectors
+		wg.Add(1)
+		go func(database *entities.DatabaseCollector) {
+			defer wg.Done()
+			collections, err := entities.GetCollections(database.Name, session, integration)
+			if err != nil {
+				log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
+			}
 
-		for _, collection := range collections {
-			collectorChan <- collection
-		}
+			for _, collection := range collections {
+				collectorChan <- collection
+			}
+		}(database)
 	}
 }

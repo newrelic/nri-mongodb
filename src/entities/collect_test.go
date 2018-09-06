@@ -36,11 +36,11 @@ func TestCollectServerStatus(t *testing.T) {
 		t.Error(err)
 	}
 	expected := map[string]interface{}{
-		"asserts.regularPerSecond":   0.0,
-		"asserts.warningPerSecond":   0.0,
-		"asserts.messagesPerSecond":  0.0,
-		"asserts.userPerSecond":      0.0,
-		"asserts.rolloversPerSecond": 0.0,
+		"asserts.regularPerSecond":   float64(0),
+		"asserts.warningPerSecond":   float64(0),
+		"asserts.messagesPerSecond":  float64(0),
+		"asserts.userPerSecond":      float64(0),
+		"asserts.rolloversPerSecond": float64(0),
 		"key":        "value",
 		"event_type": "testmetricset",
 	}
@@ -71,10 +71,9 @@ func TestCollectIsMaster(t *testing.T) {
 	}
 
 	expected := map[string]interface{}{
-		"replset.isMaster":    true,
-		"replset.isSecondary": true,
-		"key":        "value",
-		"event_type": "testmetricset",
+		"replset.isMaster":    float64(1),
+		"replset.isSecondary": float64(1),
+		"event_type":          "testmetricset",
 	}
 
 	actual := ms.Metrics
@@ -82,7 +81,7 @@ func TestCollectIsMaster(t *testing.T) {
 	// 	assert.True(t, reflect.DeepEqual(actual, expected))
 }
 
-func TestCollectReplSetMetrics(t *testing.T) {
+func TestCollectReplGetStatus(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
 	c := MongodCollector{
@@ -98,20 +97,48 @@ func TestCollectReplSetMetrics(t *testing.T) {
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := CollectReplSetMetrics(c, ms)
+	err := CollectReplGetStatus(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
 	if err != nil {
 		t.Error(err)
 	}
 
 	expected := map[string]interface{}{
-		"members": []map[string]interface{}{
-			{
-				"name":                         "mdb-rh7-rs1-a1.bluemedora.localnet:27017",
-				"replset.health":               0.0,
-				"replset.stateStr":             "SECONDARY",
-				"replset.uptimeInMilliseconds": 0.0,
+		"replset.health":               float64(1),
+		"replset.state":                "SECONDARY",
+		"replset.uptimeInMilliseconds": float64(758657),
+		"event_type":                   "testmetricset",
+	}
+	actual := ms.Metrics
+	assert.Equal(t, expected, actual)
+}
+
+func TestCollectReplGetConfig(t *testing.T) {
+
+	i, _ := integration.New("test", "1")
+	c := MongodCollector{
+		HostCollector{
+			DefaultCollector{
+				Session:     test.MockSession{},
+				Integration: i,
 			},
+			"testMongod",
 		},
+	}
+
+	e, _ := c.GetEntity()
+	ms := e.NewMetricSet("testmetricset")
+
+	err := CollectReplGetConfig(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := map[string]interface{}{
+		"replset.isArbiter": float64(0),
+		"replset.isHidden":  float64(0),
+		"replset.priority":  float64(10),
+		"replset.votes":     float64(20),
+		"event_type":        "testmetricset",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -130,23 +157,33 @@ func TestCollectTop(t *testing.T) {
 		},
 	}
 
+	e, _ := c.GetEntity()
+
 	err := CollectTop(c)
 	if err != nil {
 		t.Error(err)
 	}
+	expected := map[string]interface{}{
+		"usage.totalInMilliseconds":     float64(305277),
+		"usage.totalPerSecond":          float64(0),
+		"usage.writeLockPerSecond":      float64(0),
+		"event_type":                    "MongodTopSample",
+		"displayName":                   "testMongod",
+		"database":                      "records",
+		"collection":                    "users",
+		"entityName":                    "mongod:testMongod",
+		"usage.readLockInMilliseconds":  float64(305123),
+		"usage.readLockPerSecond":       float64(0),
+		"usage.writeLockInMilliseconds": float64(13),
+	}
+	actual := e.Metrics[0].Metrics
+	assert.Equal(t, expected, actual)
 
-	//not entirely sure what actual should be, since we never create ms like in the other tests
-
-	// expected := map[string]interface{}{
-	// 	"totals": map[string]interface{}{
-	// 		"total": map[string]interface{}{
-	// 			"usage.totalInMilliseconds": 0,
-	// 			"usage.totalPerSecond":      0,
-	// 		},
-	// 	},
+	// for i, ms := range e.Metrics {
+	// 	assert.Equal(t, "", ms)
+	// 	print(i)
 	// }
-	// actual := ms.Metrics
-	// assert.Equal(t, expected, actual)
+
 }
 
 func TestCollectCollStats(t *testing.T) {
@@ -170,10 +207,10 @@ func TestCollectCollStats(t *testing.T) {
 	}
 
 	expected := map[string]interface{}{
-		"collection.sizeInBytes":       2157.0,
-		"collection.avgObjSizeInBytes": 719.0,
-		"collection.count":             3.0,
-		"collection.capped":            0.0,
+		"collection.sizeInBytes":       float64(2157),
+		"collection.avgObjSizeInBytes": float64(719),
+		"collection.count":             float64(3),
+		"collection.capped":            float64(0),
 		"event_type":                   "testmetricset",
 	}
 	actual := ms.Metrics
@@ -202,11 +239,11 @@ func TestCollectDbStats(t *testing.T) {
 	}
 
 	expected := map[string]interface{}{
-		"stats.objects":        5.0,
-		"stats.storageInBytes": 7.0,
-		"stats.indexInBytes":   8.0,
-		"stats.indexes":        4.0,
-		"stats.dataInBytes":    6.0,
+		"stats.objects":        float64(5),
+		"stats.storageInBytes": float64(7),
+		"stats.indexInBytes":   float64(8),
+		"stats.indexes":        float64(4),
+		"stats.dataInBytes":    float64(6),
 		"event_type":           "testmetricset",
 	}
 	actual := ms.Metrics

@@ -3,7 +3,8 @@ package test
 import (
 	"fmt"
 
-	"github.com/globalsign/mgo"
+	"reflect"
+
 	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/metrics"
@@ -22,6 +23,11 @@ func (t MockSession) Close() {
 	return
 }
 
+// New just returns itself because this is a mock session
+func (t MockSession) New(host, port string) (connection.Session, error) {
+	return t, nil
+}
+
 // MockDB is a mocked database
 type MockDB struct{}
 
@@ -32,9 +38,9 @@ func (d MockDB) C(name string) connection.Collection {
 
 // Run runs a command on a mock DB
 func (d MockDB) Run(cmd interface{}, result interface{}) error {
-	m := cmd.(map[string]interface{})
-	for key := range m {
-		switch key {
+	m := reflect.ValueOf(cmd)
+	for _, key := range m.MapKeys() {
+		switch key.String() {
 		case "serverStatus":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
 				"asserts": map[string]interface{}{
@@ -54,17 +60,15 @@ func (d MockDB) Run(cmd interface{}, result interface{}) error {
 
 		case "isMaster":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
-				"replset": map[string]interface{}{
-					"ismaster":  true,
-					"secondary": true,
-				},
+				"ismaster":  true,
+				"secondary": true,
 			})
 			err := bson.Unmarshal(marshalled, result)
 			if err != nil {
 				return err
 			}
 
-		case "replSetMetrics":
+		case "replSetGetStatus":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
 				"members": []map[string]interface{}{
 					{
@@ -80,15 +84,53 @@ func (d MockDB) Run(cmd interface{}, result interface{}) error {
 				return err
 			}
 
-		case "top":
+		case "replSetGetConfig":
 			marshalled, _ := bson.Marshal(map[string]interface{}{
-				"totals": map[string]interface{}{
-					"total": map[string]interface{}{
-						"time":  608,
-						"count": 1,
+				"config": map[string]interface{}{
+					"members": []map[string]interface{}{
+						{
+							"host":        "mdb-rh7-rs1-a1.bluemedora.localnet:27017",
+							"arbiterOnly": 0.0,
+							"hidden":      0.0,
+							"priority":    10.0,
+							"votes":       20.0,
+						},
 					},
 				},
 			})
+			err := bson.Unmarshal(marshalled, result)
+			if err != nil {
+				return err
+			}
+
+		case "top":
+			marshalled, _ := bson.Marshal(map[string]interface{}{
+				"totals": map[string]interface{}{
+					"records.users": map[string]interface{}{
+						"total": map[string]interface{}{
+							"time":  305277,
+							"count": 2825,
+						},
+						"readLock": map[string]interface{}{
+							"time":  305123,
+							"count": 2893,
+						},
+						"writeLock": map[string]interface{}{
+							"time":  13,
+							"count": 1,
+						},
+					},
+				},
+			})
+
+			// marshalled, _ := bson.Marshal(map[string]interface{}{
+			// 	"totals": map[string]interface{}{
+			// 		"total": map[string]interface{}{
+			// 			"time":  608,
+			// 			"count": 1,
+			// 		},
+			// 	},
+			// })
 			err := bson.Unmarshal(marshalled, result)
 			if err != nil {
 				return err
@@ -129,7 +171,7 @@ func (d MockDB) CollectionNames() ([]string, error) {
 // MockCollection is a mock collection
 type MockCollection struct{}
 
-// Find runs a query on a mock collection
-func (c MockCollection) Find(query interface{}) *mgo.Query {
+// FindAll runs a query on a mock collection
+func (c MockCollection) FindAll(result interface{}) error {
 	return nil
 }

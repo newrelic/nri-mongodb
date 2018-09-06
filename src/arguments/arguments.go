@@ -9,11 +9,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
-var (
-	// GlobalArgs is a global exported instantiated argument list
-	GlobalArgs ArgumentList
-)
-
 // ArgumentList is a struct that defines the arguments for the integration
 type ArgumentList struct {
 	sdkArgs.DefaultArgumentList
@@ -23,9 +18,8 @@ type ArgumentList struct {
 	Port                  string `default:"27017" help:"Port on which MongoDB is running"`
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
-	SslCertFile           string `default:"" help:"Path to the certificate file used to identify the local connection against MongoDB"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`
-	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to MITM attacks, and should only be used for testing."`
+	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to man-in-the-middle attacks, and should only be used for testing."`
 }
 
 // Validate validates an argument list and returns an error if something is wrong

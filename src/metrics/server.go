@@ -260,7 +260,7 @@ type ServerStatusMetricsTTL struct {
 // ServerStatusBackgroundFlushing is a storage struct
 type ServerStatusBackgroundFlushing struct {
 	Flushes   *int     `bson:"flushes"    metric_name:"flush.flushesDisk"           source_type:"gauge"`
-	TotalMs   *float64 `bson:"total_ms"   metric_name:"flush.totalInMillisends"     source_type:"gauge"`
+	TotalMs   *float64 `bson:"total_ms"   metric_name:"flush.totalInMilliseconds"     source_type:"gauge"`
 	AverageMs *float64 `bson:"average_ms" metric_name:"flush.averageInMilliseconds" source_type:"gauge"`
 	LastMs    *float64 `bson:"last_ms"    metric_name:"flush.lastInMilliseconds"    source_type:"gauge"`
 }

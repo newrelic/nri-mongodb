@@ -28,6 +28,10 @@ func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
 // CollectMetrics collects and sets metrics for a config server
 func (c ConfigCollector) CollectMetrics() {
 	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to create entity: %v", err)
+		return
+	}
 
 	ms := e.NewMetricSet("MongoConfigServerSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
@@ -40,7 +44,11 @@ func (c ConfigCollector) CollectMetrics() {
 	}
 
 	if isReplSet {
-		if err := CollectReplSetMetrics(c, ms); err != nil {
+		if err := CollectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
+			log.Error("Collect failed: %v", err)
+		}
+
+		if err := CollectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 	}
@@ -69,25 +77,21 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 	}
 	configHostPorts, _ := parseReplicaSetString(configServersString)
 
-	var configCollectors []*ConfigCollector // Creation can fail, so can't pre-allocate
+	configCollectors := make([]*ConfigCollector, 0, len(configHostPorts))
 	for _, configHostPort := range configHostPorts {
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = configHostPort.Host
-		ci.Port = configHostPort.Port
-
-		session, err := ci.CreateSession()
+		configSession, err := session.New(configHostPort.Host, configHostPort.Port)
 		if err != nil {
-			log.Error("Failed to connect to config server %s", ci.Host)
+			log.Error("Failed to connect to config server %s: %v", configHostPort.Host, err)
 			continue
 		}
 
 		cc := &ConfigCollector{
 			HostCollector{
 				DefaultCollector{
-					Session:     session,
+					Session:     configSession,
 					Integration: integration,
 				},
-				ci.Host,
+				configHostPort.Host,
 			},
 		}
 		configCollectors = append(configCollectors, cc)
