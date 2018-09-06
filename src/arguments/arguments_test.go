@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestValidateArguments(t *testing.T) {
+func TestArgumentList_Validate(t *testing.T) {
 	testCases := []struct {
 		argumentList  ArgumentList
 		expectedError bool

@@ -20,6 +20,11 @@ func (t MockSession) Close() {
 	return
 }
 
+// New just returns itself because this is a mock session
+func (t MockSession) New(host, port string) (connection.Session, error) {
+	return t, nil
+}
+
 // MockDB is a mocked database
 type MockDB struct{}
 

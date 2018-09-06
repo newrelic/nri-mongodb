@@ -5,7 +5,6 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	args "github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 )
@@ -38,7 +37,7 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) 
 		// Create a waitGroup for collecting inventory and metrics
 		var inventoryMetricsWg sync.WaitGroup
 
-		if args.GlobalArgs.HasInventory() {
+		if args.HasInventory() {
 			inventoryMetricsWg.Add(1)
 			go func() {
 				defer inventoryMetricsWg.Done()
@@ -46,7 +45,7 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) 
 			}()
 		}
 
-		if args.GlobalArgs.HasMetrics() {
+		if args.HasMetrics() {
 			inventoryMetricsWg.Add(1)
 			go func() {
 				defer inventoryMetricsWg.Done()
@@ -118,7 +117,7 @@ func createShardCollectors(wg *sync.WaitGroup, session connection.Session, colle
 		go func(localShard string) {
 			defer wg.Done()
 
-			mongods, err := entities.GetMongods(localShard, integration)
+			mongods, err := entities.GetMongods(session, localShard, integration)
 			if err != nil {
 				log.Error("Failed to collect list of mongods for shard %s", localShard)
 			}

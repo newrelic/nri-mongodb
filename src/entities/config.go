@@ -79,23 +79,19 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 
 	configCollectors := make([]*ConfigCollector, 0, len(configHostPorts))
 	for _, configHostPort := range configHostPorts {
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = configHostPort.Host
-		ci.Port = configHostPort.Port
-
-		session, err := ci.CreateSession()
+		configSession, err := session.New(configHostPort.Host, configHostPort.Port)
 		if err != nil {
-			log.Error("Failed to connect to config server %s: %v", ci.Host, err)
+			log.Error("Failed to connect to config server %s: %v", configHostPort.Host, err)
 			continue
 		}
 
 		cc := &ConfigCollector{
 			HostCollector{
 				DefaultCollector{
-					Session:     session,
+					Session:     configSession,
 					Integration: integration,
 				},
-				ci.Host,
+				configHostPort.Host,
 			},
 		}
 		configCollectors = append(configCollectors, cc)

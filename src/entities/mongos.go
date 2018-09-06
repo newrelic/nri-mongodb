@@ -58,11 +58,7 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 	mongoses := make([]*MongosCollector, 0, len(mu))
 	for _, mongos := range mu {
 		hostPort := extractHostPort(mongos.ID)
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = hostPort.Host
-		ci.Port = hostPort.Port
-
-		session, err := ci.CreateSession()
+		mongosSession, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
 			log.Error("Failed to connect to mongos server %s: %v", mongos.ID, err)
 			continue
@@ -71,10 +67,10 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 		mc := &MongosCollector{
 			HostCollector{
 				DefaultCollector{
-					Session:     session,
+					Session:     mongosSession,
 					Integration: integration,
 				},
-				ci.Host,
+				hostPort.Host,
 			},
 		}
 

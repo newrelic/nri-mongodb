@@ -6,7 +6,7 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	args "github.com/newrelic/nri-mongodb/src/arguments"
+	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
@@ -15,26 +15,38 @@ const (
 	integrationVersion = "0.1.0"
 )
 
-func main() {
+var (
+	args *arguments.ArgumentList
+)
 
+func main() {
 	// Create the integration
-	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args.GlobalArgs))
+	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(args))
 	if err != nil {
 		log.Error("Failed to create integration: %v", err)
 		os.Exit(1)
 	}
 
 	// Set verbose level
-	log.SetupLogging(args.GlobalArgs.Verbose)
+	log.SetupLogging(args.Verbose)
 
 	// Validate arguments
-	if err := args.GlobalArgs.Validate(); err != nil {
+	if err := args.Validate(); err != nil {
 		log.Error("Invalid arguments: %v", err)
 		os.Exit(1)
 	}
 
 	// Connect to Mongo
-	connectionInfo := connection.DefaultConnectionInfo() // TODO only use args in the main package
+	connectionInfo := connection.Info{
+		AuthSource:            args.AuthSource,
+		Host:                  args.Host,
+		Password:              args.Password,
+		Port:                  args.Port,
+		Ssl:                   args.Ssl,
+		SslCaCerts:            args.SslCaCerts,
+		SslInsecureSkipVerify: args.SslInsecureSkipVerify,
+		Username:              args.Username,
+	}
 	session, err := connectionInfo.CreateSession()
 
 	// Start workers

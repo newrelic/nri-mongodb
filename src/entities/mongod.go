@@ -64,18 +64,14 @@ func (c MongodCollector) CollectMetrics() {
 }
 
 // GetMongods returns an array of MongodCollectors to collect
-func GetMongods(shardHostString string, integration *integration.Integration) ([]*MongodCollector, error) {
+func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shardHostString)
 
 	mongodCollectors := make([]*MongodCollector, 0, len(hostPorts))
 	for _, hostPort := range hostPorts {
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = hostPort.Host
-		ci.Port = hostPort.Port
-
-		session, err := ci.CreateSession()
+		mongodSession, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
-			log.Error("Failed to connected to mongod server %s: %v", ci.Host, err)
+			log.Error("Failed to connected to mongod server %s: %v", hostPort.Host, err)
 			continue
 		}
 
@@ -83,9 +79,9 @@ func GetMongods(shardHostString string, integration *integration.Integration) ([
 			HostCollector{
 				DefaultCollector{
 					Integration: integration,
-					Session:     session,
+					Session:     mongodSession,
 				},
-				ci.Host,
+				hostPort.Host,
 			},
 		}
 		mongodCollectors = append(mongodCollectors, newMongodCollector)
