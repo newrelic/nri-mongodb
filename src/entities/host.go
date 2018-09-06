@@ -113,7 +113,6 @@ func setInventoryItem(entity *integration.Entity, category, key, field string, v
 	if category != "" {
 		key = category + "/" + key
 	}
-	log.Info("%s %s=%v", key, field, value)
 	if err := entity.SetInventoryItem(key, field, value); err != nil {
 		log.Warn("Error setting inventory item [%s] %s=%v, %v", key, field, value, err)
 	}
