@@ -10,26 +10,36 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-// MongodCollector is a storage struct with all the information needed
+// mongodCollector is a storage struct with all the information needed
 // to collect metrics and inventory for a mongod
-type MongodCollector struct {
-	HostCollector
+type mongodCollector struct {
+	hostCollector
 }
 
 // GetEntity creates or returns an entity for the mongod
-func (c MongodCollector) GetEntity() (*integration.Entity, error) {
+func (c *mongodCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "mongod")
+		return i.Entity(c.name, "mongod")
 	}
 
 	return nil, errors.New("nil integration")
 }
 
-// CollectMetrics sets all the metrics for a mongod
-func (c MongodCollector) CollectMetrics() {
+// CollectInventory collects inventory
+func (c *mongodCollector) CollectInventory() {
 	e, err := c.GetEntity()
 	if err != nil {
-		log.Error("Failed to get entity: %v", err)
+		log.Error("Failed to create mongod entity: %v", err)
+		return
+	}
+	c.collectInventory(e)
+}
+
+// CollectMetrics sets all the metrics for a mongod
+func (c *mongodCollector) CollectMetrics() {
+	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to create mongod entity: %v", err)
 		return
 	}
 
@@ -38,36 +48,36 @@ func (c MongodCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	isReplSet, err := CollectIsMaster(c, ms)
+	isReplSet, err := collectIsMaster(c, ms)
 	if err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 
 	if isReplSet {
-		if err := CollectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
+		if err := collectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 
-		if err := CollectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
+		if err := collectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 	}
 
-	if err := CollectServerStatus(c, ms); err != nil {
+	if err := collectServerStatus(c, ms); err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 
-	if err := CollectTop(c); err != nil {
+	if err := collectTop(c); err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 
 }
 
 // GetMongods returns an array of MongodCollectors to collect
-func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]*MongodCollector, error) {
+func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]Collector, error) {
 	hostPorts, _ := parseReplicaSetString(shardHostString)
 
-	mongodCollectors := make([]*MongodCollector, 0, len(hostPorts))
+	mongodCollectors := make([]Collector, 0, len(hostPorts))
 	for _, hostPort := range hostPorts {
 		mongodSession, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
@@ -75,13 +85,13 @@ func GetMongods(session connection.Session, shardHostString string, integration 
 			continue
 		}
 
-		newMongodCollector := &MongodCollector{
-			HostCollector{
-				DefaultCollector{
-					Integration: integration,
-					Session:     mongodSession,
+		newMongodCollector := &mongodCollector{
+			hostCollector{
+				defaultCollector{
+					hostPort.Host,
+					integration,
+					mongodSession,
 				},
-				hostPort.Host,
 			},
 		}
 		mongodCollectors = append(mongodCollectors, newMongodCollector)

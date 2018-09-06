@@ -9,20 +9,23 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-// DatabaseCollector is a storage struct containing all the
+// databaseCollector is a storage struct containing all the
 // necessary information to collect a database
-type DatabaseCollector struct {
-	DefaultCollector
-	Name string
+type databaseCollector struct {
+	defaultCollector
 }
 
 // GetEntity creates or returns an entity for a database
-func (c DatabaseCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.Name, "database")
+func (c *databaseCollector) GetEntity() (*integration.Entity, error) {
+	return c.GetIntegration().Entity(c.name, "database")
+}
+
+// CollectInventory no-op
+func (c *databaseCollector) CollectInventory() {
 }
 
 // CollectMetrics collects and sets all the database's metrics
-func (c DatabaseCollector) CollectMetrics() {
+func (c *databaseCollector) CollectMetrics() {
 
 	e, err := c.GetEntity()
 	if err != nil {
@@ -34,13 +37,13 @@ func (c DatabaseCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := CollectDbStats(c, ms); err != nil {
+	if err := collectDbStats(c, ms); err != nil {
 		log.Error("Collect failed: %s", err)
 	}
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
-func GetDatabases(session connection.Session, integration *integration.Integration) ([]*DatabaseCollector, error) {
+func GetDatabases(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {
 			Name string `bson:"name"`
@@ -52,14 +55,14 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 		return nil, err
 	}
 
-	databases := make([]*DatabaseCollector, len(unmarshalledDatabaseList.Databases))
+	databases := make([]Collector, len(unmarshalledDatabaseList.Databases))
 	for i, database := range unmarshalledDatabaseList.Databases {
-		newDatabase := &DatabaseCollector{
-			DefaultCollector{
-				Integration: integration,
-				Session:     session,
+		newDatabase := &databaseCollector{
+			defaultCollector{
+				database.Name,
+				integration,
+				session,
 			},
-			database.Name,
 		}
 
 		databases[i] = newDatabase

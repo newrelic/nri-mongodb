@@ -19,12 +19,14 @@ func TestHostCollector(t *testing.T) {
 	// 	t.Fatalf("Error creating session:  %v", err)
 	// }
 
-	// collector := HostCollector{
-	// 	DefaultCollector: DefaultCollector{
-	// 		Integration: i,
-	// 		Session:     session,
+	// collector := mongodCollector{
+	// 	hostCollector{
+	// 		defaultCollector{
+	// 			"mdb-rh7-rs1-x2",
+	// 			i,
+	// 			session,
+	// 		},
 	// 	},
-	// 	Name: "mdb-rh7-rs1-x2",
 	// }
 
 	// collector.CollectInventory()

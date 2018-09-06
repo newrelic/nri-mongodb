@@ -140,11 +140,11 @@ func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, co
 
 		// Create Collection Collectors
 		wg.Add(1)
-		go func(database *entities.DatabaseCollector) {
+		go func(database entities.Collector) {
 			defer wg.Done()
-			collections, err := entities.GetCollections(database.Name, session, integration)
+			collections, err := entities.GetCollections(database.GetName(), session, integration)
 			if err != nil {
-				log.Error("Failed to collect list of collections for database %s: %v", database.Name, err)
+				log.Error("Failed to collect list of collections for database %s: %v", database.GetName(), err)
 			}
 
 			for _, collection := range collections {

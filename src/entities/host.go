@@ -5,39 +5,34 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
-// HostCollector is a base collector for any entity that represents a specific host
-type HostCollector struct {
-	DefaultCollector
-	Name string
+// hostCollector is a base collector for any entity that represents a specific host
+type hostCollector struct {
+	defaultCollector
 }
 
 type cmdLineOpts struct {
 	Argv   []string
-	Parsed bson.M
+	Parsed map[string]interface{}
 	Ok     float64
 }
 
-// CollectInventory collects all the inventory for a given host
-func (c HostCollector) CollectInventory() {
-	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to create entity: %v", err)
-	}
-
-	c.populateParameters(e)
-	c.populateCmdLineOpts(e)
+// collectInventory collects all the inventory for a given host.
+// This needs to be called from the parent object (Mongod/Mongos/Config)
+// so that the integration.Entity is from the parent.
+func (hc *hostCollector) collectInventory(e *integration.Entity) {
+	hc.populateParameters(e)
+	hc.populateCmdLineOpts(e)
 }
 
-func (c HostCollector) populateCmdLineOpts(entity *integration.Entity) {
+func (hc *hostCollector) populateCmdLineOpts(entity *integration.Entity) {
 	var cmdOpts cmdLineOpts
 
-	if err := c.Session.DB("admin").Run(bson.M{"getCmdLineOpts": 1}, &cmdOpts); err != nil {
-		log.Error("Error calling getCmdLineOpts for [%s]: %v", c.Name, err)
+	if err := hc.session.DB("admin").Run(cmd{"getCmdLineOpts": 1}, &cmdOpts); err != nil {
+		log.Error("Error calling getCmdLineOpts for [%s]: %v", hc.name, err)
 		return
 	}
 	if cmdOpts.Ok == 1 {
@@ -48,11 +43,11 @@ func (c HostCollector) populateCmdLineOpts(entity *integration.Entity) {
 	}
 }
 
-func (c HostCollector) populateParameters(entity *integration.Entity) {
-	var params bson.M
+func (hc *hostCollector) populateParameters(entity *integration.Entity) {
+	var params map[string]interface{}
 
-	if err := c.Session.DB("admin").Run(bson.M{"getParameter": "*"}, &params); err != nil {
-		log.Error("Error calling getParameter for [%s]: %v", c.Name, err)
+	if err := hc.session.DB("admin").Run(cmd{"getParameter": "*"}, &params); err != nil {
+		log.Error("Error calling getParameter for [%s]: %v", hc.name, err)
 		return
 	}
 	ok, exists := params["ok"]
@@ -65,7 +60,7 @@ func addInventoryItem(entity *integration.Entity, category, key string, value in
 	switch v := value.(type) {
 	case []interface{}:
 		addInventoryArray(entity, category, key, v, keyPrefix...)
-	case bson.M:
+	case map[string]interface{}:
 		addInventoryMap(entity, category, v, false, append(keyPrefix, key)...)
 	case string:
 		if v != "" {
@@ -87,7 +82,7 @@ func addInventoryArray(entity *integration.Entity, category, key string, value [
 	}
 }
 
-func addInventoryMap(entity *integration.Entity, category string, value bson.M, isRoot bool, keyPrefix ...string) {
+func addInventoryMap(entity *integration.Entity, category string, value map[string]interface{}, isRoot bool, keyPrefix ...string) {
 	for k, v := range value {
 		if isInventoryKey(k, isRoot) {
 			addInventoryItem(entity, category, k, v, keyPrefix...)
