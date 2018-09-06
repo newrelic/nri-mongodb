@@ -22,11 +22,13 @@ type IsMaster struct {
 
 // ReplSetGetConfig is a storage struct
 type ReplSetGetConfig struct {
-	Members struct {
-		Host        *string  `bson:"host"`
-		ArbiterOnly *bool    `bson:"arbiterOnly" metric_name:"replset.isArbiter" source_type:"gauge"`
-		Hidden      *bool    `bson:"hidden"      metric_name:"replset.isHidden"  source_type:"gauge"`
-		Priority    *float32 `bson:"priority"    metric_name:"replset.priority"  source_type:"gauge"`
-		Votes       *float32 `bson:"votes"       metric_name:"replset.votes"     source_type:"gauge"`
-	} `bson:"members"`
+	Config struct {
+		Members []struct {
+			Host        *string  `bson:"host"`
+			ArbiterOnly *bool    `bson:"arbiterOnly" metric_name:"replset.isArbiter" source_type:"gauge"`
+			Hidden      *bool    `bson:"hidden"      metric_name:"replset.isHidden"  source_type:"gauge"`
+			Priority    *float32 `bson:"priority"    metric_name:"replset.priority"  source_type:"gauge"`
+			Votes       *float32 `bson:"votes"       metric_name:"replset.votes"     source_type:"gauge"`
+		} `bson:"members"`
+	} `bson:"config"`
 }

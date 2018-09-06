@@ -44,7 +44,11 @@ func (c MongodCollector) CollectMetrics() {
 	}
 
 	if isReplSet {
-		if err := CollectReplSetMetrics(c, ms); err != nil {
+		if err := CollectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
+			log.Error("Collect failed: %v", err)
+		}
+
+		if err := CollectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 	}
@@ -60,32 +64,27 @@ func (c MongodCollector) CollectMetrics() {
 }
 
 // GetMongods returns an array of MongodCollectors to collect
-func GetMongods(shardHostString string, integration *integration.Integration) ([]*MongodCollector, error) {
+func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]*MongodCollector, error) {
 	hostPorts, _ := parseReplicaSetString(shardHostString)
 
-	mongodCollectors := make([]*MongodCollector, len(hostPorts))
-	for i, hostPort := range hostPorts {
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = hostPort.Host
-		ci.Port = hostPort.Port
-
-		log.Info(ci.Host)
-
-		session, err := ci.CreateSession()
+	mongodCollectors := make([]*MongodCollector, 0, len(hostPorts))
+	for _, hostPort := range hostPorts {
+		mongodSession, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
-			return nil, err
+			log.Error("Failed to connected to mongod server %s: %v", hostPort.Host, err)
+			continue
 		}
 
 		newMongodCollector := &MongodCollector{
 			HostCollector{
 				DefaultCollector{
 					Integration: integration,
-					Session:     session,
+					Session:     mongodSession,
 				},
-				ci.Host,
+				hostPort.Host,
 			},
 		}
-		mongodCollectors[i] = newMongodCollector
+		mongodCollectors = append(mongodCollectors, newMongodCollector)
 	}
 
 	return mongodCollectors, nil

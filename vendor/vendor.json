@@ -64,7 +64,7 @@
 			"revisionTime": "2018-05-06T08:33:45Z"
 		},
 		{
-			"checksumSHA1": "JfyJjjAVlS645GExMeAWFqRd34s=",
+			"checksumSHA1": "SbguDK5lY8uhaHNrmJmNbiWIGM0=",
 			"path": "github.com/kr/text",
 			"revision": "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f",
 			"revisionTime": "2018-05-06T08:24:08Z"
@@ -128,6 +128,12 @@
 			"path": "github.com/stretchr/objx",
 			"revision": "9e1dfc121bca96d392da5d00591953bdb54ab306",
 			"revisionTime": "2018-06-26T19:55:58Z"
+		},
+		{
+			"checksumSHA1": "LqwYI/omjNLmiYBPHgtsj9oqQEM=",
+			"path": "github.com/tonnerre/golang-pretty",
+			"revision": "e7fccc03e91bad289b96c21aa3312a220689bdd7",
+			"revisionTime": "2013-09-25T19:59:53Z"
 		},
 		{
 			"checksumSHA1": "mEfgxG3MaGzFaf5vMRqYYiqOFoY=",

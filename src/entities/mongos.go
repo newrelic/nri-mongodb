@@ -51,33 +51,30 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 
 	var mu MongosUnmarshaller
 	c := session.DB("config").C("mongos")
-	if err := c.Find(map[string]interface{}{}).All(&mu); err != nil {
+	if err := c.FindAll(&mu); err != nil {
 		return nil, err
 	}
 
-	mongoses := make([]*MongosCollector, len(mu))
-	for i, mongos := range mu {
+	mongoses := make([]*MongosCollector, 0, len(mu))
+	for _, mongos := range mu {
 		hostPort := extractHostPort(mongos.ID)
-		ci := connection.DefaultConnectionInfo()
-		ci.Host = hostPort.Host
-		ci.Port = hostPort.Port
-
-		session, err := ci.CreateSession()
+		mongosSession, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
-			return nil, err
+			log.Error("Failed to connect to mongos server %s: %v", mongos.ID, err)
+			continue
 		}
 
 		mc := &MongosCollector{
 			HostCollector{
 				DefaultCollector{
-					Session:     session,
+					Session:     mongosSession,
 					Integration: integration,
 				},
-				ci.Host,
+				hostPort.Host,
 			},
 		}
 
-		mongoses[i] = mc
+		mongoses = append(mongoses, mc)
 	}
 
 	return mongoses, nil
