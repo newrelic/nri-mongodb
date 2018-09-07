@@ -1,18 +1,12 @@
 package entities
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 
-	"github.com/tonnerre/golang-pretty"
-
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/test"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCollectServerStatus(t *testing.T) {
@@ -45,27 +39,26 @@ func TestCollectServerStatus(t *testing.T) {
 		"event_type": "testmetricset",
 	}
 	actual := ms.Metrics
-	fmt.Println(pretty.Diff(actual, expected))
-	assert.True(t, reflect.DeepEqual(actual, expected))
+	assert.Equal(t, expected, actual)
 }
 
-func TestCollectIsMaster(t *testing.T) {
+func Test_collectIsMaster(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Session:     test.MockSession{},
-				Integration: i,
+	c := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testMongod",
+				i,
+				test.MockSession{},
 			},
-			"testMongod",
 		},
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	_, err := CollectIsMaster(c, ms)
+	_, err := collectIsMaster(c, ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -78,26 +71,25 @@ func TestCollectIsMaster(t *testing.T) {
 
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
-	// 	assert.True(t, reflect.DeepEqual(actual, expected))
 }
 
-func TestCollectReplGetStatus(t *testing.T) {
+func Test_collectReplGetStatus(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Session:     test.MockSession{},
-				Integration: i,
+	c := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testMongod",
+				i,
+				test.MockSession{},
 			},
-			"testMongod",
 		},
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := CollectReplGetStatus(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
+	err := collectReplGetStatus(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -112,23 +104,23 @@ func TestCollectReplGetStatus(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCollectReplGetConfig(t *testing.T) {
+func Test_collectReplGetConfig(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Session:     test.MockSession{},
-				Integration: i,
+	c := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testMongod",
+				i,
+				test.MockSession{},
 			},
-			"testMongod",
 		},
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := CollectReplGetConfig(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
+	err := collectReplGetConfig(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -144,22 +136,22 @@ func TestCollectReplGetConfig(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCollectTop(t *testing.T) {
+func Test_collectTop(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Session:     test.MockSession{},
-				Integration: i,
+	c := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testMongod",
+				i,
+				test.MockSession{},
 			},
-			"testMongod",
 		},
 	}
 
 	e, _ := c.GetEntity()
 
-	err := CollectTop(c)
+	err := collectTop(c)
 	if err != nil {
 		t.Error(err)
 	}
@@ -178,30 +170,24 @@ func TestCollectTop(t *testing.T) {
 	}
 	actual := e.Metrics[0].Metrics
 	assert.Equal(t, expected, actual)
-
-	// for i, ms := range e.Metrics {
-	// 	assert.Equal(t, "", ms)
-	// 	print(i)
-	// }
-
 }
 
-func TestCollectCollStats(t *testing.T) {
+func Test_collectCollStats(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := CollectionCollector{
-		DefaultCollector{
-			Session:     test.MockSession{},
-			Integration: i,
+	c := &collectionCollector{
+		defaultCollector{
+			"testMongod",
+			i,
+			test.MockSession{},
 		},
-		"testMongod",
 		"testDB",
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := CollectCollStats(c, ms)
+	err := collectCollStats(c, ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -216,24 +202,23 @@ func TestCollectCollStats(t *testing.T) {
 	actual := ms.Metrics
 
 	assert.Equal(t, expected, actual)
-
 }
 
-func TestCollectDbStats(t *testing.T) {
+func Test_collectDbStats(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := DatabaseCollector{
-		DefaultCollector{
-			Session:     test.MockSession{},
-			Integration: i,
+	c := &databaseCollector{
+		defaultCollector{
+			"testMongod",
+			i,
+			test.MockSession{},
 		},
-		"testMongod",
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := CollectDbStats(c, ms)
+	err := collectDbStats(c, ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -248,5 +233,4 @@ func TestCollectDbStats(t *testing.T) {
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
-
 }
