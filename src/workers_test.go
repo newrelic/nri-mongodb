@@ -8,14 +8,12 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 	"github.com/newrelic/nri-mongodb/src/test"
 )
 
 func TestStartCollectorWorkerPool(t *testing.T) {
-	args = &arguments.ArgumentList{}
 	numWorkers := 10
 	var wg sync.WaitGroup
 	entitiesChan := StartCollectorWorkerPool(numWorkers, &wg)
@@ -76,7 +74,6 @@ func (t *testCollector) CollectMetrics() {
 }
 
 func Test_collectorWorker(t *testing.T) {
-	args = &arguments.ArgumentList{}
 	collectorChan := make(chan entities.Collector)
 	var wg sync.WaitGroup
 	i, _ := integration.New("testIntegration", "testVersion")

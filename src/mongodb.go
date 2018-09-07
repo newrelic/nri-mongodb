@@ -16,12 +16,12 @@ const (
 )
 
 var (
-	args *arguments.ArgumentList
+	args arguments.ArgumentList
 )
 
 func main() {
 	// Create the integration
-	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(args))
+	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
 		log.Error("Failed to create integration: %v", err)
 		os.Exit(1)
