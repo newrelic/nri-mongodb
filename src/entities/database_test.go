@@ -10,15 +10,15 @@ import (
 func Test_DatabaseCollector_GetEntity(t *testing.T) {
 	i, _ := integration.New("testIntegration", "testVersion")
 
-	cc := DatabaseCollector{
-		DefaultCollector{
-			Integration: i,
-			Session:     test.MockSession{},
+	dc := databaseCollector{
+		defaultCollector{
+			"testCollector",
+			i,
+			test.MockSession{},
 		},
-		"testCollector",
 	}
 
-	e, err := cc.GetEntity()
+	e, err := dc.GetEntity()
 	if err != nil {
 		t.Error(err)
 	}
@@ -35,14 +35,14 @@ func Test_DatabaseCollector_GetEntity(t *testing.T) {
 
 func Test_DatabaseCollector_CollectMetrics(t *testing.T) {
 	i, _ := integration.New("test", "0.0.1")
-	cc := DatabaseCollector{
-		DefaultCollector{
-			Integration: i,
-			Session:     test.MockSession{},
+	dc := databaseCollector{
+		defaultCollector{
+			"testDatabase",
+			i,
+			test.MockSession{},
 		},
-		"testDatabase",
 	}
 
-	cc.CollectMetrics()
+	dc.CollectMetrics()
 
 }

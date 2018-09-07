@@ -16,6 +16,7 @@ type cmd map[string]interface{}
 type Collector interface {
 	CollectMetrics()
 	CollectInventory()
+	GetName() string
 	GetEntity() (*integration.Entity, error)
 	GetIntegration() *integration.Integration
 	GetSession() (connection.Session, error)
@@ -26,38 +27,28 @@ type hostPort struct {
 	Port string
 }
 
-// DefaultCollector is the most basic implementation of the
+// defaultCollector is the most basic implementation of the
 // Collector interface, and can be inherited to create a minimal
 // running version which creates no metrics or inventory
-type DefaultCollector struct {
-	Session     connection.Session
-	Integration *integration.Integration
+type defaultCollector struct {
+	name        string
+	integration *integration.Integration
+	session     connection.Session
 }
 
-// CollectMetrics collects no metrics
-func (d DefaultCollector) CollectMetrics() {
-	return
-}
-
-// CollectInventory collects no inventory
-func (d DefaultCollector) CollectInventory() {
-	return
-}
-
-// GetEntity returns a dummy entity
-func (d DefaultCollector) GetEntity() (*integration.Entity, error) {
-	return nil, errors.New("entity is unknown")
+func (d *defaultCollector) GetName() string {
+	return d.name
 }
 
 // GetIntegration returns the integration associated with the collector
-func (d DefaultCollector) GetIntegration() *integration.Integration {
-	return d.Integration
+func (d *defaultCollector) GetIntegration() *integration.Integration {
+	return d.integration
 }
 
 // GetSession returns the session associated with the collector
-func (d DefaultCollector) GetSession() (connection.Session, error) {
-	if d.Session != nil {
-		return d.Session, nil
+func (d *defaultCollector) GetSession() (connection.Session, error) {
+	if d.session != nil {
+		return d.session, nil
 	}
 
 	return nil, errors.New("session is nil")

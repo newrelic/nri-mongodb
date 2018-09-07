@@ -10,12 +10,12 @@ import (
 func Test_CollectionCollector_GetEntity(t *testing.T) {
 	i, _ := integration.New("testIntegration", "testVersion")
 
-	cc := CollectionCollector{
-		DefaultCollector{
-			Integration: i,
-			Session:     test.MockSession{},
+	cc := collectionCollector{
+		defaultCollector{
+			"testCollector",
+			i,
+			test.MockSession{},
 		},
-		"testCollector",
 		"testDB",
 	}
 
@@ -36,12 +36,12 @@ func Test_CollectionCollector_GetEntity(t *testing.T) {
 
 func Test_CollectionCollector_CollectMetrics(t *testing.T) {
 	i, _ := integration.New("test", "0.0.1")
-	cc := CollectionCollector{
-		DefaultCollector{
-			Integration: i,
-			Session:     test.MockSession{},
+	cc := collectionCollector{
+		defaultCollector{
+			"testCollection",
+			i,
+			test.MockSession{},
 		},
-		"testCollection",
 		"testDatabase",
 	}
 

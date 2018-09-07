@@ -10,13 +10,13 @@ import (
 func Test_ConfigCollector_GetEntity(t *testing.T) {
 	i, _ := integration.New("testIntegration", "testVersion")
 
-	cc := ConfigCollector{
-		HostCollector{
-			DefaultCollector{
-				Integration: i,
-				Session:     test.MockSession{},
+	cc := configCollector{
+		hostCollector{
+			defaultCollector{
+				"testCollector",
+				i,
+				test.MockSession{},
 			},
-			"testCollector",
 		},
 	}
 
@@ -37,13 +37,13 @@ func Test_ConfigCollector_GetEntity(t *testing.T) {
 
 func Test_ConfigCollector_CollectMetrics(t *testing.T) {
 	i, _ := integration.New("test", "0.0.1")
-	cc := ConfigCollector{
-		HostCollector{
-			DefaultCollector{
-				Integration: i,
-				Session:     test.MockSession{},
+	cc := configCollector{
+		hostCollector{
+			defaultCollector{
+				"testCollector",
+				i,
+				test.MockSession{},
 			},
-			"testCollector",
 		},
 	}
 

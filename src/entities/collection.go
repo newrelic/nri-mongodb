@@ -10,25 +10,28 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-// CollectionCollector is a storage struct which holds all the
+// collectionCollector is a storage struct which holds all the
 // necessary information to collect a collection
-type CollectionCollector struct {
-	DefaultCollector
-	Name string
-	DB   string
+type collectionCollector struct {
+	defaultCollector
+	db string
 }
 
 // GetEntity creates or returns an entity for a collection
-func (c CollectionCollector) GetEntity() (*integration.Entity, error) {
+func (c *collectionCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "collection")
+		return i.Entity(c.name, "collection")
 	}
 
 	return nil, errors.New("nil integration")
 }
 
+// CollectInventory no-op
+func (c *collectionCollector) CollectInventory() {
+}
+
 // CollectMetrics collects and sets the metrics for a collection
-func (c CollectionCollector) CollectMetrics() {
+func (c *collectionCollector) CollectMetrics() {
 	e, err := c.GetEntity()
 	if err != nil {
 		log.Error("Failed to get entity: %v")
@@ -40,28 +43,28 @@ func (c CollectionCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := CollectCollStats(c, ms); err != nil {
+	if err := collectCollStats(c, ms); err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection
-func GetCollections(dbName string, session connection.Session, integration *integration.Integration) ([]*CollectionCollector, error) {
+func GetCollections(dbName string, session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	names, err := session.DB(dbName).CollectionNames()
 	if err != nil {
 		return nil, err
 	}
 
-	collections := make([]*CollectionCollector, len(names))
+	collections := make([]Collector, len(names))
 	for i, name := range names {
-		newCollection := &CollectionCollector{
-			DefaultCollector: DefaultCollector{
-				Integration: integration,
-				Session:     session,
+		newCollection := &collectionCollector{
+			defaultCollector{
+				name,
+				integration,
+				session,
 			},
-			Name: name,
-			DB:   dbName,
+			dbName,
 		}
 
 		collections[i] = newCollection

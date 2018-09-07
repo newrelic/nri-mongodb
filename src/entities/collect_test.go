@@ -18,20 +18,20 @@ import (
 func TestCollectServerStatus(t *testing.T) {
 
 	i, _ := integration.New("test", "1")
-	c := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Session:     test.MockSession{},
-				Integration: i,
+	c := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testMongod",
+				i,
+				test.MockSession{},
 			},
-			"testMongod",
 		},
 	}
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset", metric.Attribute{Key: "key", Value: "value"})
 
-	err := CollectServerStatus(c, ms)
+	err := collectServerStatus(c, ms)
 	if err != nil {
 		t.Error(err)
 	}

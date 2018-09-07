@@ -10,23 +10,33 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-// MongosCollector is a storage struct which contains all the information
+// mongosCollector is a storage struct which contains all the information
 // needed to collect metrics and inventory for a given mongos
-type MongosCollector struct {
-	HostCollector
+type mongosCollector struct {
+	hostCollector
 }
 
 // GetEntity creates or returns an entity for the mongos
-func (c MongosCollector) GetEntity() (*integration.Entity, error) {
+func (c *mongosCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "mongos")
+		return i.Entity(c.name, "mongos")
 	}
 
 	return nil, errors.New("nil integration")
 }
 
+// CollectInventory collects inventory
+func (c *mongosCollector) CollectInventory() {
+	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to create config entity: %v", err)
+		return
+	}
+	c.collectInventory(e)
+}
+
 // CollectMetrics sets all the metrics for the mongos
-func (c MongosCollector) CollectMetrics() {
+func (c *mongosCollector) CollectMetrics() {
 
 	e, err := c.GetEntity()
 	if err != nil {
@@ -38,13 +48,13 @@ func (c MongosCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := CollectServerStatus(c, ms); err != nil {
+	if err := collectServerStatus(c, ms); err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 }
 
 // GetMongoses returns an array of MongosCollectors which will be collected
-func GetMongoses(session connection.Session, integration *integration.Integration) ([]*MongosCollector, error) {
+func GetMongoses(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id"`
 	}
@@ -55,7 +65,7 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 		return nil, err
 	}
 
-	mongoses := make([]*MongosCollector, 0, len(mu))
+	mongoses := make([]Collector, 0, len(mu))
 	for _, mongos := range mu {
 		hostPort := extractHostPort(mongos.ID)
 		mongosSession, err := session.New(hostPort.Host, hostPort.Port)
@@ -64,13 +74,13 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 			continue
 		}
 
-		mc := &MongosCollector{
-			HostCollector{
-				DefaultCollector{
-					Session:     mongosSession,
-					Integration: integration,
+		mc := &mongosCollector{
+			hostCollector{
+				defaultCollector{
+					hostPort.Host,
+					integration,
+					mongosSession,
 				},
-				hostPort.Host,
 			},
 		}
 

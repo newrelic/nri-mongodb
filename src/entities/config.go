@@ -10,23 +10,33 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-// ConfigCollector is a storage struct which holds all the
+// configCollector is a storage struct which holds all the
 // necessary information to collect a config  server
-type ConfigCollector struct {
-	HostCollector
+type configCollector struct {
+	hostCollector
 }
 
 // GetEntity creates or returns an entity for the config server
-func (c ConfigCollector) GetEntity() (*integration.Entity, error) {
+func (c *configCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.Name, "config")
+		return i.Entity(c.name, "config")
 	}
 
 	return nil, errors.New("nil integration")
 }
 
+// CollectInventory collects inventory
+func (c *configCollector) CollectInventory() {
+	e, err := c.GetEntity()
+	if err != nil {
+		log.Error("Failed to create config entity: %v", err)
+		return
+	}
+	c.collectInventory(e)
+}
+
 // CollectMetrics collects and sets metrics for a config server
-func (c ConfigCollector) CollectMetrics() {
+func (c *configCollector) CollectMetrics() {
 	e, err := c.GetEntity()
 	if err != nil {
 		log.Error("Failed to create entity: %v", err)
@@ -38,28 +48,28 @@ func (c ConfigCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	isReplSet, err := CollectIsMaster(c, ms)
+	isReplSet, err := collectIsMaster(c, ms)
 	if err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 
 	if isReplSet {
-		if err := CollectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
+		if err := collectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 
-		if err := CollectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
+		if err := collectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
 			log.Error("Collect failed: %v", err)
 		}
 	}
 
-	if err := CollectServerStatus(c, ms); err != nil {
+	if err := collectServerStatus(c, ms); err != nil {
 		log.Error("Collect failed: %v", err)
 	}
 }
 
 // GetConfigServers returns a list of ConfigCollectors to collect
-func GetConfigServers(session connection.Session, integration *integration.Integration) ([]*ConfigCollector, error) {
+func GetConfigServers(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	type ConfigUnmarshaller struct {
 		Map struct {
 			Config string
@@ -77,7 +87,7 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 	}
 	configHostPorts, _ := parseReplicaSetString(configServersString)
 
-	configCollectors := make([]*ConfigCollector, 0, len(configHostPorts))
+	configCollectors := make([]Collector, 0, len(configHostPorts))
 	for _, configHostPort := range configHostPorts {
 		configSession, err := session.New(configHostPort.Host, configHostPort.Port)
 		if err != nil {
@@ -85,13 +95,13 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 			continue
 		}
 
-		cc := &ConfigCollector{
-			HostCollector{
-				DefaultCollector{
-					Session:     configSession,
-					Integration: integration,
+		cc := &configCollector{
+			hostCollector{
+				defaultCollector{
+					configHostPort.Host,
+					integration,
+					configSession,
 				},
-				configHostPort.Host,
 			},
 		}
 		configCollectors = append(configCollectors, cc)

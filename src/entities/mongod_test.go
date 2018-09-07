@@ -10,17 +10,17 @@ import (
 func Test_MongodCollector_GetEntity(t *testing.T) {
 	i, _ := integration.New("testIntegration", "testVersion")
 
-	cc := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Integration: i,
-				Session:     test.MockSession{},
+	mc := mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testCollector",
+				i,
+				test.MockSession{},
 			},
-			"testCollector",
 		},
 	}
 
-	e, err := cc.GetEntity()
+	e, err := mc.GetEntity()
 	if err != nil {
 		t.Error(err)
 	}
@@ -37,16 +37,16 @@ func Test_MongodCollector_GetEntity(t *testing.T) {
 
 func Test_MongodCollector_CollectMetrics(t *testing.T) {
 	i, _ := integration.New("test", "0.0.1")
-	cc := MongodCollector{
-		HostCollector{
-			DefaultCollector{
-				Integration: i,
-				Session:     test.MockSession{},
+	mc := mongodCollector{
+		hostCollector{
+			defaultCollector{
+				"testCollector",
+				i,
+				test.MockSession{},
 			},
-			"testCollector",
 		},
 	}
 
-	cc.CollectMetrics()
+	mc.CollectMetrics()
 
 }
