@@ -1,26 +1,14 @@
 package main
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"fmt"
-	"io/ioutil"
-	"net"
 	"os"
+	"sync"
 
-	"github.com/globalsign/mgo"
-	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
-
-type argumentList struct {
-	sdkArgs.DefaultArgumentList
-	Username string
-	Password string
-}
 
 const (
 	integrationName    = "com.newrelic.mongodb"
@@ -76,8 +64,5 @@ func main() {
 		log.Error("Failed to publish integration: %v", err)
 		os.Exit(1)
 	}
-	fmt.Printf("%+v", ss)
 
 }
-totalCreated
-total_created
