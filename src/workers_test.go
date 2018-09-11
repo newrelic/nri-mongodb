@@ -8,13 +8,12 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/nri-mongodb/src/arguments"
+	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 	"github.com/newrelic/nri-mongodb/src/test"
 )
 
 func TestStartCollectorWorkerPool(t *testing.T) {
-	args = &arguments.ArgumentList{}
 	numWorkers := 10
 	var wg sync.WaitGroup
 	entitiesChan := StartCollectorWorkerPool(numWorkers, &wg)
@@ -35,25 +34,38 @@ func TestStartCollectorWorkerPool(t *testing.T) {
 }
 
 type testCollector struct {
-	entities.DefaultCollector
-	Name string
+	name        string
+	integration *integration.Integration
+	session     connection.Session
 }
 
-func (t testCollector) GetEntity() (*integration.Entity, error) {
-	if i := t.GetIntegration(); i != nil {
-		return i.Entity(t.Name, "test")
+func (t *testCollector) GetEntity() (*integration.Entity, error) {
+	if t.integration != nil {
+		return t.integration.Entity(t.name, "test")
 	}
 
 	return nil, errors.New("nil integration")
 }
 
-func (t testCollector) CollectInventory() {
+func (t *testCollector) GetName() string {
+	return t.name
+}
+
+func (t *testCollector) GetIntegration() *integration.Integration {
+	return t.integration
+}
+
+func (t *testCollector) GetSession() (connection.Session, error) {
+	return t.session, nil
+}
+
+func (t *testCollector) CollectInventory() {
 	e, _ := t.GetEntity()
 	e.SetInventoryItem("testCategory", "testItem", "testValue")
 	return
 }
 
-func (t testCollector) CollectMetrics() {
+func (t *testCollector) CollectMetrics() {
 	e, _ := t.GetEntity()
 
 	ms := e.NewMetricSet("testSample")
@@ -62,7 +74,6 @@ func (t testCollector) CollectMetrics() {
 }
 
 func Test_collectorWorker(t *testing.T) {
-	args = &arguments.ArgumentList{}
 	collectorChan := make(chan entities.Collector)
 	var wg sync.WaitGroup
 	i, _ := integration.New("testIntegration", "testVersion")
@@ -70,12 +81,10 @@ func Test_collectorWorker(t *testing.T) {
 	wg.Add(1)
 	go collectorWorker(collectorChan, &wg)
 
-	collectorChan <- testCollector{
-		entities.DefaultCollector{
-			Integration: i,
-			Session:     test.MockSession{},
-		},
+	collectorChan <- &testCollector{
 		"testName",
+		i,
+		test.MockSession{},
 	}
 	close(collectorChan)
 

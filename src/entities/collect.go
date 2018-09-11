@@ -8,8 +8,8 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
-// CollectServerStatus collects serverStatus metrics
-func CollectServerStatus(c Collector, ms *metric.Set) error {
+// collectServerStatus collects serverStatus metrics
+func collectServerStatus(c Collector, ms *metric.Set) error {
 
 	// Retrieve the session for the collector
 	session, err := c.GetSession()
@@ -31,9 +31,9 @@ func CollectServerStatus(c Collector, ms *metric.Set) error {
 	return nil
 }
 
-// CollectIsMaster collects isMaster metrics. Returns a boolean which
+// collectIsMaster collects isMaster metrics. Returns a boolean which
 // is true if the session is connected to a replica set
-func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
+func collectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 	// Retrieve the session for the collector
 	session, err := c.GetSession()
@@ -57,8 +57,8 @@ func CollectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 }
 
-// CollectReplGetStatus collects replica set metrics
-func CollectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
+// collectReplGetStatus collects replica set metrics
+func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 	// Retrieve the session for the collector
 	session, err := c.GetSession()
@@ -85,8 +85,8 @@ func CollectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 }
 
-// CollectReplGetConfig collects replica set metrics
-func CollectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
+// collectReplGetConfig collects replica set metrics
+func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 
 	// Retrieve the session for the collector
 	session, err := c.GetSession()
@@ -113,8 +113,8 @@ func CollectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 
 }
 
-// CollectTop collects top metrics
-func CollectTop(c Collector) error {
+// collectTop collects top metrics
+func collectTop(c Collector) error {
 	session, err := c.GetSession()
 	if err != nil {
 		return fmt.Errorf("invalid session: %v", err)
@@ -151,11 +151,11 @@ func CollectTop(c Collector) error {
 	return nil
 }
 
-// CollectCollStats collects collStats
-func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
+// collectCollStats collects collStats
+func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 
 	// Ignore system collections as they're likely not wanted and probably don't have permission anyway
-	if strings.HasPrefix(c.Name, "system.") {
+	if strings.HasPrefix(c.name, "system.") {
 		return nil
 	}
 
@@ -165,7 +165,7 @@ func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.DB).Run(cmd{"collStats": c.Name}, &collStats); err != nil {
+	if err := session.DB(c.db).Run(cmd{"collStats": c.name}, &collStats); err != nil {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
@@ -176,10 +176,10 @@ func CollectCollStats(c CollectionCollector, ms *metric.Set) error {
 	return nil
 }
 
-// CollectDbStats collects dbStats
-func CollectDbStats(c DatabaseCollector, ms *metric.Set) error {
+// collectDbStats collects dbStats
+func collectDbStats(c *databaseCollector, ms *metric.Set) error {
 	var dbStats metrics.DbStats
-	if err := c.Session.DB(c.Name).Run(cmd{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.session.DB(c.name).Run(cmd{"dbStats": 1}, &dbStats); err != nil {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 
