@@ -56,7 +56,6 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 		return nil, err
 	}
 
-	//databases := make([]Collector, len(unmarshalledDatabaseList.Databases))
 	databases := make([]Collector, 0)
 	for _, database := range unmarshalledDatabaseList.Databases {
 		if checkDatabaseFilter(database.Name, filter) {
@@ -68,7 +67,6 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 				},
 			}
 
-			//databases[i] = newDatabase
 			databases = append(databases, newDatabase)
 		} else {
 			log.Info("Database '%s' did not match filter, will not collect", database.Name)
