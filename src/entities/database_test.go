@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/nri-mongodb/src/filter"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
 )
@@ -57,6 +58,7 @@ func Test_databaseCollector_CollectMetrics_Error(t *testing.T) {
 
 func TestGetDatabases(t *testing.T) {
 	testIntegration, _ := integration.New("test", "0.0.1")
+	testFilter, _ := filter.ParseFilters("")
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
 		On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
@@ -77,7 +79,7 @@ func TestGetDatabases(t *testing.T) {
 		Once()
 	expectedDBs := []string{"db1", "db2"}
 
-	databases, err := GetDatabases(mockSession, testIntegration)
+	databases, err := GetDatabases(mockSession, testIntegration, testFilter)
 	mockSession.AssertExpectations(t)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, databases)
@@ -93,13 +95,14 @@ func TestGetDatabases(t *testing.T) {
 
 func TestGetDatabases_Error(t *testing.T) {
 	testIntegration, _ := integration.New("test", "0.0.1")
+	testFilter, _ := filter.ParseFilters("")
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
 		On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
-	databases, err := GetDatabases(mockSession, testIntegration)
+	databases, err := GetDatabases(mockSession, testIntegration, testFilter)
 	mockSession.AssertExpectations(t)
 	assert.Error(t, err)
 	assert.Equal(t, assert.AnError, err)
