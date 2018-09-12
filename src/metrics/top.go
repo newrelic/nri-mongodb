@@ -7,15 +7,15 @@ type Top struct {
 
 // TopRecords is a storage struct
 type TopRecords struct {
-	Total     TopRecordsTotal
-	ReadLock  TopRecordsReadLock
-	WriteLock TopRecordsWriteLock
-	Queries   TopRecordsQueries
-	Getmore   TopRecordsGetmore
-	Insert    TopRecordsInsert
-	Update    TopRecordsUpdate
-	Remove    TopRecordsRemove
-	Commands  TopRecordsCommands
+	Total     *TopRecordsTotal     `bson:"total"`
+	ReadLock  *TopRecordsReadLock  `bson:"readLock"`
+	WriteLock *TopRecordsWriteLock `bson:"writeLock"`
+	Queries   *TopRecordsQueries   `bson:"queries"`
+	Getmore   *TopRecordsGetmore   `bson:"getmore"`
+	Insert    *TopRecordsInsert    `bson:"insert"`
+	Update    *TopRecordsUpdate    `bson:"update"`
+	Remove    *TopRecordsRemove    `bson:"remove"`
+	Commands  *TopRecordsCommands  `bson:"commands"`
 }
 
 // TopRecordsTotal is a storage struct

@@ -1,11 +1,11 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/filter"
 )
@@ -18,7 +18,12 @@ type databaseCollector struct {
 
 // GetEntity creates or returns an entity for a database
 func (c *databaseCollector) GetEntity() (*integration.Entity, error) {
-	return c.GetIntegration().Entity(c.name, "database")
+	if i := c.GetIntegration(); i != nil {
+		return i.Entity(c.name, "database")
+	}
+
+	return nil, errors.New("nil integration")
+
 }
 
 // CollectInventory no-op
@@ -29,8 +34,8 @@ func (c *databaseCollector) CollectInventory() {
 func (c *databaseCollector) CollectMetrics() {
 
 	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to get entity: %v", err)
+	if logError(err, "Failed to create database entity: %v") {
+		return
 	}
 
 	ms := e.NewMetricSet("MongoDatabaseSample",
@@ -38,9 +43,7 @@ func (c *databaseCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := collectDbStats(c, ms); err != nil {
-		log.Error("Collect failed: %s", err)
-	}
+	logError(collectDbStats(c, ms), "Collect failed: %v")
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
@@ -52,7 +55,7 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 	}
 
 	var unmarshalledDatabaseList DatabaseListUnmarshaller
-	if err := session.DB("admin").Run(cmd{"listDatabases": 1}, &unmarshalledDatabaseList); err != nil {
+	if err := session.DB("admin").Run(map[string]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList); err != nil {
 		return nil, err
 	}
 

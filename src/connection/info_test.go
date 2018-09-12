@@ -1,14 +1,12 @@
 package connection
 
 import (
-	"fmt"
 	"path/filepath"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/globalsign/mgo"
-	"github.com/kr/pretty"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInfo_clone(t *testing.T) {
@@ -20,32 +18,20 @@ func TestInfo_clone(t *testing.T) {
 	}
 
 	info2 := info.clone("", "")
-	if !reflect.DeepEqual(info, info2) {
-		pretty.Ldiff(t, info, info2)
-		t.Error("Bad info clone2")
-	}
+	assert.Equal(t, info, info2, "Bad clone info2")
 
 	info3 := info.clone("host3", "")
 	info.Host = "host3"
-	if !reflect.DeepEqual(info, info3) {
-		pretty.Ldiff(t, info, info3)
-		t.Error("Bad info clone2")
-	}
+	assert.Equal(t, info, info3, "Bad clone info3")
 
 	info4 := info.clone("host4", "4")
 	info.Host = "host4"
 	info.Port = "4"
-	if !reflect.DeepEqual(info, info4) {
-		pretty.Ldiff(t, info, info4)
-		t.Error("Bad info clone2")
-	}
+	assert.Equal(t, info, info4, "Bad clone info4")
 
 	info5 := info.clone("", "5")
 	info.Port = "5"
-	if !reflect.DeepEqual(info, info5) {
-		pretty.Ldiff(t, info, info5)
-		t.Error("Bad info clone2")
-	}
+	assert.Equal(t, info, info5, "Bad clone info5")
 }
 
 func TestInfo_CreateSession(t *testing.T) {
@@ -61,10 +47,7 @@ func TestInfo_CreateSession(t *testing.T) {
 	}
 
 	_, err := info.CreateSession()
-	if err == nil {
-		t.Error("Expected connection to fail")
-	}
-
+	assert.Error(t, err, "Expected connection to fail")
 }
 
 func TestInfo_generateDialInfo(t *testing.T) {
@@ -88,10 +71,7 @@ func TestInfo_generateDialInfo(t *testing.T) {
 		ReadPreference: &mgo.ReadPreference{Mode: mgo.PrimaryPreferred},
 	}
 
-	if !reflect.DeepEqual(dialInfo, expectedDialInfo) {
-		fmt.Println(pretty.Diff(dialInfo, expectedDialInfo))
-		t.Error("Bad dial info")
-	}
+	assert.Equal(t, expectedDialInfo, dialInfo, "Bad dial info")
 }
 
 func Test_addSSL(t *testing.T) {
@@ -108,9 +88,7 @@ func Test_addSSL(t *testing.T) {
 
 	addSSL(dialInfo, false, "")
 
-	if dialInfo.DialServer == nil {
-		t.Error("Nil dialServer")
-	}
+	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
 }
 
 func Test_addSSL_EmptyPEM(t *testing.T) {
@@ -127,7 +105,5 @@ func Test_addSSL_EmptyPEM(t *testing.T) {
 
 	addSSL(dialInfo, false, filepath.Join("testdata", "empty.pem"))
 
-	if dialInfo.DialServer == nil {
-		t.Error("Nil dialServer")
-	}
+	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
 }
