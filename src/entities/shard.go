@@ -8,7 +8,7 @@ import (
 // GetShards creates an array of ShardCollectors
 func GetShards(session connection.Session, integration *integration.Integration) ([]string, error) {
 	type ShardUnmarshaller []struct {
-		ID   string `bson:"_id"`
+		ID   string `bson:"_id" json:"_id"`
 		Host string `bson:"host"`
 	}
 

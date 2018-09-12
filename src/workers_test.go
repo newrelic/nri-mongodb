@@ -1,16 +1,18 @@
 package main
 
 import (
-	"errors"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 	"github.com/newrelic/nri-mongodb/src/test"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestStartCollectorWorkerPool(t *testing.T) {
@@ -29,7 +31,7 @@ func TestStartCollectorWorkerPool(t *testing.T) {
 	case <-c:
 		return
 	case <-time.After(time.Second):
-		t.Error("wait group close timed out")
+		assert.FailNow(t, "Wait group close timed out")
 	}
 }
 
@@ -44,7 +46,7 @@ func (t *testCollector) GetEntity() (*integration.Entity, error) {
 		return t.integration.Entity(t.name, "test")
 	}
 
-	return nil, errors.New("nil integration")
+	return nil, assert.AnError
 }
 
 func (t *testCollector) GetName() string {
@@ -84,7 +86,7 @@ func Test_collectorWorker(t *testing.T) {
 	collectorChan <- &testCollector{
 		"testName",
 		i,
-		test.MockSession{},
+		test.FakeSession{},
 	}
 	close(collectorChan)
 
@@ -96,17 +98,120 @@ func Test_collectorWorker(t *testing.T) {
 
 	select {
 	case <-c:
-		if len(i.Entities) != 1 {
-			t.Errorf("expected one entity, got %d", len(i.Entities))
-		}
-		if len(i.Entities[0].Metrics[0].Metrics) != 2 {
-			t.Errorf("expected one metric in the set, got %d", len(i.Entities[0].Metrics[0].Metrics))
-		}
+		assert.Len(t, i.Entities, 1, "Expected one entity")
+		assert.Len(t, i.Entities[0].Metrics[0].Metrics, 2, "Expected one metric in the set")
+		assert.Len(t, i.Entities[0].Inventory.Items(), 1, "Expected one inventory item")
+	case <-time.After(time.Second):
+		assert.FailNow(t, "Collector worker took too long to close.")
+	}
+}
 
-		if len(i.Entities[0].Inventory.Items()) != 1 {
-			t.Errorf("expected one inventory item, got %d", len(i.Entities[0].Inventory.Items()))
+func TestFeedWorkerPool(t *testing.T) {
+	mockSession := new(test.MockSession)
+	mockSession.On("New", "config1", "27017").Return(mockSession, nil).Once()
+	mockSession.On("New", "mongos1", "27017").Return(mockSession, nil).Once()
+	mockSession.On("New", "shard1", "27017").Return(mockSession, nil).Once()
+
+	configDB := mockSession.MockDatabase("config", 2)
+	configDB.MockCollection("mongos", 1).
+		On("FindAll", mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(0)
+			err := bson.UnmarshalJSON([]byte(`[
+				{ "_id": "mongos1:27017" },
+			]`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+	configDB.MockCollection("shards", 1).
+		On("FindAll", mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(0)
+			err := bson.UnmarshalJSON([]byte(`[
+				{ "_id": "rs1", "host": "shard1" },
+			]`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	adminDB := mockSession.MockDatabase("admin", 2)
+	adminDB.On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"databases": [
+					{
+						"name": "database1"
+					}
+				]
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+	adminDB.On("Run", "getShardMap", mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"map": {
+					"config": "rs1config/config1:27017"
+				}
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	mockSession.MockDatabase("database1", 1).
+		On("CollectionNames").
+		Return([]string{"collection1"}, nil).
+		Once()
+
+	collChan := make(chan entities.Collector)
+	i, _ := integration.New("test", "0.0.0")
+
+	go FeedWorkerPool(mockSession, collChan, i)
+
+	wgDone := make(chan struct{})
+	var collectors []entities.Collector
+	go func() {
+		for {
+			coll, ok := <-collChan
+			if !ok {
+				break
+			} else {
+				collectors = append(collectors, coll)
+			}
+		}
+		close(wgDone)
+	}()
+
+	expectedCollectorNames := map[string]bool{
+		"database1":   true,
+		"config1":     true,
+		"mongos1":     true,
+		"shard1":      true,
+		"collection1": true,
+	}
+
+	select {
+	case <-wgDone:
+		mockSession.AssertExpectations(t)
+		assert.Len(t, collectors, len(expectedCollectorNames))
+		for _, coll := range collectors {
+			_, ok := expectedCollectorNames[coll.GetName()]
+			assert.True(t, ok, "Expected collector name is missing: %s", coll.GetName())
+			session, err := coll.GetSession()
+			assert.NoError(t, err)
+			assert.Equal(t, mockSession, session)
+			assert.Equal(t, i, coll.GetIntegration())
+			e, err := coll.GetEntity()
+			assert.NoError(t, err)
+			assert.NotNil(t, e)
 		}
 	case <-time.After(time.Second):
-		t.Error("collector worker took too long to close")
+		assert.FailNow(t, "Timed out waiting for Mongoses")
 	}
 }
