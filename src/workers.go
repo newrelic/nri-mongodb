@@ -131,7 +131,9 @@ func createShardCollectors(wg *sync.WaitGroup, session connection.Session, colle
 func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
 	defer wg.Done()
 
-	databases, err := entities.GetDatabases(session, integration)
+	// this error is checked when arguments are validated
+	databaseFilter, _ := args.ParseFilters()
+	databases, err := entities.GetDatabases(session, integration, databaseFilter)
 	if err != nil {
 		log.Error("Failed to collect list of databases: %v", err)
 	}
