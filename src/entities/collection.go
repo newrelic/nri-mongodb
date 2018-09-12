@@ -51,7 +51,7 @@ func (c *collectionCollector) CollectMetrics() {
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection
-func GetCollections(dbName string, session connection.Session, integration *integration.Integration, filter filter.DatabaseFilter) ([]Collector, error) {
+func GetCollections(dbName string, session connection.Session, integration *integration.Integration, filter *filter.DatabaseFilter) ([]Collector, error) {
 	names, err := session.DB(dbName).CollectionNames()
 	if err != nil {
 		return nil, err

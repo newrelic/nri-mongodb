@@ -17,13 +17,13 @@ func ParseFilters(filterJSON string) (*DatabaseFilter, error) {
 	if filterJSON == "" {
 		return &DatabaseFilter{
 			CollectAll: true,
-			Filters: map[string][]string{},
+			Filters:    map[string][]string{},
 		}, nil
 	}
 
 	filterMap := DatabaseFilter{
 		CollectAll: false,
-		Filters: map[string][]string{},
+		Filters:    map[string][]string{},
 	}
 	err := json.Unmarshal([]byte(filterJSON), &filterMap.Filters)
 	if err != nil {
@@ -48,7 +48,7 @@ func (dbFilter *DatabaseFilter) CheckFilter(dbName, collectionName string) bool 
 		if collectionName == "" {
 			return true
 		}
-		
+
 		return dbFilter.checkCollectionFilter(collections, collectionName)
 	}
 

@@ -21,7 +21,7 @@ type ArgumentList struct {
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to man-in-the-middle attacks, and should only be used for testing."`
-	Filters				  string `default:"" help:"JSON data defining database and collection filters."`
+	Filters               string `default:"" help:"JSON data defining database and collection filters."`
 }
 
 // Validate validates an argument list and returns an error if something is wrong

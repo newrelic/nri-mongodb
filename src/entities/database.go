@@ -6,8 +6,8 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-mongodb/src/filter"
 	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/filter"
 )
 
 // databaseCollector is a storage struct containing all the
@@ -44,7 +44,7 @@ func (c *databaseCollector) CollectMetrics() {
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
-func GetDatabases(session connection.Session, integration *integration.Integration, filter filter.DatabaseFilter) ([]Collector, error) {
+func GetDatabases(session connection.Session, integration *integration.Integration, filter *filter.DatabaseFilter) ([]Collector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {
 			Name string `bson:"name"`

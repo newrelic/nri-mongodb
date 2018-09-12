@@ -21,7 +21,7 @@ func Test_Filter(t *testing.T) {
 
 	testCases := []struct {
 		filterJSON string
-		dbName 	   string
+		dbName     string
 		collName   string
 		expBool    bool
 	}{

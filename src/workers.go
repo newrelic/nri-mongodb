@@ -7,6 +7,7 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
+	"github.com/newrelic/nri-mongodb/src/filter"
 )
 
 // StartCollectorWorkerPool starts a pool of workers to handle collecting each entity
@@ -132,7 +133,7 @@ func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, co
 	defer wg.Done()
 
 	// this error is checked when arguments are validated
-	databaseFilter, _ := args.ParseFilters()
+	databaseFilter, _ := filter.ParseFilters(args.Filters)
 	databases, err := entities.GetDatabases(session, integration, databaseFilter)
 	if err != nil {
 		log.Error("Failed to collect list of databases: %v", err)
@@ -144,7 +145,7 @@ func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, co
 		wg.Add(1)
 		go func(database entities.Collector) {
 			defer wg.Done()
-			collections, err := entities.GetCollections(database.GetName(), session, integration)
+			collections, err := entities.GetCollections(database.GetName(), session, integration, databaseFilter)
 			if err != nil {
 				log.Error("Failed to collect list of collections for database %s: %v", database.GetName(), err)
 			}
