@@ -6,7 +6,6 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
@@ -33,8 +32,7 @@ func (c *collectionCollector) CollectInventory() {
 // CollectMetrics collects and sets the metrics for a collection
 func (c *collectionCollector) CollectMetrics() {
 	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to get entity: %v")
+	if logError(err, "Failed to create collection entity: %v") {
 		return
 	}
 
@@ -43,10 +41,7 @@ func (c *collectionCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := collectCollStats(c, ms); err != nil {
-		log.Error("Collect failed: %v", err)
-	}
-
+	logError(collectCollStats(c, ms), "Collect failed: %v")
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection

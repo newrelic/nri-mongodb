@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
@@ -54,9 +55,21 @@ func (d *defaultCollector) GetSession() (connection.Session, error) {
 	return nil, errors.New("session is nil")
 }
 
+func logError(err error, format string, args ...interface{}) bool {
+	if err != nil {
+		if format == "" {
+			log.Error("%v", err)
+		} else {
+			log.Error(format, append([]interface{}{err}, args...)...)
+		}
+		return true
+	}
+	return false
+}
+
 func extractHostPort(hostPortString string) hostPort {
 	hostPortArray := strings.SplitN(hostPortString, ":", 2)
-	if len(hostPortArray) == 1 {
+	if len(hostPortArray) == 1 || len(hostPortArray[1]) == 0 {
 		return hostPort{Host: hostPortArray[0], Port: "27017"}
 	}
 

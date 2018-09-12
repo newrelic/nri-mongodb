@@ -39,8 +39,8 @@ func (c *mongosCollector) CollectInventory() {
 func (c *mongosCollector) CollectMetrics() {
 
 	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to create entity: %v", err)
+	if logError(err, "Failed to create entity: %v") {
+		return
 	}
 
 	ms := e.NewMetricSet("MongosSample",
@@ -48,20 +48,17 @@ func (c *mongosCollector) CollectMetrics() {
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 	)
 
-	if err := collectServerStatus(c, ms); err != nil {
-		log.Error("Collect failed: %v", err)
-	}
+	logError(collectServerStatus(c, ms), "Collect failed: %v")
 }
 
 // GetMongoses returns an array of MongosCollectors which will be collected
 func GetMongoses(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	type MongosUnmarshaller []struct {
-		ID string `bson:"_id"`
+		ID string `bson:"_id" json:"_id"`
 	}
 
 	var mu MongosUnmarshaller
-	c := session.DB("config").C("mongos")
-	if err := c.FindAll(&mu); err != nil {
+	if err := session.DB("config").C("mongos").FindAll(&mu); err != nil {
 		return nil, err
 	}
 

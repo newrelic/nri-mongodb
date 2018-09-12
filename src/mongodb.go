@@ -23,7 +23,7 @@ func main() {
 	// Create the integration
 	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		log.Error("Failed to create integration: %v", err)
+		log.Error("Failed to create integration")
 		os.Exit(1)
 	}
 

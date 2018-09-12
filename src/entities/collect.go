@@ -54,7 +54,6 @@ func collectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 	// Return whether the node is part of a replica set and an error
 	return isMaster.SetName != nil, nil
-
 }
 
 // collectReplGetStatus collects replica set metrics
@@ -76,9 +75,7 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 		if !strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
 			continue
 		}
-		if err := ms.MarshalMetrics(member); err != nil {
-			return fmt.Errorf("marshal metrics on replSetGetStatus failed: %v", err)
-		}
+		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetStatus failed: %v")
 	}
 
 	return nil
@@ -104,9 +101,7 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 		if !strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
 			continue
 		}
-		if err := ms.MarshalMetrics(member); err != nil {
-			return fmt.Errorf("marshal metrics on replSetGetConfig failed: %v", err)
-		}
+		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetConfig failed: %v")
 	}
 
 	return nil
@@ -142,9 +137,7 @@ func collectTop(c Collector) error {
 			metric.Attribute{Key: "collection", Value: collectionName},
 		)
 
-		if err := ms.MarshalMetrics(collectionStats); err != nil {
-			return fmt.Errorf("marshal metrics on top failed: %v", err)
-		}
+		logError(ms.MarshalMetrics(collectionStats), "Marshal metrics on top failed: %v")
 
 	}
 
@@ -169,11 +162,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
-	if err := ms.MarshalMetrics(collStats); err != nil {
-		return fmt.Errorf("marshal metrics on collStats failed: %v", err)
-	}
-
-	return nil
+	return ms.MarshalMetrics(collStats)
 }
 
 // collectDbStats collects dbStats
@@ -183,9 +172,5 @@ func collectDbStats(c *databaseCollector, ms *metric.Set) error {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 
-	if err := ms.MarshalMetrics(dbStats); err != nil {
-		return fmt.Errorf("marshal metrics for dbStats failed: %s", err)
-	}
-
-	return nil
+	return ms.MarshalMetrics(dbStats)
 }

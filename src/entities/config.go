@@ -38,8 +38,7 @@ func (c *configCollector) CollectInventory() {
 // CollectMetrics collects and sets metrics for a config server
 func (c *configCollector) CollectMetrics() {
 	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to create entity: %v", err)
+	if logError(err, "Failed to create config entity: %v") {
 		return
 	}
 
@@ -49,23 +48,15 @@ func (c *configCollector) CollectMetrics() {
 	)
 
 	isReplSet, err := collectIsMaster(c, ms)
-	if err != nil {
-		log.Error("Collect failed: %v", err)
-	}
+	logError(err, "Collect is master failed: %v")
 
 	if isReplSet {
-		if err := collectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
-			log.Error("Collect failed: %v", err)
-		}
+		logError(collectReplGetStatus(c, e.Metadata.Name, ms), "Get ReplSet status failed: %v")
 
-		if err := collectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
-			log.Error("Collect failed: %v", err)
-		}
+		logError(collectReplGetConfig(c, e.Metadata.Name, ms), "Get ReplSet config failed: %v")
 	}
 
-	if err := collectServerStatus(c, ms); err != nil {
-		log.Error("Collect failed: %v", err)
-	}
+	logError(collectServerStatus(c, ms), "Collect server status failed: %v")
 }
 
 // GetConfigServers returns a list of ConfigCollectors to collect

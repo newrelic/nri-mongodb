@@ -38,8 +38,7 @@ func (c *mongodCollector) CollectInventory() {
 // CollectMetrics sets all the metrics for a mongod
 func (c *mongodCollector) CollectMetrics() {
 	e, err := c.GetEntity()
-	if err != nil {
-		log.Error("Failed to create mongod entity: %v", err)
+	if logError(err, "Failed to create mongod entity: %v") {
 		return
 	}
 
@@ -49,28 +48,15 @@ func (c *mongodCollector) CollectMetrics() {
 	)
 
 	isReplSet, err := collectIsMaster(c, ms)
-	if err != nil {
-		log.Error("Collect failed: %v", err)
-	}
+	logError(err, "Collect is master failed: %v")
 
 	if isReplSet {
-		if err := collectReplGetStatus(c, e.Metadata.Name, ms); err != nil {
-			log.Error("Collect failed: %v", err)
-		}
-
-		if err := collectReplGetConfig(c, e.Metadata.Name, ms); err != nil {
-			log.Error("Collect failed: %v", err)
-		}
+		logError(collectReplGetStatus(c, e.Metadata.Name, ms), "Get ReplSet status failed: %v")
+		logError(collectReplGetConfig(c, e.Metadata.Name, ms), "Get ReplSet config failed: %v")
 	}
 
-	if err := collectServerStatus(c, ms); err != nil {
-		log.Error("Collect failed: %v", err)
-	}
-
-	if err := collectTop(c); err != nil {
-		log.Error("Collect failed: %v", err)
-	}
-
+	logError(collectServerStatus(c, ms), "Collect server status failed: %v")
+	logError(collectTop(c), "Collect top failed: %v")
 }
 
 // GetMongods returns an array of MongodCollectors to collect

@@ -96,11 +96,11 @@ var ignoredInventoryKeys = map[string]bool{
 }
 
 func isInventoryKey(key string, isRoot bool) bool {
-	if !isRoot {
-		return true
-	}
 	if strings.HasPrefix(key, "$") {
 		return false
+	}
+	if !isRoot {
+		return true
 	}
 	if ignore, ok := ignoredInventoryKeys[key]; ok && ignore {
 		return false
