@@ -59,9 +59,9 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 		return nil, err
 	}
 
-	databases := make([]Collector, 0)
+	databases := make([]Collector, 0, len(unmarshalledDatabaseList.Databases))
 	for _, database := range unmarshalledDatabaseList.Databases {
-		if filter.CheckFilter(database.Name, "") {
+		if filter == nil || filter.CheckFilter(database.Name, "") {
 			newDatabase := &databaseCollector{
 				defaultCollector{
 					database.Name,

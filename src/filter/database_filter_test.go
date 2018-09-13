@@ -83,6 +83,6 @@ func Test_Filter(t *testing.T) {
 	for _, tc := range testCases {
 		dbFilter, _ := ParseFilters(tc.filterJSON)
 		result := dbFilter.CheckFilter(tc.dbName, tc.collName)
-		assert.Equal(t, tc.expBool, result)
+		assert.Equal(t, tc.expBool, result, "filterString: '%s' db: '%s' col: '%s' expected: '%s'", tc.filterJSON, tc.dbName, tc.collName, tc.expBool)
 	}
 }

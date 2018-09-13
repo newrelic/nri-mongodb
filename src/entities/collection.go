@@ -52,9 +52,9 @@ func GetCollections(dbName string, session connection.Session, integration *inte
 		return nil, err
 	}
 
-	collections := make([]Collector, 0)
+	collections := make([]Collector, 0, len(names))
 	for _, name := range names {
-		if filter.CheckFilter(dbName, name) {
+		if filter == nil || filter.CheckFilter(dbName, name) {
 			newCollection := &collectionCollector{
 				defaultCollector{
 					name,
