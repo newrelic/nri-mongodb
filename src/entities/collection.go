@@ -7,6 +7,7 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/filter"
 )
 
 // collectionCollector is a storage struct which holds all the
@@ -45,24 +46,26 @@ func (c *collectionCollector) CollectMetrics() {
 }
 
 // GetCollections returns a list of CollectionCollectors which each collect a collection
-func GetCollections(dbName string, session connection.Session, integration *integration.Integration) ([]Collector, error) {
+func GetCollections(dbName string, session connection.Session, integration *integration.Integration, filter *filter.DatabaseFilter) ([]Collector, error) {
 	names, err := session.DB(dbName).CollectionNames()
 	if err != nil {
 		return nil, err
 	}
 
-	collections := make([]Collector, len(names))
-	for i, name := range names {
-		newCollection := &collectionCollector{
-			defaultCollector{
-				name,
-				integration,
-				session,
-			},
-			dbName,
-		}
+	collections := make([]Collector, 0, len(names))
+	for _, name := range names {
+		if filter == nil || filter.CheckFilter(dbName, name) {
+			newCollection := &collectionCollector{
+				defaultCollector{
+					name,
+					integration,
+					session,
+				},
+				dbName,
+			}
 
-		collections[i] = newCollection
+			collections = append(collections, newCollection)
+		}
 	}
 
 	return collections, nil

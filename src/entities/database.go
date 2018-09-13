@@ -7,6 +7,7 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/filter"
 )
 
 // databaseCollector is a storage struct containing all the
@@ -46,7 +47,7 @@ func (c *databaseCollector) CollectMetrics() {
 }
 
 // GetDatabases returns a list of DatabaseCollectors which each collect a specific database
-func GetDatabases(session connection.Session, integration *integration.Integration) ([]Collector, error) {
+func GetDatabases(session connection.Session, integration *integration.Integration, filter *filter.DatabaseFilter) ([]Collector, error) {
 	type DatabaseListUnmarshaller struct {
 		Databases []struct {
 			Name string `bson:"name"`
@@ -58,17 +59,19 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 		return nil, err
 	}
 
-	databases := make([]Collector, len(unmarshalledDatabaseList.Databases))
-	for i, database := range unmarshalledDatabaseList.Databases {
-		newDatabase := &databaseCollector{
-			defaultCollector{
-				database.Name,
-				integration,
-				session,
-			},
-		}
+	databases := make([]Collector, 0, len(unmarshalledDatabaseList.Databases))
+	for _, database := range unmarshalledDatabaseList.Databases {
+		if filter == nil || filter.CheckFilter(database.Name, "") {
+			newDatabase := &databaseCollector{
+				defaultCollector{
+					database.Name,
+					integration,
+					session,
+				},
+			}
 
-		databases[i] = newDatabase
+			databases = append(databases, newDatabase)
+		}
 	}
 
 	return databases, nil
