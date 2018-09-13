@@ -6,7 +6,6 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/filter"
 )
@@ -72,8 +71,6 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 			}
 
 			databases = append(databases, newDatabase)
-		} else {
-			log.Info("Database '%s' did not match filter, will not collect", database.Name)
 		}
 	}
 
