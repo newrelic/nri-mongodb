@@ -48,6 +48,9 @@ func main() {
 		Username:              args.Username,
 	}
 	session, err := connectionInfo.CreateSession()
+	if err != nil {
+		log.Error("Failed to create session: %v", err)
+	}
 
 	// Start workers
 	var wg sync.WaitGroup
