@@ -119,7 +119,14 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 		}
 
 		// Calculate the fraction of votes for a member
-		voteFraction := *member.Votes / totalVotes
+		voteFraction := func() {
+			if totalVotes == 0 {
+				return 0
+			} else {
+				return *member.Votes / totalVotes
+			}
+		}()
+
 		member.VoteFraction = &voteFraction
 
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetConfig failed: %v")
