@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Set verbose level
-	//log.SetupLogging(args.Verbose)
+	log.SetupLogging(args.Verbose)
 
 	// Validate arguments
 	if err := args.Validate(); err != nil {
