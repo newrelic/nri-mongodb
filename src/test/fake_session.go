@@ -171,6 +171,11 @@ func (c FakeCollection) FindAll(result interface{}) error {
 	return nil
 }
 
+// PipeAll executes a pipe command and gets all the results
+func (c FakeCollection) PipeAll(query, result interface{}) error {
+	return nil
+}
+
 // ExpectedInventory is what the inventory should look like using this fake session.
 // It is a combination of "getCmdLineOpts" and "getParameter".
 var ExpectedInventory = inventory.Items{

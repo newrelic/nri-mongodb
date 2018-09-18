@@ -3,8 +3,11 @@ package entities
 import (
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
@@ -71,8 +74,15 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 		return err
 	}
 
+	t := time.Now().Unix()
 	for _, member := range replSetStatus.Members {
-		if !strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
+		// Calculate the replication lag
+		if member.Optime.Timestamp != nil {
+			lag := t - member.Optime.Timestamp.Time().Unix()
+			member.Optime.ReplicationLag = &lag
+		}
+
+		if !strings.HasPrefix(*member.Name, hostname) {
 			continue
 		}
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetStatus failed: %v")
@@ -97,10 +107,27 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 		return err
 	}
 
+	// Count the total number of votes in the replica set
+	var totalVotes float32
 	for _, member := range replSetConfig.Config.Members {
-		if !strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
+		totalVotes += *member.Votes
+	}
+
+	for _, member := range replSetConfig.Config.Members {
+		if !strings.HasPrefix(*member.Host, hostname) {
 			continue
 		}
+
+		// Calculate the fraction of votes for a member
+		voteFraction := func() float32 {
+			if totalVotes == 0 {
+				return 0
+			}
+			return *member.Votes / totalVotes
+		}()
+
+		member.VoteFraction = &voteFraction
+
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetConfig failed: %v")
 	}
 
@@ -162,6 +189,44 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
+	e, err := c.GetEntity()
+	if err != nil {
+		return err
+	}
+
+	var indexStats []bson.M
+	col := session.DB(c.db).C(c.name)
+	query := []bson.M{{"$indexStats": bson.M{}}}
+	if err := col.PipeAll(query, &indexStats); err != nil {
+		return err
+	}
+
+	if collStats.IndexSizes != nil {
+		for indexName, indexSize := range *collStats.IndexSizes {
+			var indexAccesses int64
+			for _, index := range indexStats {
+				if index["name"] == indexName {
+					indexAccesses = index["accesses"].(bson.M)["ops"].(int64)
+				}
+			}
+
+			ms := e.NewMetricSet("MongoCollectionSample",
+				metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
+				metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+				metric.Attribute{Key: "database", Value: c.db},
+				metric.Attribute{Key: "collection", Value: c.name},
+				metric.Attribute{Key: "index", Value: indexName},
+			)
+
+			if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {
+				log.Error("Unable to set indexSizeInBytes metric")
+			}
+			if err := ms.SetMetric("collection.indexAccesses", indexAccesses, metric.GAUGE); err != nil {
+				log.Error("Unable to set indexAccesses metric")
+			}
+		}
+	}
+
 	return ms.MarshalMetrics(collStats)
 }
 
@@ -173,4 +238,21 @@ func collectDbStats(c *databaseCollector, ms *metric.Set) error {
 	}
 
 	return ms.MarshalMetrics(dbStats)
+}
+
+func collectNumDatabases(c Collector, ms *metric.Set) error {
+	var listDatabases metrics.ListDatabases
+	s, err := c.GetSession()
+	if err != nil {
+		return err
+	}
+
+	if err := s.DB("admin").Run(cmd{"listDatabases": 1}, &listDatabases); err != nil {
+		return fmt.Errorf("run listDatabases failed: %s", err)
+	}
+
+	length := len(listDatabases.Databases)
+	listDatabases.NumDatabases = &length
+
+	return ms.MarshalMetrics(listDatabases)
 }

@@ -180,11 +180,12 @@ func Test_collectReplGetConfig(t *testing.T) {
 	}
 
 	expected := map[string]interface{}{
-		"replset.isArbiter": float64(0),
-		"replset.isHidden":  float64(0),
-		"replset.priority":  float64(10),
-		"replset.votes":     float64(20),
-		"event_type":        "testmetricset",
+		"replset.isArbiter":    float64(0),
+		"replset.isHidden":     float64(0),
+		"replset.priority":     float64(10),
+		"replset.votes":        float64(20),
+		"replset.voteFraction": float64(1),
+		"event_type":           "testmetricset",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)

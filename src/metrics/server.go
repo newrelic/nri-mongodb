@@ -91,6 +91,7 @@ type ServerStatusMem struct {
 type ServerStatusMetrics struct {
 	Cursor        *ServerStatusMetricsCursor        `bson:"cursor"`
 	Commands      *ServerStatusMetricsCommands      `bson:"commands"`
+	Document      *ServerStatusMetricsDocument      `bson:"document"`
 	GetLastError  *ServerStatusMetricsGetLastError  `bson:"getLastError"`
 	Operation     *ServerStatusMetricsOperation     `bson:"operation"`
 	QueryExecutor *ServerStatusMetricsQueryExecutor `bson:"queryExecutor"`
@@ -101,8 +102,6 @@ type ServerStatusMetrics struct {
 
 // ServerStatusMetricsCursor is a storage struct
 type ServerStatusMetricsCursor struct {
-	// TODO determine whether they actually want this separately
-	//TimedOut          *int                           `bson:"timedOut" metric_name:"cursor.timedOut" source_type:"gauge"`
 	TimedOutPerSecond *int                           `bson:"timedOut" metric_name:"cursor.timedOutPerSecond" source_type:"rate"`
 	Open              *ServerStatusMetricsCursorOpen `bson:"open"`
 }
@@ -125,46 +124,54 @@ type ServerStatusMetricsCommands struct {
 	Update        *ServerStatusMetricsCommandUpdate        `bson:"update"`
 }
 
+// ServerStatusMetricsDocument is a storage struct
+type ServerStatusMetricsDocument struct {
+	Deleted  *int `bson:"deleted"  metric_name:"document.deletedPerSecond"  source_type:"rate"`
+	Inserted *int `bson:"inserted" metric_name:"document.insertedPerSecond" source_type:"rate"`
+	Returned *int `bson:"returned" metric_name:"document.returnedPerSecond" source_type:"rate"`
+	Updated  *int `bson:"updated"  metric_name:"document.updatedPerSecond"  source_type:"rate"`
+}
+
 // ServerStatusMetricsCommandCount is a storage struct
 type ServerStatusMetricsCommandCount struct {
 	Failed *int `bson:"failed" metric_name:"commands.countFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.countPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.countPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandCreateIndexes is a storage struct
 type ServerStatusMetricsCommandCreateIndexes struct {
 	Failed *int `bson:"failed" metric_name:"commands.createIndexesFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.createIndexesPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.createIndexesPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandDelete is a storage struct
 type ServerStatusMetricsCommandDelete struct {
 	Failed *int `bson:"failed" metric_name:"commands.deleteFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.deletePerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.deletePerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandEval is a storage struct
 type ServerStatusMetricsCommandEval struct {
 	Failed *int `bson:"failed" metric_name:"commands.evalFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.evalPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.evalPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandFindAndModify is a storage struct
 type ServerStatusMetricsCommandFindAndModify struct {
 	Failed *int `bson:"failed" metric_name:"commands.modifyFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.modifyPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.modifyPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandInsert is a storage struct
 type ServerStatusMetricsCommandInsert struct {
 	Failed *int `bson:"failed" metric_name:"commands.insertFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.insertPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.insertPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandUpdate is a storage struct
 type ServerStatusMetricsCommandUpdate struct {
 	Failed *int `bson:"failed" metric_name:"commands.updateFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.updatePerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.updatePerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsGetLastError is a storage struct
@@ -200,6 +207,7 @@ type ServerStatusMetricsRepl struct {
 	Buffer  *ServerStatusMetricsReplBuffer  `bson:"buffer"`
 	Network *ServerStatusMetricsReplNetwork `bson:"network"`
 	Preload *ServerStatusMetricsReplPreload `bson:"preload"`
+	Oplog   *ServerStatusMetricsReplOplog   `bson:"oplog"`
 }
 
 // ServerStatusMetricsReplApply is a storage struct
@@ -210,7 +218,7 @@ type ServerStatusMetricsReplApply struct {
 
 // ServerStatusMetricsReplApplyBatches is a storage struct
 type ServerStatusMetricsReplApplyBatches struct {
-	Num *int `bson:"num" metric_name:"repl.apply.batchesPerSec" source_type:"rate"`
+	Num *int `bson:"num" metric_name:"repl.apply.batchesPerSecond" source_type:"rate"`
 }
 
 // ServerStatusMetricsReplBuffer is a storage struct
@@ -235,6 +243,12 @@ type ServerStatusMetricsReplNetworkGetmores struct {
 
 // ServerStatusMetricsReplPreload is a storage struct
 type ServerStatusMetricsReplPreload struct {
+	Docs    *ServerStatusMetricsReplPreloadDocs    `bson:"docs"`
+	Indexes *ServerStatusMetricsReplPreloadIndexes `bson:"indexes"`
+}
+
+// ServerStatusMetricsReplOplog is a storage struct
+type ServerStatusMetricsReplOplog struct {
 	Docs    *ServerStatusMetricsReplPreloadDocs    `bson:"docs"`
 	Indexes *ServerStatusMetricsReplPreloadIndexes `bson:"indexes"`
 }
@@ -409,10 +423,10 @@ type ServerStatusLocksGlobal struct {
 
 // ServerStatusLocksGlobalAcquireCount is a storage struct
 type ServerStatusLocksGlobalAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.globalAcquiredShared" source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquiredShared" source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquiredShared" source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquiredShared" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.globalAcquiredShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquiredExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquiredIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquiredIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksGlobalAcquireWaitCount is a storage struct

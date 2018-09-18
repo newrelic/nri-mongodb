@@ -67,6 +67,9 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	getWg := new(sync.WaitGroup)
 
 	getWg.Add(1)
+	go createClusterCollectors(getWg, session, collectorChan, integration)
+
+	getWg.Add(1)
 	go createMongosCollectors(getWg, session, collectorChan, integration)
 
 	getWg.Add(1)
@@ -79,6 +82,18 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	go createDatabaseCollectors(getWg, session, collectorChan, integration)
 
 	getWg.Wait()
+}
+
+func createClusterCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	clusters, err := entities.GetClusters(session, integration)
+	if err != nil {
+		log.Error("Failed to collect list of clusters: %v", err)
+	}
+	for _, cluster := range clusters {
+		collectorChan <- cluster
+	}
 }
 
 func createMongosCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {

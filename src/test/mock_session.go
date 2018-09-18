@@ -116,3 +116,9 @@ func (c *MockCollection) FindAll(result interface{}) error {
 	args := c.Called(result)
 	return args.Error(0)
 }
+
+// PipeAll is mocked via setup
+func (c *MockCollection) PipeAll(query, result interface{}) error {
+	args := c.Called(query, result)
+	return args.Error(0)
+}
