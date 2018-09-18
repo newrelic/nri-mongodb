@@ -50,6 +50,7 @@ func main() {
 	session, err := connectionInfo.CreateSession()
 	if err != nil {
 		log.Error("Failed to create session: %v", err)
+		os.Exit(1)
 	}
 
 	// Start workers
