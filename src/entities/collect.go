@@ -119,12 +119,11 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 		}
 
 		// Calculate the fraction of votes for a member
-		voteFraction := func() {
+		voteFraction := func() float32 {
 			if totalVotes == 0 {
 				return 0
-			} else {
-				return *member.Votes / totalVotes
 			}
+			return *member.Votes / totalVotes
 		}()
 
 		member.VoteFraction = &voteFraction
