@@ -16,6 +16,7 @@ type Session interface {
 // actions needed against a MongoDB collection
 type Collection interface {
 	FindAll(result interface{}) error
+	PipeAll(request, result interface{}) error
 }
 
 // DataLayer is an interface that represents the minimum

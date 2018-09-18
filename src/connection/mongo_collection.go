@@ -11,3 +11,7 @@ type mongoCollection struct {
 func (c *mongoCollection) FindAll(result interface{}) error {
 	return c.col.Find(nil).All(result)
 }
+
+func (c *mongoCollection) PipeAll(request, result interface{}) error {
+	return c.col.Pipe(request).All(result)
+}

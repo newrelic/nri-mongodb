@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Set verbose level
-	log.SetupLogging(args.Verbose)
+	//log.SetupLogging(args.Verbose)
 
 	// Validate arguments
 	if err := args.Validate(); err != nil {
@@ -48,8 +48,9 @@ func main() {
 		Username:              args.Username,
 	}
 	session, err := connectionInfo.CreateSession()
-	if err != nil {
-		log.Error("Failed to create session: %v", err)
+	if err != nil || session == nil {
+		log.Error("Failed to create session with connection info %v: %v", connectionInfo, err)
+		os.Exit(1)
 	}
 
 	// Start workers

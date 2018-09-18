@@ -112,8 +112,8 @@ func TestFeedWorkerPool(t *testing.T) {
 	mockSession.On("New", "mongos1", "27017").Return(mockSession, nil).Once()
 	mockSession.On("New", "shard1", "27017").Return(mockSession, nil).Once()
 
-	configDB := mockSession.MockDatabase("config", 2)
-	configDB.MockCollection("mongos", 1).
+	configDB := mockSession.MockDatabase("config", 3)
+	configDB.MockCollection("mongos", 2).
 		On("FindAll", mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
@@ -122,8 +122,7 @@ func TestFeedWorkerPool(t *testing.T) {
 				{ "_id": "mongos1:27017" },
 			]`), result)
 			assert.NoError(t, err)
-		}).
-		Once()
+		})
 	configDB.MockCollection("shards", 1).
 		On("FindAll", mock.Anything).
 		Return(nil).
@@ -133,8 +132,7 @@ func TestFeedWorkerPool(t *testing.T) {
 				{ "_id": "rs1", "host": "shard1" },
 			]`), result)
 			assert.NoError(t, err)
-		}).
-		Once()
+		})
 
 	adminDB := mockSession.MockDatabase("admin", 2)
 	adminDB.On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
@@ -189,6 +187,7 @@ func TestFeedWorkerPool(t *testing.T) {
 	}()
 
 	expectedCollectorNames := map[string]bool{
+		"cluster":     true,
 		"database1":   true,
 		"config1":     true,
 		"mongos1":     true,
