@@ -48,8 +48,8 @@ func main() {
 		Username:              args.Username,
 	}
 	session, err := connectionInfo.CreateSession()
-	if err != nil || session == nil {
-		log.Error("Failed to create session with connection info %v: %v", connectionInfo, err)
+	if err != nil {
+		log.Error("Failed to create session: %v", err)
 		os.Exit(1)
 	}
 
