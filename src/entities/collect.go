@@ -114,7 +114,7 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 	}
 
 	for _, member := range replSetConfig.Config.Members {
-		if !strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
+		if !strings.HasPrefix(*member.Host, hostname) {
 			continue
 		}
 
