@@ -135,43 +135,43 @@ type ServerStatusMetricsDocument struct {
 // ServerStatusMetricsCommandCount is a storage struct
 type ServerStatusMetricsCommandCount struct {
 	Failed *int `bson:"failed" metric_name:"commands.countFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.countTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.countPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandCreateIndexes is a storage struct
 type ServerStatusMetricsCommandCreateIndexes struct {
 	Failed *int `bson:"failed" metric_name:"commands.createIndexesFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.createIndexesTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.createIndexesPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandDelete is a storage struct
 type ServerStatusMetricsCommandDelete struct {
 	Failed *int `bson:"failed" metric_name:"commands.deleteFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.deleteTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.deletePerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandEval is a storage struct
 type ServerStatusMetricsCommandEval struct {
 	Failed *int `bson:"failed" metric_name:"commands.evalFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.evalTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.evalPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandFindAndModify is a storage struct
 type ServerStatusMetricsCommandFindAndModify struct {
 	Failed *int `bson:"failed" metric_name:"commands.findAndModifyFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.findAndModifyTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.findAndModifyTotalPerSecond"           source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandInsert is a storage struct
 type ServerStatusMetricsCommandInsert struct {
 	Failed *int `bson:"failed" metric_name:"commands.insertFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.insertTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.insertPerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandUpdate is a storage struct
 type ServerStatusMetricsCommandUpdate struct {
 	Failed *int `bson:"failed" metric_name:"commands.updateFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.updateTotal"           source_type:"gauge"`
+	Total  *int `bson:"total"  metric_name:"commands.updatePerSecond"       source_type:"rate"`
 }
 
 // ServerStatusMetricsGetLastError is a storage struct
