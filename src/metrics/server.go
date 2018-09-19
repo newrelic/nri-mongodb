@@ -135,43 +135,43 @@ type ServerStatusMetricsDocument struct {
 // ServerStatusMetricsCommandCount is a storage struct
 type ServerStatusMetricsCommandCount struct {
 	Failed *int `bson:"failed" metric_name:"commands.countFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.countPerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.countTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandCreateIndexes is a storage struct
 type ServerStatusMetricsCommandCreateIndexes struct {
 	Failed *int `bson:"failed" metric_name:"commands.createIndexesFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.createIndexesPerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.createIndexesTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandDelete is a storage struct
 type ServerStatusMetricsCommandDelete struct {
 	Failed *int `bson:"failed" metric_name:"commands.deleteFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.deletePerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.deleteTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandEval is a storage struct
 type ServerStatusMetricsCommandEval struct {
 	Failed *int `bson:"failed" metric_name:"commands.evalFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.evalPerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.evalTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandFindAndModify is a storage struct
 type ServerStatusMetricsCommandFindAndModify struct {
-	Failed *int `bson:"failed" metric_name:"commands.modifyFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.modifyPerSecond"       source_type:"rate"`
+	Failed *int `bson:"failed" metric_name:"commands.findAndModifyFailedPerSecond" source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.findAndModifyTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandInsert is a storage struct
 type ServerStatusMetricsCommandInsert struct {
 	Failed *int `bson:"failed" metric_name:"commands.insertFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.insertPerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.insertTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsCommandUpdate is a storage struct
 type ServerStatusMetricsCommandUpdate struct {
 	Failed *int `bson:"failed" metric_name:"commands.updateFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.updatePerSecond"       source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.updateTotal"           source_type:"gauge"`
 }
 
 // ServerStatusMetricsGetLastError is a storage struct
@@ -261,7 +261,7 @@ type ServerStatusMetricsReplPreloadDocs struct {
 
 // ServerStatusMetricsReplPreloadIndexes is a storage struct
 type ServerStatusMetricsReplPreloadIndexes struct {
-	Num         *int `bson:"num"         metric_name:"repl.IndexLoadedPrefetch"        source_type:"gauge"`
+	Num         *int `bson:"num"         metric_name:"repl.indexLoadedPrefetch"        source_type:"gauge"`
 	TotalMillis *int `bson:"totalMillis" metric_name:"repl.indexPreloadInMilliseconds" source_type:"gauge"`
 }
 
@@ -288,14 +288,14 @@ type ServerStatusGlobalLock struct {
 
 // ServerStatusGlobalLockCurrentQueue is a storage struct
 type ServerStatusGlobalLockCurrentQueue struct {
-	Total   *int `bson:"totalTime" metric_name:"globallock.currentQueueTotal"   source_type:"gauge"`
+	Total   *int `bson:"total" metric_name:"globallock.currentQueueTotal"   source_type:"gauge"`
 	Readers *int `bson:"readers"   metric_name:"globallock.currentQueueReaders" source_type:"gauge"`
 	Writers *int `bson:"writers"   metric_name:"globallock.currentQueueWriters" source_type:"gauge"`
 }
 
 // ServerStatusGlobalLockActiveClients is a storage struct
 type ServerStatusGlobalLockActiveClients struct {
-	Total   *int `bson:"totalTime" metric_name:"globallock.activeClientsTotal"   source_type:"gauge"`
+	Total   *int `bson:"total" metric_name:"globallock.activeClientsTotal"   source_type:"gauge"`
 	Readers *int `bson:"readers"   metric_name:"globallock.activeClientsReaders" source_type:"gauge"`
 	Writers *int `bson:"writers"   metric_name:"globallock.activeClientsWriters" source_type:"gauge"`
 }
@@ -314,14 +314,14 @@ type ServerStatusWiredTiger struct {
 // ServerStatusWiredTigerCache is a storage struct
 type ServerStatusWiredTigerCache struct {
 	Size                   *int `bson:"bytes currently in the cache"                                 metric_name:"wiredtiger.cacheInBytes"                                 source_type:"gauge"`
-	FailedEvictions        *int `bson:"failed eviction of pages that exceeded the in-memory maximum" metric_name:"wiredtiger.failedEvictionsPagesPerSecond"                source_type:"gauge"`
-	PageSplits             *int `bson:"in-memory page splits"                                        metric_name:"cacheInMemoryPageSplits"                                 source_type:"gauge"`
+	FailedEvictions        *int `bson:"failed eviction of pages that exceeded the in-memory maximum count" metric_name:"wiredtiger.failedEvictionsPagesPerSecond"                source_type:"rate"`
+	PageSplits             *int `bson:"in-memory page splits"                                        metric_name:"wiredtiger.cacheInMemoryPageSplits"                      source_type:"gauge"`
 	MaxSize                *int `bson:"maximum bytes configured"                                     metric_name:"wiredtiger.cacheMaxInBytes"                              source_type:"gauge"`
 	MaxPageSize            *int `bson:"maximum page size at eviction"                                metric_name:"wiredtiger.cacheMaxPageSizeEvictionInBytes"              source_type:"gauge"`
 	ModifiedPagesEvicted   *int `bson:"modified pages evicted"                                       metric_name:"wiredtiger.cacheModifiedPagesEvicted"                    source_type:"gauge"`
 	PagesHeld              *int `bson:"pages currently held in the cache"                            metric_name:"wiredtiger.cachePagesHeld"                               source_type:"gauge"`
 	PagesEvictedThreads    *int `bson:"pages evicted by application threads"                         metric_name:"wiredtiger.cachePagesEvictedApplicationThreadsPerSecond" source_type:"gauge"`
-	PagesEvictedMax        *int `bson:"pages evicted because they exceeded the in-memory maximum"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMaxPerSecond"        source_type:"rate"`
+	PagesEvictedMax        *int `bson:"pages evicted because they exceeded the in-memory maximum count"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMaxPerSecond"        source_type:"rate"`
 	DirtyData              *int `bson:"tracked dirty bytes in the cache"                             metric_name:"wiredtiger.cacheDirtyDataInBytes"                        source_type:"gauge"`
 	UnmodifiedPagesEvicted *int `bson:"unmodified pages evicted"                                     metric_name:"wiredtiger.cacheUnmodifiedPagesEvicted"                  source_type:"gauge"`
 }
@@ -365,10 +365,10 @@ type ServerStatusLocksCollection struct {
 
 // ServerStatusLocksCollectionAcquireCount is a storage struct
 type ServerStatusLocksCollectionAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.collectionAcquiredShared" source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.collectionAcquiredShared" source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.collectionAcquiredShared" source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.collectionAcquiredShared" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.collectionAcquireShared" source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.collectionAcquireExclusive" source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.collectionAcquireIntentShared" source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.collectionAcquireIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksCollectionAcquireWaitCount is a storage struct
@@ -392,18 +392,18 @@ type ServerStatusLocksDatabase struct {
 
 // ServerStatusLocksDatabaseAcquireCount is a storage struct
 type ServerStatusLocksDatabaseAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.databaseAcquiredShared" source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.databaseAcquiredShared" source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.databaseAcquiredShared" source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.databaseAcquiredShared" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.databaseAcquireShared" source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.databaseAcquireExclusive" source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.databaseAcquireIntentShared" source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.databaseAcquireIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksDatabaseAcquireWaitCount is a storage struct
 type ServerStatusLocksDatabaseAcquireWaitCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.databaseAcquireWaitCountShared"          source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.databaseAcquireWaitCountExclusive"       source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.databaseAcquireWaitCountIntentShared"    source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.databaseAcquireWaitCountIntentExclusive" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.databaseAcquireWaitShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.databaseAcquireWaitExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.databaseAcquireWaitIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.databaseAcquireWaitIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksDatabaseTimeAcquiringMicros is a storage struct
@@ -423,18 +423,18 @@ type ServerStatusLocksGlobal struct {
 
 // ServerStatusLocksGlobalAcquireCount is a storage struct
 type ServerStatusLocksGlobalAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.globalAcquiredShared"          source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquiredExclusive"       source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquiredIntentShared"    source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquiredIntentExclusive" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.globalAcquireShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquireExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquireIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquireIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksGlobalAcquireWaitCount is a storage struct
 type ServerStatusLocksGlobalAcquireWaitCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.globalAcquireWaitCountShared"          source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquireWaitCountExclusive"       source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquireWaitCountIntentShared"    source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquireWaitCountIntentExclusive" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.globalAcquireWaitShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.globalAcquireWaitExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.globalAcquireWaitIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.globalAcquireWaitIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksGlobalTimeAcquiringMicros is a storage struct
@@ -452,8 +452,8 @@ type ServerStatusLocksMetadata struct {
 
 // ServerStatusLocksMetadataAcquireCount is a storage struct
 type ServerStatusLocksMetadataAcquireCount struct {
-	Shared    *int `bson:"R" metric_name:"locks.metadataAcquiredShared" source_type:"gauge"`
-	Exclusive *int `bson:"W" metric_name:"locks.metadataAcquiredShared" source_type:"gauge"`
+	Shared    *int `bson:"R" metric_name:"locks.metadataAcquireShared" source_type:"gauge"`
+	Exclusive *int `bson:"W" metric_name:"locks.metadataAcquireExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksMMAPV1Journal is a storage struct
@@ -464,24 +464,31 @@ type ServerStatusLocksMMAPV1Journal struct {
 
 // ServerStatusLocksMMAPV1JournalAcquireCount is a storage struct
 type ServerStatusLocksMMAPV1JournalAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.mmapv1journalAcquiredShared"          source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.mmapv1journalAcquiredExclusive"       source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.mmapv1journalAcquiredIntentShared"    source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.mmapv1journalAcquiredIntentExclusive" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.mmapv1journalAcquireShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.mmapv1journalAcquireExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.mmapv1journalAcquireIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.mmapv1journalAcquireIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksOplog is a storage struct
 type ServerStatusLocksOplog struct {
 	AcquireCount        *ServerStatusLocksOplogAcquireCount        `bson:"acquireCount"`
+	AcquireWaitCount    *ServerStatusLocksOplogAcquireCount        `bson:"acquireWaitCount"`
 	TimeAcquiringMicros *ServerStatusLocksOplogTimeAcquiringMicros `bson:"timeAcquiringMicros"`
 }
 
 // ServerStatusLocksOplogAcquireCount is a storage struct
 type ServerStatusLocksOplogAcquireCount struct {
-	Shared          *int `bson:"R" metric_name:"locks.oplogAcquiredShared"          source_type:"gauge"`
-	Exclusive       *int `bson:"W" metric_name:"locks.oplogAcquiredExclusive"       source_type:"gauge"`
-	IntentShared    *int `bson:"r" metric_name:"locks.oplogAcquiredIntentShared"    source_type:"gauge"`
-	IntentExclusive *int `bson:"w" metric_name:"locks.oplogAcquiredIntentExclusive" source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.oplogAcquireShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.oplogAcquireExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.oplogAcquireIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.oplogAcquireIntentExclusive" source_type:"gauge"`
+}
+
+// ServerStatusLocksOplogAcquireWaitCount is a storage struct
+type ServerStatusLocksOplogAcquireWaitCount struct {
+	Shared          *int `bson:"R" metric_name:"locks.oplogAcquireWaitShared"          source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.oplogAcquireWaitIntentExclusive" source_type:"gauge"`
 }
 
 // ServerStatusLocksOplogTimeAcquiringMicros is a storage struct
