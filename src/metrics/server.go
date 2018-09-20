@@ -461,6 +461,7 @@ type ServerStatusLocksMetadataAcquireCount struct {
 // ServerStatusLocksMMAPV1Journal is a storage struct
 type ServerStatusLocksMMAPV1Journal struct {
 	AcquireCount        *ServerStatusLocksMMAPV1JournalAcquireCount        `bson:"acquireCount"`
+	AcquireWaitCount    *ServerStatusLocksMMAPV1JournalAcquireWaitCount    `bson:"acquireWaitCount"`
 	TimeAcquiringMicros *ServerStatusLocksMMAPV1JournalTimeAcquiringMicros `bson:"timeAcquiringMicros"`
 }
 
@@ -472,10 +473,18 @@ type ServerStatusLocksMMAPV1JournalAcquireCount struct {
 	IntentExclusive *int `bson:"w" metric_name:"locks.mmapv1journalAcquireIntentExclusive" source_type:"gauge"`
 }
 
+// ServerStatusLocksMMAPV1JournalAcquireWaitCount is a storage struct
+type ServerStatusLocksMMAPV1JournalAcquireWaitCount struct {
+	Shared          *int `bson:"R" metric_name:"locks.mmapv1journalAcquireWaitShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.mmapv1journalAcquireWaitExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.mmapv1journalAcquireWaitIntentShared"    source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.mmapv1journalAcquireWaitIntentExclusive" source_type:"gauge"`
+}
+
 // ServerStatusLocksOplog is a storage struct
 type ServerStatusLocksOplog struct {
 	AcquireCount        *ServerStatusLocksOplogAcquireCount        `bson:"acquireCount"`
-	AcquireWaitCount    *ServerStatusLocksOplogAcquireCount        `bson:"acquireWaitCount"`
+	AcquireWaitCount    *ServerStatusLocksOplogAcquireWaitCount    `bson:"acquireWaitCount"`
 	TimeAcquiringMicros *ServerStatusLocksOplogTimeAcquiringMicros `bson:"timeAcquiringMicros"`
 }
 
@@ -501,8 +510,10 @@ type ServerStatusLocksOplogTimeAcquiringMicros struct {
 
 // ServerStatusLocksMMAPV1JournalTimeAcquiringMicros is a storage struct
 type ServerStatusLocksMMAPV1JournalTimeAcquiringMicros struct {
-	Shared    *int `bson:"R" metric_name:"locks.mmapv1journalTimeAcquiringMicrosShared"          source_type:"gauge"`
-	Exclusive *int `bson:"W" metric_name:"locks.mmapv1journalTimeAcquiringMicrosExclusive"       source_type:"gauge"`
+	Shared          *int `bson:"R" metric_name:"locks.mmapv1journalTimeAcquiringMicrosShared"          source_type:"gauge"`
+	Exclusive       *int `bson:"W" metric_name:"locks.mmapv1journalTimeAcquiringMicrosExclusive"       source_type:"gauge"`
+	IntentShared    *int `bson:"r" metric_name:"locks.mmapv1journalTimeAcquiringMicrosIntentShared"          source_type:"gauge"`
+	IntentExclusive *int `bson:"w" metric_name:"locks.mmapv1journalTimeAcquiringMicrosIntentExclusive"       source_type:"gauge"`
 }
 
 // ServerStatusDur is a storage struct

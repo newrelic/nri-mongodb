@@ -35,7 +35,7 @@ func ParseFilters(filterJSON string) (*DatabaseFilter, error) {
 
 	for database, collections := range jsonResult {
 		if collections == nil {
-			log.Info("collecting all collections for database '%s'", database)
+			log.Info("Collecting all collections for database '%s'", database)
 			filterMap.Filters[database] = nil
 			continue
 		}
