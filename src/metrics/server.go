@@ -53,9 +53,9 @@ type ServerStatusLSRC struct {
 
 // ServerStatusNetwork is a storage struct
 type ServerStatusNetwork struct {
-	BytesIn     *int `bson:"bytesIn"     metric_name:"network.bytesIn"  source_type:"gauge"`
-	BytesOut    *int `bson:"bytesOut"    metric_name:"network.bytesOut" source_type:"gauge"`
-	NumRequests *int `bson:"numRequests" metric_name:"network.requests" source_type:"gauge"`
+	BytesIn     *int `bson:"bytesIn"     metric_name:"network.bytesInPerSecond"  source_type:"rate"`
+	BytesOut    *int `bson:"bytesOut"    metric_name:"network.bytesOutPerSecond" source_type:"rate"`
+	NumRequests *int `bson:"numRequests" metric_name:"network.requestsPerSecond" source_type:"rate"`
 }
 
 // ServerStatusOpcounters is a storage struct
@@ -159,7 +159,7 @@ type ServerStatusMetricsCommandEval struct {
 // ServerStatusMetricsCommandFindAndModify is a storage struct
 type ServerStatusMetricsCommandFindAndModify struct {
 	Failed *int `bson:"failed" metric_name:"commands.findAndModifyFailedPerSecond" source_type:"rate"`
-	Total  *int `bson:"total"  metric_name:"commands.findAndModifyTotalPerSecond"           source_type:"rate"`
+	Total  *int `bson:"total"  metric_name:"commands.findAndModifyPerSecond"           source_type:"rate"`
 }
 
 // ServerStatusMetricsCommandInsert is a storage struct
@@ -189,6 +189,8 @@ type ServerStatusMetricsGetLastErrorWtime struct {
 type ServerStatusMetricsOperation struct {
 	ScanAndOrder   *int `bson:"scanAndOrder"   metric_name:"operation.scanAndOrderPerSecond"   source_type:"rate"`
 	WriteConflicts *int `bson:"writeConflicts" metric_name:"operation.writeConflictsPerSecond" source_type:"rate"`
+	Idhack         *int `bson:"idhack"         metric_name:"operation.idhackPerSecond"         source_type:"rate"`
+	Fastmod        *int `bson:"fastmod"        metric_name:"operation.fastmodPerSecond"        source_type:"rate"`
 }
 
 // ServerStatusMetricsQueryExecutor is a storage struct
