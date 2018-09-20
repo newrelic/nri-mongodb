@@ -12,7 +12,7 @@ protocol_version: 1
 os: linux
 
 commands:
-  all_data:
+  all:
     command:
       - ./bin/nr-mongodb
     interval: 15
@@ -26,9 +26,4 @@ commands:
       - ./bin/nr-mongodb
       - --inventory
     prefix: config/nr-mongodb
-    interval: 15
-  events:
-    command:
-    - ./bin/nr-mongodb
-    - --events
     interval: 15
