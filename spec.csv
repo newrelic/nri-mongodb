@@ -1,0 +1,230 @@
+integration,metric_name,metric_type,metric_enabled,metric_description
+MongoDB,asserts.messagesPerSecond,Rate,true,The number of message assertions raised per second.
+MongoDB,asserts.regularPerSecond,Rate,true,The number of regular assertions raised per second.
+MongoDB,asserts.rolloversPerSecond,Gauge,true,The number of times that the rollover counters roll over  The counters rollover to zero every 2^30 assertionsper second.
+MongoDB,asserts.userPerSecond,Rate,true,The number of user assertions raised per second.
+MongoDB,asserts.warningPerSecond,Rate,true,The number of warnings raised per second.
+MongoDB,flush.averageInMilliseconds,Gauge,true,The Average time for each flush to disk.
+MongoDB,flush.flushesDisk,Gauge,true,The number of times the database has flushed all writes to disk.
+MongoDB,flush.lastInMilliseconds,Gauge,true,The amount of time that the last flush operation took to complete.
+MongoDB,flush.totalInMilliseconds,Gauge,true,The total number of time that the `mongod` processes have spent writing (ie flushing) data to disk.
+MongoDB,connections.available,Gauge,true,The number of unused available incoming connections the database can provide.
+MongoDB,connections.current,Gauge,true,The number of connections to the database server from clients.
+MongoDB,connections.totalCreated,Gauge,true,The total number of connections created.
+MongoDB,totalDatabases,Gauge,true,The total number of existing databases.
+MongoDB,dur.commits,Gauge,true,The number of transactions written to the journal during the last journal group commit interval.
+MongoDB,dur.commitsInWriteLock,Gauge,true,The count of the commits that occurred while a write lock was held.
+MongoDB,dur.compression,Gauge,true,The Compression ratio of the data written to the journal.
+MongoDB,dur.earlyCommits,Gauge,true,The number of times MongoDB has requested a commit before the scheduled journal group commit interval.
+MongoDB,dur.journaledInBytes,Gauge,true,The amount of data written to journal during the last journal group commit interval.
+MongoDB,dur.commitsInMilliseconds,Gauge,true,The amount of time spent for commits.
+MongoDB,dur.commitsInWriteLockInMilliseconds,Gauge,true,The amount of time spent for commits that occurred while a write lock was held.
+MongoDB,dur.timeCollectedCommitsInMilliseconds,Gauge,true,"The amount of time over which MongoDB collected the durcommitsInMilliseconds data"
+MongoDB,dur.preparingInMilliseconds,Gauge,true,The amount of time spent preparing to write to the journal.
+MongoDB,dur.remappingInMilliseconds,Gauge,true,The amount of time spent remapping copy-on-write memory mapped views.
+MongoDB,dur.writingDataFilesInMilliseconds,Gauge,true,The amount of time spent writing to data files after journaling.
+MongoDB,dur.writingJournalInMilliseconds,Gauge,true,The amount of time spent writing to the journal.
+MongoDB,dur.dataWrittenJournalDataFilesInBytes,Gauge,true,The amount of data written from journal to the data files during the last journal group commit interval.
+MongoDB,pageFaultsPerSecond,Rate,true,The number of page faults  that require disk operationsper second.
+MongoDB,fsynclocked,Gauge,true,The number of fsynclocked performed on a mongo instance.
+MongoDB,globallock.activeClientsReaders,Gauge,true,The count of the active client connections performing read operations.
+MongoDB,globallock.activeClientsTotal,Gauge,true,The total number of active client connections to the database.
+MongoDB,globallock.activeClientsWriters,Gauge,true,The count of active client connections performing write operations.
+MongoDB,globallock.currentQueueReaders,Gauge,true,The number of operations that are currently queued and waiting for the read lock.
+MongoDB,globallock.currentQueueTotal,Gauge,true,The total number of operations queued waiting for the lock.
+MongoDB,globallock.currentQueueWriters,Gauge,true,The number of operations that are currently queued and waiting for the write lock.
+MongoDB,globallock.locktime,Gauge,true,The time that the globalLock has been held since the database last started.
+MongoDB,globallock.ratio,Gauge,true,The ratio of the time that the globalLock has been held to the total time since it was created.
+MongoDB,globallock.totaltime,Gauge,true,The time since the database last started and created the global lock.
+MongoDB,indexcounters.accessesPerSecond,Rate,true,The number of times that operations have accessed indexes per second.
+MongoDB,indexcounters.hitsPerSecond,Rate,true,The number of times  that an index has been accessed and mongod is able to return the index from memoryper second.
+MongoDB,indexcounters.missesPerSecond,Rate,true,The number of times  that an operation attempted to access an index that was not in memoryper second.
+MongoDB,indexcounters.missratio,Gauge,true,The ratio of index hits to misses.
+MongoDB,indexcounters.resetsPerSecond,Rate,true,The number of times  the index counters have been resetper second.
+MongoDB,mem.bits,Gauge,true,The size of the in-memory storage engine.
+MongoDB,mem.mappedInBytes,Gauge,true,The amount of mapped memory by the database.
+MongoDB,mem.mappedWithJournalInBytes,Gauge,true,"The The amount of mapped memory, including the memory used for journaling."
+MongoDB,mem.residentInBytes,Gauge,true,The amount of memory currently used by the database process.
+MongoDB,mem.virtualInBytes,Gauge,true,The amount of virtual memory used by the mongod process.
+MongoDB,commands.countFailedPerSecond,Rate,true,The number of times count failed.
+MongoDB,commands.countPerSecond,Rate,true,The number of times count executed.
+MongoDB,commands.createIndexesFailedPerSecond,Rate,true,The number of times createIndexes failed.
+MongoDB,commands.createIndexesPerSecond,Rate,true,The number of times createIndexes executed.
+MongoDB,commands.deleteFailedPerSecond,Rate,true,The number of times delete failed.
+MongoDB,commands.deletePerSecond,Rate,true,The number of times delete executed.
+MongoDB,commands.evalFailedPerSecond,Rate,true,The number of times eval failed.
+MongoDB,commands.evalPerSecond,Rate,true,The number of times eval executed.
+MongoDB,commands.findAndModifyFailedPerSecond,Rate,true,The number of times findAndModify failed.
+MongoDB,commands.findAndModifyPerSecond,Rate,true,The number of times findAndModify executed.
+MongoDB,commands.insertFailedPerSecond,Rate,true,The number of times insert failed.
+MongoDB,commands.insertPerSecond,Rate,true,The number of times insert executed.
+MongoDB,commands.updateFailedPerSecond,Rate,true,The number of times update failed.
+MongoDB,commands.updatePerSecond,Rate,true,The number of times update executed.
+MongoDB,cursor.openNoTimeout,Gauge,true,The number of open cursors with the option `DBQueryOptionnotimeout` set to prevent timeout after a period of inactivity.
+MongoDB,cursor.openPinned,Gauge,true,The number of pinned open cursors.	
+MongoDB,cursor.openTotal,Gauge,true,The number of cursors that MongoDB is maintaining for clients.
+MongoDB,cursor.timedOutPerSecond,Rate,true,The total number of cursors that have timed out since the server process started.	
+MongoDB,document.deletedPerSecond,Rate,true,The number of documents deleted per second.
+MongoDB,document.insertedPerSecond,Rate,true,The number of documents inserted per second.
+MongoDB,document.returnedPerSecond,Rate,true,The number of documents returned by queries per second.
+MongoDB,document.updatedPerSecond,Rate,true,The number of documents updated per second.
+MongoDB,opcounters.commandPerSecond,Rate,true,The total number of commands  issued to the databaseper second.
+MongoDB,opcounters.deletePerSecond,Rate,true,The number of delete operations per second.
+MongoDB,opcounters.getmorePerSecond,Rate,true,The number of getmore operations per second.
+MongoDB,opcounters.insertPerSecond,Rate,true,The number of insert operations per second.
+MongoDB,opcounters.queryPerSecond,Rate,true,The total number of queries per second.
+MongoDB,opcounters.updatePerSecond,Rate,true,The number of update operations per second.
+MongoDB,opcountersrepl.commandPerSecond,Rate,true,The total number of replicated commands issued to the database per second.
+MongoDB,opcountersrepl.deletePerSecond,Rate,true,The number of replicated delete operations per second.
+MongoDB,opcountersrepl.getmorePerSecond,Rate,true,The number of replicated getmore operations per second.
+MongoDB,opcountersrepl.insertPerSecond,Rate,true,The number of replicated insert operations per second.
+MongoDB,opcountersrepl.queryPerSecond,Rate,true,The total number of replicated queries per second.
+MongoDB,opcountersrepl.updatePerSecond,Rate,true,The number of replicated update operations per second.
+MongoDB,oplog.logsizemb,Gauge,true,The total size of the oplog.
+MongoDB,oplog.timediff,Gauge,true,The Oplog window: difference between the first and last operation in the oplog.
+MongoDB,oplog.usedsizemb,Gauge,true,The total amount of space used by the oplog.
+MongoDB,replset.health,Gauge,true,The Member health value of the replica set: conveys if the member is up (ie 1) or down (ie 0).
+MongoDB,replset.isArbiter,Gauge,true,"1 if the mongod is an arbiter, 0 otherwise"
+MongoDB,replset.isHidden,Gauge,true,"1 if the mongod is hidden, 0 otherwise"
+MongoDB,replset.isMaster,Gauge,true,"1 if the mongod is the current master, 0 otherwise"
+MongoDB,replset.isSecondary,Gauge,true,"1 if the mongod is currently secondary, 0 otherwise"
+MongoDB,replset.priority,Gauge,true,The election priority of the mongod
+MongoDB,replset.replicationLag,Gauge,true,The Delay between a write operation on the primary and its copy to a secondary.
+MongoDB,replset.state,Attribute,true,The State of a replica that reflects its disposition within the set.
+MongoDB,replset.voteFraction,Gauge,true,The fraction of votes a server will cast in a replica set election.
+MongoDB,replset.votes,Gauge,true,The number of votes a server will cast in a replica set election.
+MongoDB,stats.dataInBytes,Gauge,true,The total size of the data held in this database including the padding factor.
+MongoDB,stats.indexes,Gauge,true,The total number of indexes across all collections in the database.
+MongoDB,stats.indexInBytes,Gauge,true,The total size of all indexes created on this database.
+MongoDB,stats.objects,Gauge,true,The number of objects (documents) in the database across all collections.
+MongoDB,stats.storageInBytes,Gauge,true,The total amount of space allocated to collections in this database for document storage.
+MongoDB,replset.uptimeInMilliseconds,Gauge,true,The number of seconds that the mongos or mongod process has been active.
+MongoDB,collection.sizeInBytes,Gauge,true,The The total size in bytes of the data in the collection plus the size of every indexes on the collection.
+MongoDB,collection.avgObjSizeInBytes,Gauge,true,The The size of the average object in the collection in bytes.
+MongoDB,collection.count,Gauge,true,The total number of objects in the collection.
+MongoDB,collection.capped,Gauge,true,The Whether or not the collection is capped.
+MongoDB,collection.max,Gauge,true,The maximum number of documents in a capped collection.
+MongoDB,collection.maxSizeInBytes,Gauge,true,The maximum size of a capped collection in bytes.
+MongoDB,collection.storageSizeInBytes,Gauge,true,The total storage space allocated to this collection for document storage.
+MongoDB,collection.nindexes,Gauge,true,The total number of indices on the collection.
+MongoDB,collection.indexSizeInBytes,Gauge,true,The size of index in bytes.
+MongoDB,collection.indexAccesses,Gauge,true,The number of time the index was used.
+MongoDB,usage.commandsPerSecond,Rate,true,The number of commands per second.
+MongoDB,usage.commandsInMillisecondsPerSecond,Gauge,true,The total time spent performing commands in milliseconds.
+MongoDB,usage.getmorePerSecond,Rate,true,The number of getmore per second.
+MongoDB,usage.getmoreInMillisecondsPerSecond,Gauge,true,The total time spent performing getmore in milliseconds.
+MongoDB,usage.insertPerSecond,Rate,true,The number of inserts per second.
+MongoDB,usage.insertInMillisecondsPerSecond,Gauge,true,The total time spent performing inserts in milliseconds.
+MongoDB,usage.queriesPerSecond,Rate,true,The number of queries per second.
+MongoDB,usage.queriesInMillisecondsPerSecond,Gauge,true,The total time spent performing queries in milliseconds.
+MongoDB,usage.readLockPerSecond,Rate,true,The number of read locks per second.
+MongoDB,usage.readLockInMillisecondsPerSecond,Gauge,true,The total time spent performing read locks in milliseconds.
+MongoDB,usage.removePerSecond,Rate,true,The number of removes per second.
+MongoDB,usage.removeInMillisecondsPerSecond,Gauge,true,The total time spent performing removes in milliseconds.
+MongoDB,usage.totalPerSecond,Rate,true,The number of operations per second.
+MongoDB,usage.totalInMillisecondsPerSecond,Gauge,true,The total time spent performing operations in milliseconds.
+MongoDB,usage.updatePerSecond,Rate,true,The number of updates per second.
+MongoDB,usage.updateInMillisecondsPerSecond,Gauge,true,The total time spent performing updates in milliseconds.
+MongoDB,usage.writeLockPerSecond,Rate,true,The number of write locks per second.
+MongoDB,usage.writeLockInMillisecondsPerSecond,Gauge,true,The total time spent performing write locks in milliseconds.
+MongoDB,locks.collectionAcquireExclusive,Gauge,true,The number of times the collection lock type was acquired in the Exclusive (X) mode.
+MongoDB,locks.collectionAcquireIntentExclusive,Gauge,true,The number of times the collection lock type was acquired in the Intent Exclusive (IX) mode.
+MongoDB,locks.collectionAcquireIntentShared,Gauge,true,The number of times the collection lock type was acquired in the Intent Shared (IS) mode.
+MongoDB,locks.collectionAcquireShared,Gauge,true,The number of times the collection lock type was acquired in the Shared (S) mode.
+MongoDB,locks.collectionAcquireWaitCountExclusive,Gauge,true,The number of times the collection lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.collectionAcquireWaitCountShared,Gauge,true,The number of times the collection lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.collectionTimeAcquiringMicrosExclusive,Gauge,true,The wait time for the collection lock type acquisitions in the Exclusive (X) mode.
+MongoDB,locks.collectionTimeAcquiringMicrosShared,Gauge,true,The wait time for the collection lock type acquisitions in the Shared (S) mode.
+MongoDB,locks.databaseAcquireExclusive,Gauge,true,The number of times the database lock type was acquired in the Exclusive (X) mode.
+MongoDB,locks.databaseAcquireIntentExclusive,Gauge,true,The number of times the database lock type was acquired in the Intent Exclusive (IX) mode.
+MongoDB,locks.databaseAcquireIntentShared,Gauge,true,The number of times the database lock type was acquired in the Intent Shared (IS) mode.
+MongoDB,locks.databaseAcquireShared,Gauge,true,The number of times the database lock type was acquired in the Shared (S) mode.
+MongoDB,locks.databaseAcquireWaitExclusive,Gauge,true,The number of times the database lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.databaseAcquireWaitExclusive,Gauge,true,The number of times the database lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.databaseAcquireWaitIntentExclusive,Gauge,true,The number of times the database lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.databaseAcquireWaitIntentShared,Gauge,true,The number of times the database lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.databaseAcquireWaitShared,Gauge,true,The number of times the database lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.databaseTimeAcquiringMicrosExclusive,Gauge,true,The wait time for the database lock type acquisitions in the Exclusive (X) mode.
+MongoDB,locks.databaseTimeAcquiringMicrosIntentExclusive,Gauge,true,The wait time for the database lock type acquisitions in the Intent Exclusive (IX) mode.
+MongoDB,locks.databaseTimeAcquiringMicrosIntentShared,Gauge,true,The wait time for the database lock type acquisitions in the Intent Shared (IS) mode.
+MongoDB,locks.databaseTimeAcquiringMicrosShared,Gauge,true,The wait time for the database lock type acquisitions in the Shared (S) mode.
+MongoDB,locks.globalAcquireExclusive,Gauge,true,The number of times the global lock type was acquired in the Exclusive (X) mode.
+MongoDB,locks.globalAcquireIntentExclusive,Gauge,true,The number of times the global lock type was acquired in the Intent Exclusive (IX) mode.
+MongoDB,locks.globalAcquireIntentShared,Gauge,true,The number of times the global lock type was acquired in the Intent Shared (IS) mode.
+MongoDB,locks.globalAcquireShared,Gauge,true,The number of times the global lock type was acquired in the Shared (S) mode.
+MongoDB,locks.globalAcquireWaitExclusive,Gauge,true,The number of times the global lock type acquisition in the Exclusive (X) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.globalAcquireWaitIntentExclusive,Gauge,true,The number of times the global lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.globalAcquireWaitIntentShared,Gauge,true,The number of times the global lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.globalAcquireWaitShared,Gauge,true,The number of times the global lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.globalTimeAcquiringMicrosExclusive,Gauge,true,The wait time for the global lock type acquisitions in the Exclusive (X) mode.
+MongoDB,locks.globalTimeAcquiringMicrosIntentExclusive,Gauge,true,The wait time for the global lock type acquisitions in the Intent Exclusive (IX) mode.
+MongoDB,locks.globalTimeAcquiringMicrosIntentShared,Gauge,true,The wait time for the global lock type acquisitions in the Intent Shared (IS) mode.
+MongoDB,locks.globalTimeAcquiringMicrosShared,Gauge,true,The wait time for the global lock type acquisitions in the Shared (S) mode.
+MongoDB,locks.metadataAcquireExclusive,Gauge,true,The number of times the metadata lock type was acquired in the Exclusive (X) mode.
+MongoDB,locks.metadataAcquireShared,Gauge,true,The number of times the metadata lock type was acquired in the Shared (S) mode.
+MongoDB,locks.mmapv1journalAcquireIntentExclusive,Gauge,true,The number of times the MMAPv1 storage engine lock type was acquired in the Intent Exclusive (IX) mode.
+MongoDB,locks.mmapv1journalAcquireIntentShared,Gauge,true,The number of times the MMAPv1 storage engine lock type was acquired in the Intent Shared (IS) mode.
+MongoDB,locks.mmapv1journalAcquireShared,Gauge,true,The number of times the MMAPv1 storage engine lock type was acquired in the Shared mode.
+MongoDB,locks.mmapv1journalAcquireExclusive,Gauge,true,The number of times the MMAPv1 storage engine lock type was acquired in the Exclusive mode.
+MongoDB,locks.mmapv1journalAcquireWaitIntentExclusive,Gauge,true,The number of times the MMAPv1 storage engine lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.mmapv1journalAcquireWaitIntentShared,Gauge,true,The number of times the MMAPv1 storage engine lock type acquisition in the Intent Shared (IS) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.mmapv1journalAcquireWaitShared,Gauge,true,The number of times the MMAPv1 storage engine lock type acquisition in the Shared mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.mmapv1journalAcquireWaitExclusive,Gauge,true,The number of times the MMAPv1 storage engine lock type acquisition in the Exclusive mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.mmapv1journalTimeAcquiringMicrosIntentExclusive,Gauge,true,The wait time for the MMAPv1 storage engine lock type acquisitions in the Intent Exclusive (IX) mode.
+MongoDB,locks.mmapv1journalTimeAcquiringMicrosIntentShared,Gauge,true,The wait time for the MMAPv1 storage engine lock type acquisitions in the Intent Shared (IS) mode.
+MongoDB,locks.mmapv1journalTimeAcquiringMicrosShared,Gauge,true,The wait time for the MMAPv1 storage engine lock type acquisitions in the Shared mode.
+MongoDB,locks.mmapv1journalTimeAcquiringMicrosExclusive,Gauge,true,The wait time for the MMAPv1 storage engine lock type acquisitions in the Exclusive mode.
+MongoDB,locks.oplogAcquireIntentExclusive,Gauge,true,The number of times the oplog lock type was acquired in the Intent Exclusive (IX) mode.
+MongoDB,locks.oplogAcquireExclusive,Gauge,true,The number of times the oplog lock type was acquired in the Exclusive (X) mode.
+MongoDB,locks.oplogAcquireIntentShared,Gauge,true,The number of times the oplog lock type was acquired in the Intent Shared (IS) mode.
+MongoDB,locks.oplogAcquireShared,Gauge,true,The number of times the oplog lock type was acquired in the Shared (S) mode.
+MongoDB,locks.oplogAcquireWaitIntentExclusive,Gauge,true,The number of times the oplog lock type acquisition in the Intent Exclusive (IX) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.oplogAcquireWaitShared,Gauge,true,The number of times the oplog lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
+MongoDB,locks.oplogTimeAcquiringMicrosIntentExclusive,Gauge,true,The wait time for the oplog lock type acquisitions in the Intent Exclusive (IX) mode.
+MongoDB,locks.oplogTimeAcquiringMicrosIntentShared,Gauge,true,The wait time for the oplog lock type acquisitions in the Shared (S) mode.
+MongoDB,wiredtiger.cacheInBytes,Gauge,true,The size of the data currently in cache.
+MongoDB,wiredtiger.failedEvictionsPagesPerSecond,Rate,true,"The number of failed eviction of pages that exceeded the in-memory maximum, per second."
+MongoDB,wiredtiger.cacheInMemoryPageSplits,Gauge,true,The In-memory page splits.
+MongoDB,wiredtiger.cacheMaxInBytes,Gauge,true,The maximum cache size.
+MongoDB,wiredtiger.cacheMaxPageSizeEvictionInBytes,Gauge,true,The maximum page size at eviction.
+MongoDB,wiredtiger.cacheModifiedPagesEvicted,Gauge,true,"The number of pages, that have been modified, evicted from the cache."
+MongoDB,wiredtiger.cachePagesHeld,Gauge,true,The number of pages currently held in the cache.
+MongoDB,wiredtiger.cachePagesEvictedApplicationThreadsPerSecond,Gauge,true,The number of page evicted by application threads per second.
+MongoDB,wiredtiger.cachePagesEvictedInMemoryMaxPerSecond,Gauge,true,"The number of pages evicted because they exceeded the cache in-memory maximum, per second."
+MongoDB,wiredtiger.cacheDirtyDataInBytes,Gauge,true,The size of the dirty data in the cache.
+MongoDB,wiredtiger.cacheUnmodifiedPagesEvicted,Gauge,true,"The number of pages, that were not modified, evicted from the cache."
+MongoDB,wiredtiger.concurrentTransactions.ReadAvailable,Gauge,true,The number of available read tickets (concurrent transactions) remaining.
+MongoDB,wiredtiger.concurrentTransactions.ReadRemaining,Gauge,true,The number of read tickets (concurrent transactions) in use.
+MongoDB,wiredtiger.concurrentTransactions.ReadTotal,Gauge,true,The total number of read tickets (concurrent transactions) available.
+MongoDB,wiredtiger.concurrentTransactions.WriteAvailable,Gauge,true,The number of available write tickets (concurrent transactions) remaining.
+MongoDB,wiredtiger.concurrentTransactions.WriteRemaining,Gauge,true,The number of write tickets (concurrent transactions) in use.
+MongoDB,wiredtiger.concurrentTransactions.WriteTotal,Gauge,true,The total number of write tickets (concurrent transactions) available.
+MongoDB,network.bytesOutPerSecond,Gauge,true,The number of bytes that reflects the amount of network traffic sent from this database.
+MongoDB,network.bytesInPerSecond,Gauge,true,The number of bytes that reflects the amount of network traffic into this database.
+MongoDB,network.requestsPerSecond,Gauge,true,The number of distinct requests that the server has received.
+MongoDB,getlasterror.wtimeMillisPerSecond,Gauge,true,The number of getLastError operations  with a specified write concern (ie w) that wait for one or more members of a replica set to acknowledge the write operationper second.
+MongoDB,getlasterror.wtimeFractionPerSecond,Gauge,true,The fraction of time (ms/s) that the mongod has spent performing getLastError operations with write concern (ie w) that wait for one or more members of a replica set to acknowledge the write operation.
+MongoDB,getlasterror.wtimeoutsPerSecond,Rate,true,The number of times  that write concern operations have timed out as a result of the wtimeout threshold to getLastErrorper second.
+MongoDB,operation.fastmodPerSecond,Rate,true,The number of update operations  that neither cause documents to grow nor require updates to the indexper second.
+MongoDB,operation.idhackPerSecond,Rate,true,The number of queries  that contain the _id fieldper second.
+MongoDB,operation.writeConflictsPerSecond,Rate,true,The number of times  that write concern operations has encounter a conflictper second.
+MongoDB,operation.scanAndOrderPerSecond,Rate,true,The number of queries  that return sorted numbers that cannot perform the sort operation using an indexper second.
+MongoDB,queryexecutor.scannedPerSecond,Rate,true,The number of index items scanned  during queries and query-plan evaluationper second.
+MongoDB,record.movesPerSecond,Rate,true,The number of times  documents move within the on-disk representation of the MongoDB data setper second.
+MongoDB,repl.apply.batchesPerSecond,Rate,true,The number of batches applied across all databases per second.
+MongoDB,repl.apply.batchesFractionPerSecond,Gauge,true,The fraction of time (ms/s) the mongod has spent applying operations from the oplog.
+MongoDB,repl.apply.operationsPerSecond,Rate,true,The number of oplog operations applied per second.
+MongoDB,repl.buffer.count,Gauge,true,The number of operations in the oplog buffer.
+MongoDB,repl.buffer.maxSizeInBytes,Gauge,true,The maximum size of the buffer.
+MongoDB,repl.buffer.sizeInBytes,Gauge,true,The Current size of the contents of the oplog buffer.
+MongoDB,repl.network.bytesPerSecond,Rate,true,The amount of data read from the replication sync source per second.
+MongoDB,repl.network.getmoresPerSecond,Rate,true,The number of getmore operations per second.
+MongoDB,repl.network.getmoresFractionPerSecond,Gauge,true,The fraction of time (ms/s) required to collect data from getmore operations.
+MongoDB,repl.network.operationPerSecond,Rate,true,The number of operations read from the replication source per second.
+MongoDB,repl.network.readersCreatedPerSecond,Rate,true,The number of oplog query processes created per second.
+MongoDB,repl.docsLoadedPrefetch,Gauge,true,The number of documents loaded during the pre-fetch stage of replication.
+MongoDB,repl.indexLoadedPrefetch,Gauge,true,The number of index entries loaded by members before updating documents as part of the pre-fetch stage of replication.
+MongoDB,repl.docsPreloadInMilliseconds,Gauge,true,The amount of time spent loading documents as part of the pre-fetch stage of replication.
+MongoDB,repl.indexPreloadInMilliseconds,Gauge,true,The amount of time spent loading indices as part of the pre-fetch stage of replication.
+MongoDB,ttl.deleteDocumentsPerSecond,Rate,true,The number of documents deleted from collections with a ttl index per second.
+MongoDB,ttl.removeDocumentPerSecond,Rate,true,The number of times  the background process removes documents from collections with a ttl indexper second.

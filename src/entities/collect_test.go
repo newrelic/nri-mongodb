@@ -232,17 +232,17 @@ func Test_collectTop(t *testing.T) {
 		t.Error(err)
 	}
 	expected := map[string]interface{}{
-		"usage.totalInMilliseconds":     float64(305277),
-		"usage.totalPerSecond":          float64(0),
-		"usage.writeLockPerSecond":      float64(0),
-		"event_type":                    "MongodTopSample",
-		"displayName":                   "testMongod",
-		"database":                      "records",
-		"collection":                    "users",
-		"entityName":                    "mongod:testMongod",
-		"usage.readLockInMilliseconds":  float64(305123),
-		"usage.readLockPerSecond":       float64(0),
-		"usage.writeLockInMilliseconds": float64(13),
+		"usage.totalInMillisecondsPerSecond":     float64(0),
+		"usage.totalPerSecond":                   float64(0),
+		"usage.writeLockPerSecond":               float64(0),
+		"event_type":                             "MongodTopSample",
+		"displayName":                            "testMongod",
+		"database":                               "records",
+		"collection":                             "users",
+		"entityName":                             "mongod:testMongod",
+		"usage.readLockInMillisecondsPerSecond":  float64(0),
+		"usage.readLockPerSecond":                float64(0),
+		"usage.writeLockInMillisecondsPerSecond": float64(0),
 	}
 	actual := e.Metrics[0].Metrics
 	assert.Equal(t, expected, actual)
