@@ -15,15 +15,15 @@ instances:
     # Setting command to 'metrics' captures only the metrics for each node in the cluster.
     command: <command>
     arguments:
-      # Enter the hostname on which a Mongos is running. Defaults to localhost.
+      # The hostname on which a Mongos is running. Defaults to localhost.
       host: <hostname>
-      # Enter the username for the MongoDB connection.
+      # The username for the MongoDB connection.
       username: <username>
-      # Enter the password for the MongoDB connection.
+      # The password for the MongoDB connection.
       password: <password>
       # The database to authenticate against. Defaults to 'admin'.
       authSource: <auth_database>
-      # Enter the port which Mongos is running. Defaults to '27017'.
+      # The port which Mongos is running. Defaults to '27017'.
       port: <mongo_port>
       # Enable SSL. Defaults to 'false'.
       ssl: <bool>
