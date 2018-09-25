@@ -72,7 +72,7 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 	}
 
 	for _, member := range replSetStatus.Members {
-		if !strings.HasPrefix(*member.Name, hostname) { // TODO ensure that the member name will always be the hostname
+		if !strings.HasPrefix(*member.Name, hostname) {
 			continue
 		}
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetStatus failed: %v")
@@ -98,7 +98,7 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 	}
 
 	for _, member := range replSetConfig.Config.Members {
-		if !strings.HasPrefix(*member.Host, hostname) { // TODO ensure that the member name will always be the hostname
+		if !strings.HasPrefix(*member.Host, hostname) {
 			continue
 		}
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetConfig failed: %v")

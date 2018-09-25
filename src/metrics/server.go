@@ -101,8 +101,6 @@ type ServerStatusMetrics struct {
 
 // ServerStatusMetricsCursor is a storage struct
 type ServerStatusMetricsCursor struct {
-	// TODO determine whether they actually want this separately
-	//TimedOut          *int                           `bson:"timedOut" metric_name:"cursor.timedOut" source_type:"gauge"`
 	TimedOutPerSecond *int                           `bson:"timedOut" metric_name:"cursor.timedOutPerSecond" source_type:"rate"`
 	Open              *ServerStatusMetricsCursorOpen `bson:"open"`
 }

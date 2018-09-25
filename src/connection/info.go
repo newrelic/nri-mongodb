@@ -51,9 +51,6 @@ func (c *Info) CreateSession() (Session, error) {
 
 	dialInfo := c.generateDialInfo()
 
-	// TODO investigate this further. This should time out, but isn't.
-	// The current manual timeout solution is dirty
-
 	sessionChan := make(chan *mgo.Session)
 	errChan := make(chan error)
 	go func() {
