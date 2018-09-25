@@ -1,16 +1,58 @@
+# Configuration file template for MongoDB
+#
+# For a complete description of the Configuration File Specification, please
+# refer to the Integrations SDK documentation:
+# https://docs.newrelic.com/docs/integrations/integrations-sdk/file-specifications
+
 integration_name: com.newrelic.mongodb
 
 instances:
-  - name: <INSTANCE IDENTIFIER>
-    command: metrics
+    # A name for the collection
+  - name: <name>
+    # Command can be 'all', 'inventory', or, 'metrics'
+    # Setting command to 'all' captures inventory and metrics for each node in the Mongo cluster
+    # Setting command to 'inventory' captures only the inventory for each node in the cluster.
+    # Setting command to 'metrics' captures only the metrics for each node in the cluster.
+    command: <command>
     arguments:
-      arg1: <ARG_VALUE>
+      # The hostname on which a Mongos is running. Defaults to localhost.
+      host: <hostname>
+      # The username for the MongoDB connection.
+      username: <username>
+      # The password for the MongoDB connection.
+      password: <password>
+      # The database to authenticate against. Defaults to 'admin'.
+      authSource: <auth_database>
+      # The port which Mongos is running. Defaults to '27017'.
+      port: <mongo_port>
+      # Enable SSL. Defaults to 'false'.
+      ssl: <bool>
+      # The path to a CA file if using SSL.
+      ssl_ca_certs: <path>
+      # Skip verification of the SSL certificate sent by the host. Defaults to 'false'.
+      # NOTE: Setting ssl_insecure_skip_verify to true can make a connection susceptible to man-in-the-middle attacks
+      # and should only be used for testing.   
+      ssl_insecure_skip_verify: <bool>
+      # A JSON map of database names to an array of collection names.
+      # Example: '{"db1":null,"db2":["collection1","collection2"],"db3":[]}'
+      # If this field is left empty, it defaults to all databases and collections.       
+      filters: <json_map>
     labels:
-      key1: <LABEL_VALUE>
+      # A lable to help identify the instance in Infrastructure 
+      key: <value>
 
-  - name: <OTHER INSTANCE IDENTIFIER>
-    command: inventory
-    arguments:
-      arg1: <ARG_VALUE>
-    labels:
-      key1: <LABEL_VALUE>
+# NOTE: Multiple instances can be set up in the file to collect multiple environments or subsets of metrics.
+  # - name: 
+  #   command: 
+  #   arguments:
+  #     host: 
+  #     username: 
+  #     password: 
+  #     authSource: 
+  #     port: 
+  #     ssl: 
+  #     ssl_ca_certs: 
+  #     ssl_insecure_skip_verify: 
+  #     filters: 
+  #   labels:
+  #     key1:

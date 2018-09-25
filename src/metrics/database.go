@@ -8,3 +8,14 @@ type DbStats struct {
 	Indexes     *int `bson:"indexes"     metric_name:"stats.indexes"        source_type:"gauge"`
 	DataSize    *int `bson:"dataSize"    metric_name:"stats.dataInBytes"    source_type:"gauge"`
 }
+
+// ListDatabases is a storage struct for the listDatabases command
+type ListDatabases struct {
+	Databases    []*ListDatabasesEntry
+	NumDatabases *int `metric_name:"totalDatabases" source_type:"gauge"`
+}
+
+// ListDatabasesEntry is a storage struct for the listDatabases command
+type ListDatabasesEntry struct {
+	Name string `bson:"name"`
+}
