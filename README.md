@@ -31,14 +31,14 @@ You can view your data in Insights by creating your own NRQL queries. To do so, 
 
 Assuming you have the source code, you can build and run the MongoDB integration locally
 
-* Go to the directory of the Kafka Integration and build it
+* Go to the directory of the MongoDB Integration and build it
 ```
 $ make
 ```
 
-* The command above will execute tests for the Kafka integration and build an executable file called `nr-mongodb` in the `bin` directory
+* The command above will execute tests for the MongoDB integration and build an executable file called `nr-mongodb` in the `bin` directory
 ```
-$ ./bin/nr-kafka --help
+$ ./bin/nr-mongodb --help
 ```
 
 For managing external dependencies, the [govendor tool](https://github.com/kardianos/govendor) is used. It is required to lock all external dependencies to a specific version (if possible) in the vendor directory.
