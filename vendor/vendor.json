@@ -81,10 +81,46 @@
 			"revisionTime": "2018-08-28T16:16:20Z"
 		},
 		{
-			"checksumSHA1": "ljd3FhYRJ91cLZz3wsH9BQQ2JbA=",
+			"checksumSHA1": "XWu/A1BeNrqd6tvQ/aK5MevyB1A=",
+			"path": "github.com/newrelic/nri-mongodb/src/arguments",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "qON2cERH4CTejMoocY/iyVek2xU=",
+			"path": "github.com/newrelic/nri-mongodb/src/connection",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "13y3UR+hlHc1vNosiD0QgttX0Nk=",
+			"path": "github.com/newrelic/nri-mongodb/src/entities",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "Hm40mms3iolGPH2PXb0aXLVp0ak=",
+			"path": "github.com/newrelic/nri-mongodb/src/filter",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "MRVHMpZziuST0X2557Rs0sFUgqU=",
+			"path": "github.com/newrelic/nri-mongodb/src/metrics",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "lZCqbbdUf9zIugL9Ac8WicYAV+g=",
+			"path": "github.com/newrelic/nri-mongodb/src/test",
+			"revision": "f475e5a319eee6a8824d7ae5fdf21e1e0806932a",
+			"revisionTime": "2018-10-08T19:32:25Z"
+		},
+		{
+			"checksumSHA1": "DTy0iJ2w5C+FDsN9EnzfhNmvS+o=",
 			"path": "github.com/pkg/errors",
-			"revision": "816c9085562cd7ee03e7f8188a1cfd942858cded",
-			"revisionTime": "2018-03-11T21:45:15Z"
+			"revision": "2233dee583dcf88f3c8b22cb7a33f05a499800d8",
+			"revisionTime": "2018-10-08T04:53:15Z"
 		},
 		{
 			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
@@ -99,17 +135,17 @@
 			"revisionTime": "2018-08-25T06:49:32Z"
 		},
 		{
-			"checksumSHA1": "c6pbpF7eowwO59phRTpF8cQ80Z0=",
+			"checksumSHA1": "yEqObY2i8tbWEB4e/oVJDURhMf4=",
 			"path": "github.com/stretchr/testify/assert",
-			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
-			"revisionTime": "2018-05-06T18:05:49Z"
+			"revision": "2db35c88b92a1631e987089b5485a95e68bc5d3a",
+			"revisionTime": "2018-10-02T11:39:27Z"
 		},
 		{
 			"checksumSHA1": "WmBSFdqpdYRIkp0I408JIZ3LDMY=",
 			"path": "github.com/stretchr/testify/mock",
-			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
-			"revisionTime": "2018-05-06T18:05:49Z"
+			"revision": "2db35c88b92a1631e987089b5485a95e68bc5d3a",
+			"revisionTime": "2018-10-02T11:39:27Z"
 		}
 	],
-	"rootPath": "github.com/newrelic/nri-mongodb"
+	"rootPath": "source.datanerd.us/ohai/ohai-integrations-benchmarks/mongodb/nri-mongodb"
 }
