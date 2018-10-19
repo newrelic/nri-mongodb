@@ -28,7 +28,7 @@ instances:
       # A JSON map of database names to an array of collection names. If empty, 
       # defaults to all databases and collections. If the list of collections is null,
       # collects all collections for the database. 
-      filters: {“db1”:null,”db2”:[“collection1”,”collection2”],”db3”:[]}
+      filters: '{"db1":null,"db2":["collection1","collection2"],"db3":[]}'
     labels:
       env: production
       label: mongo-cluster-1
