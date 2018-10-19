@@ -1,19 +1,14 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/clientopt"
-	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
-)
+	"os"
+	"sync"
 
-type argumentList struct {
-	sdkArgs.DefaultArgumentList
-	Username string
-	Password string
-}
+	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/arguments"
+	"github.com/newrelic/nri-mongodb/src/connection"
+)
 
 const (
 	integrationName    = "com.newrelic.mongodb"
@@ -21,61 +16,57 @@ const (
 )
 
 var (
-	args argumentList
+	args arguments.ArgumentList
 )
 
 func main() {
-
-	sslopt := clientopt.SSLOpt{
-		Enabled:  true,
-		Insecure: false,
-		CaFile:   "/Users/ccheek/bluemedora/blue_medora.crt",
-	}
-
-	creds := clientopt.Credential{
-		AuthMechanism: "SCRAM-SHA-1",
-		AuthSource:    "newrelic",
-		Username:      "newrelic",
-		Password:      "password",
-	}
-
-	client, err := mongo.NewClientWithOptions(
-		"mongodb://mdb-rh7-rs1-r2.bluemedora.localnet:27017/newrelic",
-		clientopt.SSL(&sslopt),
-		clientopt.Auth(creds),
-	)
+	// Create the integration
+	mongoIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		panic(err)
+		log.Error("Failed to create integration")
+		os.Exit(1)
 	}
 
-	err = client.Connect(context.TODO())
+	// Set verbose level
+	log.SetupLogging(args.Verbose)
+
+	// Validate arguments
+	if err := args.Validate(); err != nil {
+		log.Error("Invalid arguments: %v", err)
+		os.Exit(1)
+	}
+
+	// Connect to Mongo
+	connectionInfo := connection.Info{
+		AuthSource:            args.AuthSource,
+		Host:                  args.Host,
+		Password:              args.Password,
+		Port:                  args.Port,
+		Ssl:                   args.Ssl,
+		SslCaCerts:            args.SslCaCerts,
+		SslInsecureSkipVerify: args.SslInsecureSkipVerify,
+		Username:              args.Username,
+	}
+	session, err := connectionInfo.CreateSession()
 	if err != nil {
-		panic(err)
+		log.Error("Failed to create session: %v", err)
+		os.Exit(1)
 	}
 
-	nrdb := client.Database("newrelic")
-	results, err := nrdb.RunCommand(nil, map[string]interface{}{"dbStats": 1})
-	if err != nil {
-		panic(err)
-	}
-	resultsBytes, err := bson.Marshal(results)
-	if err != nil {
-		panic(err)
+	// Start workers
+	var wg sync.WaitGroup
+	collectorChan := StartCollectorWorkerPool(100, &wg)
+
+	// Feed the worker pool with entities to be collected
+	go FeedWorkerPool(session, collectorChan, mongoIntegration)
+
+	// Wait for workers to finish
+	wg.Wait()
+
+	// Publish the results
+	if err = mongoIntegration.Publish(); err != nil {
+		log.Error("Failed to publish integration: %v", err)
+		os.Exit(1)
 	}
 
-	type dbStats struct {
-		Raw map[string]struct {
-			Db          string
-			Collections int
-			Views       int
-		}
-	}
-
-	var dbs dbStats
-	err = bson.Unmarshal(resultsBytes, &dbs)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(dbs)
 }

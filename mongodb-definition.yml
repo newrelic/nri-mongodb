@@ -1,0 +1,21 @@
+name: com.newrelic.mongodb
+description: Reports status and metrics for mongodb service
+protocol_version: 1
+os: linux
+
+commands:
+  all:
+    command:
+      - ./bin/nr-mongodb
+    interval: 15
+  metrics:
+    command:
+      - ./bin/nr-mongodb
+      - --metrics
+    interval: 15
+  inventory:
+    command:
+      - ./bin/nr-mongodb
+      - --inventory
+    prefix: config/nr-mongodb
+    interval: 15
