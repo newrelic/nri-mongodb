@@ -78,8 +78,8 @@ func TestGetConfigServers(t *testing.T) {
 		name string
 		port string
 	}{
-		{"config1", "27017"},
-		{"config2", "27017"},
+		{"config1:27017", "27017"},
+		{"config2:27017", "27017"},
 	}
 
 	collectors, err := GetConfigServers(mockSession, testIntegration)

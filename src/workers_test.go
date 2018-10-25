@@ -187,12 +187,12 @@ func TestFeedWorkerPool(t *testing.T) {
 	}()
 
 	expectedCollectorNames := map[string]bool{
-		"cluster":     true,
-		"database1":   true,
-		"config1":     true,
-		"mongos1":     true,
-		"shard1":      true,
-		"collection1": true,
+		"database1":     true,
+		"config1:27017": true,
+		"mongos1:27017": true,
+		"mongos1":       true,
+		"shard1:27017":  true,
+		"collection1":   true,
 	}
 
 	select {
