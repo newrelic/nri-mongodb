@@ -434,7 +434,7 @@ func (server *mongoServer) pinger(loop bool) {
 
 func (server *mongoServer) poolShrinker() {
 	ticker := time.NewTicker(1 * time.Minute)
-	for range ticker.C {
+	for _ = range ticker.C {
 		if server.closed {
 			ticker.Stop()
 			return
