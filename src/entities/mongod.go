@@ -74,7 +74,7 @@ func GetMongods(session connection.Session, shardHostString string, integration 
 		newMongodCollector := &mongodCollector{
 			hostCollector{
 				defaultCollector{
-					hostPort.Host,
+					hostPort.Host + ":" + hostPort.Port,
 					integration,
 					mongodSession,
 				},
