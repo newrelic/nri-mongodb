@@ -62,7 +62,7 @@ func TestGetMongods(t *testing.T) {
 	mockSession.On("New", "host2", "4321").Return(mockSession, nil).Once()
 	mockSession.On("New", "host3", "666").Return(nil, assert.AnError).Once()
 
-	expectedHosts := []string{"host1", "host2"}
+	expectedHosts := []string{"host1:1234", "host2:4321"}
 	collectors, err := GetMongods(mockSession, "rs1/host1:1234,host2:4321,host3:666", testIntegration)
 
 	mockSession.AssertExpectations(t)

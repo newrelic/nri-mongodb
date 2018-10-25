@@ -84,7 +84,7 @@ func TestGetMongoses(t *testing.T) {
 		Once()
 
 	collectors, err := GetMongoses(mockSession, testIntegration)
-	expectedHosts := []string{"host1", "host2"}
+	expectedHosts := []string{"host1:27017", "host2:1234"}
 
 	mockSession.AssertExpectations(t)
 	assert.NoError(t, err)
