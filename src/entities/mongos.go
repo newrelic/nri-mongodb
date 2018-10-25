@@ -74,7 +74,7 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 		mc := &mongosCollector{
 			hostCollector{
 				defaultCollector{
-					hostPort.Host,
+					hostPort.Host + ":" + hostPort.Port,
 					integration,
 					mongosSession,
 				},

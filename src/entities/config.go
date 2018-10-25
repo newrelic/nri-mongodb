@@ -89,7 +89,7 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 		cc := &configCollector{
 			hostCollector{
 				defaultCollector{
-					configHostPort.Host,
+					configHostPort.Host + ":" + configHostPort.Port,
 					integration,
 					configSession,
 				},
