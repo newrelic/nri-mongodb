@@ -17,5 +17,5 @@ commands:
     command:
       - ./bin/nr-mongodb
       - --inventory
-    prefix: config/nr-mongodb
+    prefix: config/mongodb
     interval: 15
