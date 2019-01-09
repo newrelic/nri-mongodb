@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.0 - 2019-01-09
+### Fixed 
+- Detect if the monitored instance is a standalone instance, and collect the proper subset of metrics
+
 ## 1.0.0 - 2018-11-29
 ### Changes
 - Bumped version for GA release 

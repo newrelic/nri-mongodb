@@ -12,7 +12,7 @@ import (
 
 const (
 	integrationName    = "com.newrelic.mongodb"
-	integrationVersion = "1.0.0"
+	integrationVersion = "1.1.0"
 )
 
 var (
