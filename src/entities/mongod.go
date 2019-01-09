@@ -59,6 +59,7 @@ func (c *mongodCollector) CollectMetrics() {
 	logError(collectTop(c), "Collect top failed: %v")
 }
 
+// GetStandaloneMongod creates a mongod from a session
 func GetStandaloneMongod(session connection.Session, integration *integration.Integration) Collector {
 	standaloneMongodCollector := &mongodCollector{
 		hostCollector{

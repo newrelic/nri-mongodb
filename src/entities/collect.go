@@ -35,6 +35,7 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 	return nil
 }
 
+// IsStandaloneInstance returns true if the instance the session is pointing to is a mongod
 func IsStandaloneInstance(session connection.Session) (bool, error) {
 
 	// Collect and unmarshal the result

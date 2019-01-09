@@ -9,6 +9,7 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
+// Cmd is an aliasi for map[string]interface{}
 type Cmd map[string]interface{}
 
 // Collector is an interface which represents an entity.
