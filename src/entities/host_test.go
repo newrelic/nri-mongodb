@@ -17,7 +17,7 @@ func Test_hostCollector_collectInventory(t *testing.T) {
 	e, _ := testIntegration.Entity("host", "namespace")
 	mockSession := new(test.MockSession)
 	mAdminDB := mockSession.MockDatabase("admin", 2)
-	mAdminDB.On("Run", cmd{"getCmdLineOpts": 1}, mock.Anything).
+	mAdminDB.On("Run", Cmd{"getCmdLineOpts": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
 			result := args.Get(1)
@@ -43,7 +43,7 @@ func Test_hostCollector_collectInventory(t *testing.T) {
 			assert.NoError(t, err)
 		}).
 		Once()
-	mAdminDB.On("Run", cmd{"getParameter": "*"}, mock.Anything).
+	mAdminDB.On("Run", Cmd{"getParameter": "*"}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
 			result := args.Get(1)
@@ -74,10 +74,10 @@ func Test_hostCollector_collectInventory_Errors(t *testing.T) {
 	e, _ := testIntegration.Entity("host", "namespace")
 	mockSession := new(test.MockSession)
 	mAdminDB := mockSession.MockDatabase("admin", 2)
-	mAdminDB.On("Run", cmd{"getCmdLineOpts": 1}, mock.Anything).
+	mAdminDB.On("Run", Cmd{"getCmdLineOpts": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
-	mAdminDB.On("Run", cmd{"getParameter": "*"}, mock.Anything).
+	mAdminDB.On("Run", Cmd{"getParameter": "*"}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 	collector := &hostCollector{

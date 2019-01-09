@@ -8,6 +8,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
@@ -22,7 +23,7 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 
 	// Collect and unmarshal the result
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(cmd{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(Cmd{"serverStatus": 1}, &ss); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -32,6 +33,23 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 	}
 
 	return nil
+}
+
+func IsStandaloneInstance(session connection.Session) (bool, error) {
+
+	// Collect and unmarshal the result
+	var isMaster metrics.IsMaster
+	if err := session.DB("admin").Run(Cmd{"isMaster": 1}, &isMaster); err != nil {
+		return false, fmt.Errorf("run isMaster failed: %v", err)
+	}
+
+	if isMaster.Msg != nil {
+		if *isMaster.Msg == "isdbgrid" {
+			return false, nil
+		}
+	}
+
+	return true, nil
 }
 
 // collectIsMaster collects isMaster metrics. Returns a boolean which
@@ -46,7 +64,7 @@ func collectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
-	if err := session.DB("admin").Run(cmd{"isMaster": 1}, &isMaster); err != nil {
+	if err := session.DB("admin").Run(Cmd{"isMaster": 1}, &isMaster); err != nil {
 		return false, fmt.Errorf("run isMaster failed: %v", err)
 	}
 
@@ -70,7 +88,7 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetStatus metrics.ReplSetGetStatus
-	if err := session.DB("admin").Run(cmd{"replSetGetStatus": 1}, &replSetStatus); err != nil {
+	if err := session.DB("admin").Run(Cmd{"replSetGetStatus": 1}, &replSetStatus); err != nil {
 		return err
 	}
 
@@ -103,7 +121,7 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetConfig metrics.ReplSetGetConfig
-	if err := session.DB("admin").Run(cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
 		return err
 	}
 
@@ -148,7 +166,7 @@ func collectTop(c Collector) error {
 	}
 
 	var topMetrics metrics.Top
-	if err := session.DB("admin").Run(cmd{"top": 1}, &topMetrics); err != nil {
+	if err := session.DB("admin").Run(Cmd{"top": 1}, &topMetrics); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -185,7 +203,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.db).Run(cmd{"collStats": c.name}, &collStats); err != nil {
+	if err := session.DB(c.db).Run(Cmd{"collStats": c.name}, &collStats); err != nil {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
@@ -233,7 +251,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 // collectDbStats collects dbStats
 func collectDbStats(c *databaseCollector, ms *metric.Set) error {
 	var dbStats metrics.DbStats
-	if err := c.session.DB(c.name).Run(cmd{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.session.DB(c.name).Run(Cmd{"dbStats": 1}, &dbStats); err != nil {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 
@@ -247,7 +265,7 @@ func collectNumDatabases(c Collector, ms *metric.Set) error {
 		return err
 	}
 
-	if err := s.DB("admin").Run(cmd{"listDatabases": 1}, &listDatabases); err != nil {
+	if err := s.DB("admin").Run(Cmd{"listDatabases": 1}, &listDatabases); err != nil {
 		return fmt.Errorf("run listDatabases failed: %s", err)
 	}
 

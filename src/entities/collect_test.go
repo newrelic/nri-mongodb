@@ -25,8 +25,8 @@ func Test_collectServerStatus(t *testing.T) {
 		"asserts.messagesPerSecond":  float64(0),
 		"asserts.userPerSecond":      float64(0),
 		"asserts.rolloversPerSecond": float64(0),
-		"key":        "value",
-		"event_type": "testmetricset",
+		"key":                        "value",
+		"event_type":                 "testmetricset",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -47,7 +47,7 @@ func Test_collectServerStatus_MissingSession(t *testing.T) {
 func Test_collectServerStatus_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"serverStatus": 1}, mock.Anything).
+		On("Run", Cmd{"serverStatus": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -100,7 +100,7 @@ func Test_collectIsMaster_MissingSession(t *testing.T) {
 func Test_collectIsMaster_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"isMaster": 1}, mock.Anything).
+		On("Run", Cmd{"isMaster": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -153,7 +153,7 @@ func Test_collectReplGetStatus_MissingSession(t *testing.T) {
 func Test_collectReplGetStatus_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"replSetGetStatus": 1}, mock.Anything).
+		On("Run", Cmd{"replSetGetStatus": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -206,7 +206,7 @@ func Test_collectReplGetConfig_MissingSession(t *testing.T) {
 func Test_collectReplGetConfig_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"replSetGetConfig": 1}, mock.Anything).
+		On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -269,7 +269,7 @@ func Test_collectTop_MissingIntegration(t *testing.T) {
 func Test_collectTop_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"top": 1}, mock.Anything).
+		On("Run", Cmd{"top": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -330,7 +330,7 @@ func Test_collectCollStats_CommandError(t *testing.T) {
 	c := getTestCollectionCollector()
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase(c.db, 1).
-		On("Run", cmd{"collStats": c.name}, mock.Anything).
+		On("Run", Cmd{"collStats": c.name}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -369,7 +369,7 @@ func Test_collectDbStats_CommandError(t *testing.T) {
 	c := getTestDatabaseCollector()
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase(c.name, 1).
-		On("Run", cmd{"dbStats": 1}, mock.Anything).
+		On("Run", Cmd{"dbStats": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 	c.session = mockSession

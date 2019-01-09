@@ -59,6 +59,21 @@ func (c *mongodCollector) CollectMetrics() {
 	logError(collectTop(c), "Collect top failed: %v")
 }
 
+func GetStandaloneMongod(session connection.Session, integration *integration.Integration) Collector {
+	standaloneMongodCollector := &mongodCollector{
+		hostCollector{
+			defaultCollector{
+				// TODO get the host and port for the mongod
+				fmt.Sprintf("%s:%s", session.Info().Host, session.Info().Port),
+				integration,
+				session,
+			},
+		},
+	}
+
+	return standaloneMongodCollector
+}
+
 // GetMongods returns an array of MongodCollectors to collect
 func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]Collector, error) {
 	hostPorts, _ := parseReplicaSetString(shardHostString)

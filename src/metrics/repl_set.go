@@ -24,6 +24,7 @@ type ReplSetGetStatusMember struct {
 // IsMaster is a storage struct
 type IsMaster struct {
 	SetName   *string `bson:"setName"`
+	Msg       *string `bson:"msg"`
 	IsMaster  *bool   `bson:"ismaster"  metric_name:"replset.isMaster"    source_type:"gauge"`
 	Secondary *bool   `bson:"secondary" metric_name:"replset.isSecondary" source_type:"gauge"`
 }

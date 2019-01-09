@@ -134,8 +134,22 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-	adminDB := mockSession.MockDatabase("admin", 2)
-	adminDB.On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
+	adminDB := mockSession.MockDatabase("admin", 3)
+
+	adminDB.On("Run", entities.Cmd{"isMaster": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"isMaster": true,
+				"msg": "isdbgrid",
+				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
 			result := args.Get(1)
@@ -149,6 +163,7 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		}).
 		Once()
+
 	adminDB.On("Run", "getShardMap", mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {

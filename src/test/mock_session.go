@@ -36,6 +36,10 @@ func (s *MockSession) MockDatabase(name string, callCount int) *MockDatabase {
 	return db
 }
 
+func (s *MockSession) Info() *connection.Info {
+  return &connection.Info{}
+}
+
 // DB is mocked via setup
 func (s *MockSession) DB(name string) connection.DataLayer {
 	args := s.Called(name)

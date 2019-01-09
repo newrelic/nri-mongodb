@@ -9,7 +9,7 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
-type cmd map[string]interface{}
+type Cmd map[string]interface{}
 
 // Collector is an interface which represents an entity.
 // A Collector knows how to collect itself through the CollectMetrics
