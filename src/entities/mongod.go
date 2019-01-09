@@ -64,7 +64,6 @@ func GetStandaloneMongod(session connection.Session, integration *integration.In
 	standaloneMongodCollector := &mongodCollector{
 		hostCollector{
 			defaultCollector{
-				// TODO get the host and port for the mongod
 				fmt.Sprintf("%s:%s", session.Info().Host, session.Info().Port),
 				integration,
 				session,
