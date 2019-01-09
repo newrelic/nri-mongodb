@@ -3,6 +3,7 @@ package entities
 import (
 	"testing"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
@@ -82,6 +83,53 @@ func Test_collectIsMaster(t *testing.T) {
 
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
+}
+
+func TestIsStandaloneInstance_True(t *testing.T) {
+	mockSession := new(test.MockSession)
+	adminDB := mockSession.MockDatabase("admin", 1)
+	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"isMaster": true,
+				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	result, err := IsStandaloneInstance(mockSession)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.True(t, result)
+}
+
+func TestIsStandaloneInstance_False(t *testing.T) {
+	mockSession := new(test.MockSession)
+	adminDB := mockSession.MockDatabase("admin", 1)
+	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"isMaster": true,
+				"msg": "isdbgrid",
+				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	result, err := IsStandaloneInstance(mockSession)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.False(t, result)
 }
 
 func Test_collectIsMaster_MissingSession(t *testing.T) {
