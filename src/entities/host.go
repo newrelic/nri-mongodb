@@ -31,7 +31,7 @@ func (hc *hostCollector) collectInventory(e *integration.Entity) {
 func (hc *hostCollector) populateCmdLineOpts(entity *integration.Entity) {
 	var cmdOpts cmdLineOpts
 
-	if err := hc.session.DB("admin").Run(cmd{"getCmdLineOpts": 1}, &cmdOpts); err != nil {
+	if err := hc.session.DB("admin").Run(Cmd{"getCmdLineOpts": 1}, &cmdOpts); err != nil {
 		log.Error("Error calling getCmdLineOpts for [%s]: %v", hc.name, err)
 		return
 	}
@@ -46,7 +46,7 @@ func (hc *hostCollector) populateCmdLineOpts(entity *integration.Entity) {
 func (hc *hostCollector) populateParameters(entity *integration.Entity) {
 	var params map[string]interface{}
 
-	if err := hc.session.DB("admin").Run(cmd{"getParameter": "*"}, &params); err != nil {
+	if err := hc.session.DB("admin").Run(Cmd{"getParameter": "*"}, &params); err != nil {
 		log.Error("Error calling getParameter for [%s]: %v", hc.name, err)
 		return
 	}

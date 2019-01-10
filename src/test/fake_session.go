@@ -26,6 +26,11 @@ func (t FakeSession) New(host, port string) (connection.Session, error) {
 	return t, nil
 }
 
+// Info returns the session info
+func (t FakeSession) Info() *connection.Info {
+	return &connection.Info{}
+}
+
 // FakeDB is a mocked database
 type FakeDB struct{}
 

@@ -9,6 +9,7 @@ package connection
 type Session interface {
 	DB(name string) DataLayer
 	New(host, port string) (Session, error)
+	Info() *Info
 	Close()
 }
 

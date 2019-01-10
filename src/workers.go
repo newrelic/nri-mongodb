@@ -66,20 +66,34 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	// Create a wait group for each of the get*Collectors calls
 	getWg := new(sync.WaitGroup)
 
-	getWg.Add(1)
-	go createClusterCollectors(getWg, session, collectorChan, integration)
+	isStandaloneInstance, err := entities.IsStandaloneInstance(session)
+	if err != nil {
+		log.Error("Failed to determine whether the monitored instance is a standalone instance or a sharded instance: %s", err.Error())
+		return
+	}
 
-	getWg.Add(1)
-	go createMongosCollectors(getWg, session, collectorChan, integration)
+	if isStandaloneInstance {
+		getWg.Add(1)
+		go createStandaloneMongodCollector(getWg, session, collectorChan, integration)
 
-	getWg.Add(1)
-	go createConfigCollectors(getWg, session, collectorChan, integration)
+		getWg.Add(1)
+		go createDatabaseCollectors(getWg, session, collectorChan, integration)
+	} else {
+		getWg.Add(1)
+		go createClusterCollectors(getWg, session, collectorChan, integration)
 
-	getWg.Add(1)
-	go createShardCollectors(getWg, session, collectorChan, integration)
+		getWg.Add(1)
+		go createMongosCollectors(getWg, session, collectorChan, integration)
 
-	getWg.Add(1)
-	go createDatabaseCollectors(getWg, session, collectorChan, integration)
+		getWg.Add(1)
+		go createConfigCollectors(getWg, session, collectorChan, integration)
+
+		getWg.Add(1)
+		go createShardCollectors(getWg, session, collectorChan, integration)
+
+		getWg.Add(1)
+		go createDatabaseCollectors(getWg, session, collectorChan, integration)
+	}
 
 	getWg.Wait()
 }
@@ -118,6 +132,14 @@ func createConfigCollectors(wg *sync.WaitGroup, session connection.Session, coll
 	for _, configServer := range configServers {
 		collectorChan <- configServer
 	}
+}
+
+func createStandaloneMongodCollector(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+	mongod := entities.GetStandaloneMongod(session, integration)
+	collectorChan <- mongod
+
 }
 
 func createShardCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {

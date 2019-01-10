@@ -61,7 +61,7 @@ func TestGetDatabases(t *testing.T) {
 	testFilter, _ := filter.ParseFilters("")
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
+		On("Run", Cmd{"listDatabases": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
 			result := args.Get(1)
@@ -98,7 +98,7 @@ func TestGetDatabases_Error(t *testing.T) {
 	testFilter, _ := filter.ParseFilters("")
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", map[string]interface{}{"listDatabases": 1}, mock.Anything).
+		On("Run", Cmd{"listDatabases": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 

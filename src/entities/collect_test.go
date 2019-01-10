@@ -3,6 +3,7 @@ package entities
 import (
 	"testing"
 
+	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
@@ -47,7 +48,7 @@ func Test_collectServerStatus_MissingSession(t *testing.T) {
 func Test_collectServerStatus_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"serverStatus": 1}, mock.Anything).
+		On("Run", Cmd{"serverStatus": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -84,6 +85,53 @@ func Test_collectIsMaster(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestIsStandaloneInstance_True(t *testing.T) {
+	mockSession := new(test.MockSession)
+	adminDB := mockSession.MockDatabase("admin", 1)
+	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"isMaster": true,
+				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	result, err := IsStandaloneInstance(mockSession)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.True(t, result)
+}
+
+func TestIsStandaloneInstance_False(t *testing.T) {
+	mockSession := new(test.MockSession)
+	adminDB := mockSession.MockDatabase("admin", 1)
+	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+				"isMaster": true,
+				"msg": "isdbgrid",
+				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		}).
+		Once()
+
+	result, err := IsStandaloneInstance(mockSession)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.False(t, result)
+}
+
 func Test_collectIsMaster_MissingSession(t *testing.T) {
 	c := getTestMongodCollector()
 	c.session = nil
@@ -100,7 +148,7 @@ func Test_collectIsMaster_MissingSession(t *testing.T) {
 func Test_collectIsMaster_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"isMaster": 1}, mock.Anything).
+		On("Run", Cmd{"isMaster": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -153,7 +201,7 @@ func Test_collectReplGetStatus_MissingSession(t *testing.T) {
 func Test_collectReplGetStatus_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"replSetGetStatus": 1}, mock.Anything).
+		On("Run", Cmd{"replSetGetStatus": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -206,7 +254,7 @@ func Test_collectReplGetConfig_MissingSession(t *testing.T) {
 func Test_collectReplGetConfig_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"replSetGetConfig": 1}, mock.Anything).
+		On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -269,7 +317,7 @@ func Test_collectTop_MissingIntegration(t *testing.T) {
 func Test_collectTop_CommandError(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase("admin", 1).
-		On("Run", cmd{"top": 1}, mock.Anything).
+		On("Run", Cmd{"top": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -330,7 +378,7 @@ func Test_collectCollStats_CommandError(t *testing.T) {
 	c := getTestCollectionCollector()
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase(c.db, 1).
-		On("Run", cmd{"collStats": c.name}, mock.Anything).
+		On("Run", Cmd{"collStats": c.name}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 
@@ -369,7 +417,7 @@ func Test_collectDbStats_CommandError(t *testing.T) {
 	c := getTestDatabaseCollector()
 	mockSession := new(test.MockSession)
 	mockSession.MockDatabase(c.name, 1).
-		On("Run", cmd{"dbStats": 1}, mock.Anything).
+		On("Run", Cmd{"dbStats": 1}, mock.Anything).
 		Return(assert.AnError).
 		Once()
 	c.session = mockSession

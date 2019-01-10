@@ -55,7 +55,7 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 	}
 
 	var unmarshalledDatabaseList DatabaseListUnmarshaller
-	if err := session.DB("admin").Run(map[string]interface{}{"listDatabases": 1}, &unmarshalledDatabaseList); err != nil {
+	if err := session.DB("admin").Run(Cmd{"listDatabases": 1}, &unmarshalledDatabaseList); err != nil {
 		return nil, err
 	}
 

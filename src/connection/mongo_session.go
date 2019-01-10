@@ -8,6 +8,10 @@ type mongoSession struct {
 	info *Info
 }
 
+func (s *mongoSession) Info() *Info {
+	return s.info
+}
+
 // DB shadows the mgo.Session DB function
 func (s *mongoSession) DB(name string) DataLayer {
 	return &mongoDatabase{s.Session.DB(name)}
