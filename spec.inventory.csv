@@ -1,0 +1,13 @@
+entity type,inventory source,inventory path
+mongos,config/mongodb,commandline/
+mongos,config/mongodb,configuration/
+mongos,config/mongodb,parameter/
+config,config/mongodb,commandline/
+config,config/mongodb,configuration/
+config,config/mongodb,parameter/
+database,,
+mongod,config/mongodb,commandline/
+mongod,config/mongodb,configuration/
+mongod,config/mongodb,parameter/
+collection,,
+cluster,,
