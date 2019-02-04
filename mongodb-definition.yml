@@ -1,6 +1,6 @@
 name: com.newrelic.mongodb
 description: Reports status and metrics for mongodb service
-protocol_version: 1
+protocol_version: 2
 os: linux
 
 commands:
