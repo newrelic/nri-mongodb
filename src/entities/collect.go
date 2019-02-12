@@ -173,6 +173,10 @@ func collectTop(c Collector) error {
 
 	for key, collectionStats := range topMetrics.Totals {
 		splitKey := strings.SplitN(key, ".", 2)
+		if len(splitKey) != 2 {
+			log.Error("The output of the top command contained unexpected key %s which is not of the form <database>.<collection>", key)
+			continue
+		}
 		databaseName := splitKey[0]
 		collectionName := splitKey[1]
 
