@@ -112,6 +112,20 @@ func unmarshalCommand(cmd string, result interface{}) error {
 						"count": 1,
 					},
 				},
+				"testnocollect": map[string]interface{}{
+					"total": map[string]interface{}{
+						"time":  305277,
+						"count": 2825,
+					},
+					"readLock": map[string]interface{}{
+						"time":  305123,
+						"count": 2893,
+					},
+					"writeLock": map[string]interface{}{
+						"time":  13,
+						"count": 1,
+					},
+				},
 			},
 		})
 		return bson.Unmarshal(marshalled, result)

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.2 - 2019-02-12
+### Fixed 
+- Don't panic on invalid mongo top response
+
 ## 1.1.1 - 2019-02-04
 ### Fixed 
 - Use correct protocol version
