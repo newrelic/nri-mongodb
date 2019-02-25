@@ -7,6 +7,7 @@ commands:
   all:
     command:
       - ./bin/nr-mongodb
+    prefix: config/mongodb
     interval: 15
   metrics:
     command:
