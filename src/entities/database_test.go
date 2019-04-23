@@ -19,7 +19,7 @@ func Test_databaseCollector_GetEntity(t *testing.T) {
 	e, err := dc.GetEntity()
 	assert.NoError(t, err)
 	assert.Equal(t, "testDatabase", e.Metadata.Name)
-	assert.Equal(t, "database", e.Metadata.Namespace)
+	assert.Equal(t, "mo-database", e.Metadata.Namespace)
 }
 
 func Test_databaseCollector_GetEntity_Error(t *testing.T) {

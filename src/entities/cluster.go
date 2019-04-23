@@ -18,7 +18,7 @@ type clusterCollector struct {
 // GetEntity creates or returns an entity for the mongos
 func (c *clusterCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "cluster")
+		return i.Entity(c.name, "mo-cluster")
 	}
 
 	return nil, errors.New("nil integration")

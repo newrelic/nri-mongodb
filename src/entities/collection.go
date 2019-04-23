@@ -20,7 +20,7 @@ type collectionCollector struct {
 // GetEntity creates or returns an entity for a collection
 func (c *collectionCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "collection")
+		return i.Entity(c.name, "mo-collection")
 	}
 
 	return nil, errors.New("nil integration")

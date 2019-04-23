@@ -19,7 +19,7 @@ type mongosCollector struct {
 // GetEntity creates or returns an entity for the mongos
 func (c *mongosCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "mongos")
+		return i.Entity(c.name, "mo-mongos")
 	}
 
 	return nil, errors.New("nil integration")

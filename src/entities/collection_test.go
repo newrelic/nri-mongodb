@@ -15,7 +15,7 @@ func TestCollectionCollector_GetEntity(t *testing.T) {
 	e, err := cc.GetEntity()
 	assert.NoError(t, err)
 	assert.Equal(t, "testCollection", e.Metadata.Name)
-	assert.Equal(t, "collection", e.Metadata.Namespace)
+	assert.Equal(t, "mo-collection", e.Metadata.Namespace)
 }
 
 func TestCollectionCollector_GetEntity_Error(t *testing.T) {

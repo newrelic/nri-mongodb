@@ -287,7 +287,7 @@ func Test_collectTop(t *testing.T) {
 		"displayName":                            "testMongod",
 		"database":                               "records",
 		"collection":                             "users",
-		"entityName":                             "mongod:testMongod",
+    "entityName":                             "mo-mongod:testMongod",
 		"usage.readLockInMillisecondsPerSecond":  float64(0),
 		"usage.readLockPerSecond":                float64(0),
 		"usage.writeLockInMillisecondsPerSecond": float64(0),
