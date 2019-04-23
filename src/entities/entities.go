@@ -2,6 +2,7 @@ package entities
 
 import (
 	"errors"
+  "fmt"
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -33,6 +34,23 @@ type Collector interface {
 type hostPort struct {
 	Host string
 	Port string
+}
+
+func (c *defaultCollector) GetSessionEntityKey() integration.EntityKey {
+  session, _ := c.GetSession()
+  host := session.Info().Host
+  port := session.Info().Port
+  i := c.GetIntegration()
+  clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+  var namespace string
+  if ok, _ := IsStandaloneInstance(session); ok {
+    namespace = "mo-mongod"
+  } else {
+    namespace = "mo-mongos"
+  }
+  e, _ := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
+  key, _ := e.Key()
+  return key
 }
 
 // defaultCollector is the most basic implementation of the

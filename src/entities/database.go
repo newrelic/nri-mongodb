@@ -20,7 +20,7 @@ type databaseCollector struct {
 func (c *databaseCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.Entity(c.name, "mo-database", clusterNameIDAttr)
+		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-database", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

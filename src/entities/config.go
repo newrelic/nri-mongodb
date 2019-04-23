@@ -20,7 +20,7 @@ type configCollector struct {
 func (c *configCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.Entity(c.name, "mo-config", clusterNameIDAttr)
+		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-config", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

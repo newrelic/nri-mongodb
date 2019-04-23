@@ -22,7 +22,7 @@ func (c *collectionCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
     databaseNameIDAttr := integration.IDAttribute{Key: "databaseName", Value: c.db}
-		return i.Entity(c.name, "mo-collection", clusterNameIDAttr, databaseNameIDAttr)
+		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-collection", clusterNameIDAttr, databaseNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

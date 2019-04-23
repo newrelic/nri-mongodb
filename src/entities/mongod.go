@@ -20,7 +20,7 @@ type mongodCollector struct {
 func (c *mongodCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.Entity(c.name, "mo-mongod", clusterNameIDAttr)
+		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongod", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")
