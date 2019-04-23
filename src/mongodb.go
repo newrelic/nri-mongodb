@@ -8,6 +8,7 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/entities"
 )
 
 const (
@@ -56,6 +57,9 @@ func main() {
 	// Start workers
 	var wg sync.WaitGroup
 	collectorChan := StartCollectorWorkerPool(100, &wg)
+
+  // Set a global cluster name for identity attributes
+  entities.ClusterName = args.ClusterName
 
 	// Feed the worker pool with entities to be collected
 	go FeedWorkerPool(session, collectorChan, mongoIntegration)

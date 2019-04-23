@@ -19,7 +19,8 @@ type mongosCollector struct {
 // GetEntity creates or returns an entity for the mongos
 func (c *mongosCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "mo-mongos")
+    clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+		return i.Entity(c.name, "mo-mongos", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

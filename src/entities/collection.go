@@ -20,7 +20,9 @@ type collectionCollector struct {
 // GetEntity creates or returns an entity for a collection
 func (c *collectionCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "mo-collection")
+    clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+    databaseNameIDAttr := integration.IDAttribute{Key: "databaseName", Value: c.db}
+		return i.Entity(c.name, "mo-collection", clusterNameIDAttr, databaseNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

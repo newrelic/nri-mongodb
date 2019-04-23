@@ -57,12 +57,7 @@ func GetClusters(session connection.Session, integration *integration.Integratio
 	}
 
 	clusters := make([]Collector, 0, 1)
-	clusterName := ""
-
-	for _, mongos := range mu {
-		hostPort := extractHostPort(mongos.ID)
-		clusterName += hostPort.Host
-	}
+	clusterName := ClusterName
 
 	cluster := &clusterCollector{
 		defaultCollector{

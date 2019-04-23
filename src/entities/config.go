@@ -19,7 +19,8 @@ type configCollector struct {
 // GetEntity creates or returns an entity for the config server
 func (c *configCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "mo-config")
+    clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+		return i.Entity(c.name, "mo-config", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")

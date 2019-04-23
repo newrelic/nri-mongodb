@@ -182,6 +182,8 @@ func TestFeedWorkerPool(t *testing.T) {
 		Return([]string{"collection1"}, nil).
 		Once()
 
+  entities.ClusterName = "testClusterName"
+
 	collChan := make(chan entities.Collector)
 	i, _ := integration.New("test", "0.0.0")
 
@@ -205,7 +207,7 @@ func TestFeedWorkerPool(t *testing.T) {
 		"database1":     true,
 		"config1:27017": true,
 		"mongos1:27017": true,
-		"mongos1":       true,
+		"testClusterName":       true,
 		"shard1:27017":  true,
 		"collection1":   true,
 	}

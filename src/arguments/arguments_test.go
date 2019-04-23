@@ -14,6 +14,7 @@ func TestArgumentList_Validate(t *testing.T) {
 				Username:   "testUser",
 				Password:   "testPass",
 				Host:       "testHost",
+        ClusterName: "testClusterName",
 				Port:       "27071",
 				AuthSource: "admin",
 				Ssl:        false,
@@ -70,6 +71,7 @@ func TestArgumentList_Validate(t *testing.T) {
 			argumentList: ArgumentList{
 				Username:   "testUser",
 				Password:   "testPass",
+        ClusterName: "testClusterName",
 				Host:       "testHost",
 				Port:       "2000",
 				AuthSource: "admin",

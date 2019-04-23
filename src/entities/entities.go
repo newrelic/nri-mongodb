@@ -9,6 +9,12 @@ import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 
+var (
+  // ClusterName is an identifier for the cluster
+  ClusterName string
+)
+
+
 // Cmd is an aliasi for map[string]interface{}
 type Cmd map[string]interface{}
 

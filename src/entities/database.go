@@ -19,7 +19,8 @@ type databaseCollector struct {
 // GetEntity creates or returns an entity for a database
 func (c *databaseCollector) GetEntity() (*integration.Entity, error) {
 	if i := c.GetIntegration(); i != nil {
-		return i.Entity(c.name, "mo-database")
+    clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+		return i.Entity(c.name, "mo-database", clusterNameIDAttr)
 	}
 
 	return nil, errors.New("nil integration")
