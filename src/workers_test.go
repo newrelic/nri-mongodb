@@ -148,7 +148,6 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-
 	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
@@ -182,7 +181,7 @@ func TestFeedWorkerPool(t *testing.T) {
 		Return([]string{"collection1"}, nil).
 		Once()
 
-  entities.ClusterName = "testClusterName"
+	entities.ClusterName = "testClusterName"
 
 	collChan := make(chan entities.Collector)
 	i, _ := integration.New("test", "0.0.0")
@@ -204,12 +203,12 @@ func TestFeedWorkerPool(t *testing.T) {
 	}()
 
 	expectedCollectorNames := map[string]bool{
-		"database1":     true,
-		"config1:27017": true,
-		"mongos1:27017": true,
-		"testClusterName":       true,
-		"shard1:27017":  true,
-		"collection1":   true,
+		"database1":       true,
+		"config1:27017":   true,
+		"mongos1:27017":   true,
+		"testClusterName": true,
+		"shard1:27017":    true,
+		"collection1":     true,
 	}
 
 	select {

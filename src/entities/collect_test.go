@@ -26,9 +26,9 @@ func Test_collectServerStatus(t *testing.T) {
 		"asserts.messagesPerSecond":  float64(0),
 		"asserts.userPerSecond":      float64(0),
 		"asserts.rolloversPerSecond": float64(0),
-		"key":        "value",
-		"event_type": "testmetricset",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"key":                "value",
+		"event_type":         "testmetricset",
+		"reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -53,7 +53,7 @@ func Test_collectServerStatus_CommandError(t *testing.T) {
 		Return(assert.AnError).
 		Once()
 	mockSession.MockDatabase("admin", 1).
-    On("Run", Cmd{"isMaster": 1}, mock.Anything).
+		On("Run", Cmd{"isMaster": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {
 			result := args.Get(1)
@@ -92,7 +92,7 @@ func Test_collectIsMaster(t *testing.T) {
 		"replset.isMaster":    float64(1),
 		"replset.isSecondary": float64(1),
 		"event_type":          "testmetricset",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":  "mo-mongod:testhost:1234:clustername=",
 	}
 
 	actual := ms.Metrics
@@ -151,7 +151,7 @@ func Test_collectIsMaster_MissingSession(t *testing.T) {
 	c.session = nil
 	e, err := c.GetEntity()
 	assert.Error(t, err)
-  assert.Nil(t, e)
+	assert.Nil(t, e)
 }
 
 func Test_collectIsMaster_CommandError(t *testing.T) {
@@ -165,7 +165,7 @@ func Test_collectIsMaster_CommandError(t *testing.T) {
 	c.session = mockSession
 	e, err := c.GetEntity()
 	assert.Error(t, err)
-  assert.Nil(t, e)
+	assert.Nil(t, e)
 }
 
 func Test_collectReplGetStatus(t *testing.T) {
@@ -184,7 +184,7 @@ func Test_collectReplGetStatus(t *testing.T) {
 		"replset.state":                "SECONDARY",
 		"replset.uptimeInMilliseconds": float64(758657),
 		"event_type":                   "testmetricset",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":           "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -208,7 +208,7 @@ func Test_collectReplGetConfig(t *testing.T) {
 		"replset.votes":        float64(20),
 		"replset.voteFraction": float64(1),
 		"event_type":           "testmetricset",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":   "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -231,11 +231,11 @@ func Test_collectTop(t *testing.T) {
 		"displayName":                            "testMongod",
 		"database":                               "records",
 		"collection":                             "users",
-    "entityName":                             "mo-mongod:testMongod",
+		"entityName":                             "mo-mongod:testMongod",
 		"usage.readLockInMillisecondsPerSecond":  float64(0),
 		"usage.readLockPerSecond":                float64(0),
 		"usage.writeLockInMillisecondsPerSecond": float64(0),
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":                     "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := e.Metrics[0].Metrics
 	assert.Equal(t, expected, actual)
@@ -256,7 +256,7 @@ func Test_collectCollStats(t *testing.T) {
 		"collection.count":             float64(3),
 		"collection.capped":            float64(0),
 		"event_type":                   "test",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":           "mo-mongod:testhost:1234:clustername=",
 	}
 	assert.Equal(t, expected, ms.Metrics)
 }
@@ -272,7 +272,6 @@ func Test_collectCollStats_SkipSystemCollection(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, ms.Metrics, expectedCount)
 }
-
 
 func Test_collectDbStats(t *testing.T) {
 	c := getTestDatabaseCollector()
@@ -290,8 +289,7 @@ func Test_collectDbStats(t *testing.T) {
 		"stats.indexes":        float64(4),
 		"stats.dataInBytes":    float64(6),
 		"event_type":           "test",
-    "reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"reportingEntityKey":   "mo-mongod:testhost:1234:clustername=",
 	}
 	assert.Equal(t, expected, ms.Metrics)
 }
-

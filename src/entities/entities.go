@@ -2,7 +2,7 @@ package entities
 
 import (
 	"errors"
-  "fmt"
+	"fmt"
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -11,10 +11,9 @@ import (
 )
 
 var (
-  // ClusterName is an identifier for the cluster
-  ClusterName string
+	// ClusterName is an identifier for the cluster
+	ClusterName string
 )
-
 
 // Cmd is an aliasi for map[string]interface{}
 type Cmd map[string]interface{}
@@ -36,38 +35,38 @@ type hostPort struct {
 	Port string
 }
 
-func (c *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) {
-  session, err := c.GetSession()
-  if err != nil {
-    return "", err
-  }
+func (d *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) {
+	session, err := d.GetSession()
+	if err != nil {
+		return "", err
+	}
 
-  host := session.Info().Host
-  port := session.Info().Port
+	host := session.Info().Host
+	port := session.Info().Port
 
-  i := c.GetIntegration()
-  clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-  var namespace string
-  
-  ok, err := IsStandaloneInstance(session)
-  if err != nil {
-    return "", err
-  }
+	i := d.GetIntegration()
+	clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+	var namespace string
 
-  if ok {
-    namespace = "mo-mongod"
-  } else {
-    namespace = "mo-mongos"
-  }
-  e, err := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
-  if err != nil {
-    return "", err
-  }
-  key, err := e.Key()
-  if err != nil {
-    return "", err
-  }
-  return key, nil
+	ok, err := IsStandaloneInstance(session)
+	if err != nil {
+		return "", err
+	}
+
+	if ok {
+		namespace = "mo-mongod"
+	} else {
+		namespace = "mo-mongos"
+	}
+	e, err := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
+	if err != nil {
+		return "", err
+	}
+	key, err := e.Key()
+	if err != nil {
+		return "", err
+	}
+	return key, nil
 }
 
 // defaultCollector is the most basic implementation of the
@@ -77,7 +76,7 @@ type defaultCollector struct {
 	name        string
 	integration *integration.Integration
 	session     connection.Session
-  entity      *integration.Entity
+	entity      *integration.Entity
 }
 
 func (d *defaultCollector) GetName() string {

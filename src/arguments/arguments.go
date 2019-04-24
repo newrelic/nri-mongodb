@@ -17,7 +17,7 @@ type ArgumentList struct {
 	Password              string `default:"" help:"Password for the MongoDB connection"`
 	Host                  string `default:"localhost" help:"MongoDB host to connect to for monitoring"`
 	Port                  string `default:"27017" help:"Port on which MongoDB is running"`
-  ClusterName           string `default:"" help:"A unique, user-defined name to identify the cluster"`
+	ClusterName           string `default:"" help:"A unique, user-defined name to identify the cluster"`
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`

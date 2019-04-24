@@ -58,8 +58,8 @@ func main() {
 	var wg sync.WaitGroup
 	collectorChan := StartCollectorWorkerPool(100, &wg)
 
-  // Set a global cluster name for identity attributes
-  entities.ClusterName = args.ClusterName
+	// Set a global cluster name for identity attributes
+	entities.ClusterName = args.ClusterName
 
 	// Feed the worker pool with entities to be collected
 	go FeedWorkerPool(session, collectorChan, mongoIntegration)

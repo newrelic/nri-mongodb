@@ -17,19 +17,19 @@ type clusterCollector struct {
 
 // GetEntity creates or returns an entity for the mongos
 func (c *clusterCollector) GetEntity() (*integration.Entity, error) {
-  if c.entity != nil {
-    return c.entity, nil
-  }
+	if c.entity != nil {
+		return c.entity, nil
+	}
 
 	if i := c.GetIntegration(); i != nil {
-    ekey, err := c.GetSessionEntityKey()
-    if err != nil {
-      return nil, err
-    }
+		ekey, err := c.GetSessionEntityKey()
+		if err != nil {
+			return nil, err
+		}
 
-    e, err := i.EntityReportedBy(ekey, c.name, "mo-cluster")
-    c.entity = e
-    return e, err
+		e, err := i.EntityReportedBy(ekey, c.name, "mo-cluster")
+		c.entity = e
+		return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -75,7 +75,7 @@ func GetClusters(session connection.Session, integration *integration.Integratio
 			clusterName,
 			integration,
 			session,
-      nil,
+			nil,
 		},
 	}
 
