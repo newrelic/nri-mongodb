@@ -86,6 +86,7 @@ func getTestMongodCollector() *mongodCollector {
 				"testMongod",
 				i,
 				test.FakeSession{},
+        nil,
 			},
 		},
 	}
@@ -98,6 +99,7 @@ func getBadTestMongodCollector() *mongodCollector {
 				"testMongod",
 				nil,
 				nil,
+        nil,
 			},
 		},
 	}

@@ -134,7 +134,7 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-	adminDB := mockSession.MockDatabase("admin", 3)
+	adminDB := mockSession.MockDatabase("admin", 8)
 
 	adminDB.On("Run", entities.Cmd{"isMaster": 1}, mock.Anything).
 		Return(nil).
@@ -146,8 +146,7 @@ func TestFeedWorkerPool(t *testing.T) {
 				"ok": 1
 			}`), result)
 			assert.NoError(t, err)
-		}).
-		Once()
+		})
 
 
 	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).

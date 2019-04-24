@@ -36,21 +36,38 @@ type hostPort struct {
 	Port string
 }
 
-func (c *defaultCollector) GetSessionEntityKey() integration.EntityKey {
-  session, _ := c.GetSession()
+func (c *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) {
+  session, err := c.GetSession()
+  if err != nil {
+    return "", err
+  }
+
   host := session.Info().Host
   port := session.Info().Port
+
   i := c.GetIntegration()
   clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
   var namespace string
-  if ok, _ := IsStandaloneInstance(session); ok {
+  
+  ok, err := IsStandaloneInstance(session)
+  if err != nil {
+    return "", err
+  }
+
+  if ok {
     namespace = "mo-mongod"
   } else {
     namespace = "mo-mongos"
   }
-  e, _ := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
-  key, _ := e.Key()
-  return key
+  e, err := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
+  if err != nil {
+    return "", err
+  }
+  key, err := e.Key()
+  if err != nil {
+    return "", err
+  }
+  return key, nil
 }
 
 // defaultCollector is the most basic implementation of the

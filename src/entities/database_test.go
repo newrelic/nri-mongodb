@@ -43,6 +43,7 @@ func Test_databaseCollector_CollectMetrics(t *testing.T) {
 			"testDatabase",
 			i,
 			test.FakeSession{},
+      nil,
 		},
 	}
 
@@ -116,6 +117,7 @@ func getTestDatabaseCollector() *databaseCollector {
 			"testDatabase",
 			i,
 			test.FakeSession{},
+      nil,
 		},
 	}
 }
@@ -126,6 +128,7 @@ func getBadTestDatabaseCollector() *databaseCollector {
 			"testDatabase",
 			nil,
 			nil,
+      nil,
 		},
 	}
 }

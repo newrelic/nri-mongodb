@@ -61,6 +61,7 @@ func Test_hostCollector_collectInventory(t *testing.T) {
 			"testHost",
 			testIntegration,
 			mockSession,
+      nil,
 		},
 	}
 	collector.collectInventory(e)
@@ -85,6 +86,7 @@ func Test_hostCollector_collectInventory_Errors(t *testing.T) {
 			"testHost",
 			testIntegration,
 			mockSession,
+      nil,
 		},
 	}
 	collector.collectInventory(e)

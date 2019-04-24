@@ -97,6 +97,7 @@ func getTestCollectionCollector() *collectionCollector {
 			"testCollection",
 			i,
 			test.FakeSession{},
+      nil,
 		},
 		"testDB",
 	}
@@ -108,6 +109,7 @@ func getBadTestCollectionCollector() *collectionCollector {
 			"testCollection",
 			nil,
 			nil,
+      nil,
 		},
 		"testDB",
 	}

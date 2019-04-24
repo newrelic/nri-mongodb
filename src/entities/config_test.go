@@ -156,6 +156,7 @@ func getTestConfigCollector() *configCollector {
 				"testConfig",
 				i,
 				test.FakeSession{},
+        nil,
 			},
 		},
 	}
@@ -168,6 +169,7 @@ func getBadTestConfigCollector() *configCollector {
 				"testConfig",
 				nil,
 				nil,
+        nil,
 			},
 		},
 	}

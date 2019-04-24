@@ -22,8 +22,12 @@ func (c *mongodCollector) GetEntity() (*integration.Entity, error) {
     return c.entity, nil
   }
 	if i := c.GetIntegration(); i != nil {
+    ekey, err := c.GetSessionEntityKey()
+    if err != nil {
+      return nil, err
+    }
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-    e, err := i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongod", clusterNameIDAttr)
+    e, err := i.EntityReportedBy(ekey, c.name, "mo-mongod", clusterNameIDAttr)
     c.entity = e
     return e, err
 	}

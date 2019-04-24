@@ -22,7 +22,12 @@ func (c *clusterCollector) GetEntity() (*integration.Entity, error) {
   }
 
 	if i := c.GetIntegration(); i != nil {
-    e, err := i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-cluster")
+    ekey, err := c.GetSessionEntityKey()
+    if err != nil {
+      return nil, err
+    }
+
+    e, err := i.EntityReportedBy(ekey, c.name, "mo-cluster")
     c.entity = e
     return e, err
 	}

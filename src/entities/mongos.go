@@ -22,8 +22,12 @@ func (c *mongosCollector) GetEntity() (*integration.Entity, error) {
     return c.entity, nil
   }
 	if i := c.GetIntegration(); i != nil {
+    ekey, err := c.GetSessionEntityKey()
+    if err != nil {
+      return nil, err
+    }
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-    e, err :=  i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongos", clusterNameIDAttr)
+    e, err :=  i.EntityReportedBy(ekey, c.name, "mo-mongos", clusterNameIDAttr)
     c.entity = e
     return e, err
 	}

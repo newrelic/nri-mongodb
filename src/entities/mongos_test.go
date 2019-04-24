@@ -122,6 +122,7 @@ func getTestMongosCollector() *mongosCollector {
 				"testMongos",
 				i,
 				test.FakeSession{},
+        nil,
 			},
 		},
 	}
@@ -134,6 +135,7 @@ func getBadTestMongosCollector() *mongosCollector {
 				"testMongos",
 				nil,
 				nil,
+        nil,
 			},
 		},
 	}
