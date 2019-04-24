@@ -149,6 +149,7 @@ func TestFeedWorkerPool(t *testing.T) {
 		}).
 		Once()
 
+
 	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
 		Return(nil).
 		Run(func(args mock.Arguments) {

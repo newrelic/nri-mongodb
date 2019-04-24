@@ -60,6 +60,7 @@ type defaultCollector struct {
 	name        string
 	integration *integration.Integration
 	session     connection.Session
+  entity      *integration.Entity
 }
 
 func (d *defaultCollector) GetName() string {

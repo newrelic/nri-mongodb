@@ -18,9 +18,14 @@ type databaseCollector struct {
 
 // GetEntity creates or returns an entity for a database
 func (c *databaseCollector) GetEntity() (*integration.Entity, error) {
+  if c.entity != nil {
+    return c.entity, nil
+  }
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-database", clusterNameIDAttr)
+    e, err := i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-database", clusterNameIDAttr)
+    c.entity = e
+    return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -68,6 +73,7 @@ func GetDatabases(session connection.Session, integration *integration.Integrati
 					database.Name,
 					integration,
 					session,
+          nil,
 				},
 			}
 

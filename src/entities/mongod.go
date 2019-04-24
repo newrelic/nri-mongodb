@@ -18,9 +18,14 @@ type mongodCollector struct {
 
 // GetEntity creates or returns an entity for the mongod
 func (c *mongodCollector) GetEntity() (*integration.Entity, error) {
+  if c.entity != nil {
+    return c.entity, nil
+  }
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongod", clusterNameIDAttr)
+    e, err := i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongod", clusterNameIDAttr)
+    c.entity = e
+    return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -68,6 +73,7 @@ func GetStandaloneMongod(session connection.Session, integration *integration.In
 				fmt.Sprintf("%s:%s", session.Info().Host, session.Info().Port),
 				integration,
 				session,
+        nil,
 			},
 		},
 	}
@@ -93,6 +99,7 @@ func GetMongods(session connection.Session, shardHostString string, integration 
 					hostPort.Host + ":" + hostPort.Port,
 					integration,
 					mongodSession,
+          nil,
 				},
 			},
 		}

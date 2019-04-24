@@ -18,9 +18,14 @@ type configCollector struct {
 
 // GetEntity creates or returns an entity for the config server
 func (c *configCollector) GetEntity() (*integration.Entity, error) {
+  if c.entity != nil {
+    return c.entity, nil
+  }
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-config", clusterNameIDAttr)
+    e, err :=  i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-config", clusterNameIDAttr)
+    c.entity = e
+    return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -93,6 +98,7 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 					configHostPort.Host + ":" + configHostPort.Port,
 					integration,
 					configSession,
+          nil,
 				},
 			},
 		}

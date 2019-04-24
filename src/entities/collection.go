@@ -19,10 +19,15 @@ type collectionCollector struct {
 
 // GetEntity creates or returns an entity for a collection
 func (c *collectionCollector) GetEntity() (*integration.Entity, error) {
+  if c.entity != nil {
+    return c.entity, nil
+  }
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
     databaseNameIDAttr := integration.IDAttribute{Key: "databaseName", Value: c.db}
-		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-collection", clusterNameIDAttr, databaseNameIDAttr)
+    e, err := i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-collection", clusterNameIDAttr, databaseNameIDAttr)
+    c.entity = e
+    return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -63,6 +68,7 @@ func GetCollections(dbName string, session connection.Session, integration *inte
 					name,
 					integration,
 					session,
+          nil,
 				},
 				dbName,
 			}

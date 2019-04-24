@@ -18,9 +18,14 @@ type mongosCollector struct {
 
 // GetEntity creates or returns an entity for the mongos
 func (c *mongosCollector) GetEntity() (*integration.Entity, error) {
+  if c.entity != nil {
+    return c.entity, nil
+  }
 	if i := c.GetIntegration(); i != nil {
     clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
-		return i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongos", clusterNameIDAttr)
+    e, err :=  i.EntityReportedBy(c.GetSessionEntityKey(), c.name, "mo-mongos", clusterNameIDAttr)
+    c.entity = e
+    return e, err
 	}
 
 	return nil, errors.New("nil integration")
@@ -78,6 +83,7 @@ func GetMongoses(session connection.Session, integration *integration.Integratio
 					hostPort.Host + ":" + hostPort.Port,
 					integration,
 					mongosSession,
+          nil,
 				},
 			},
 		}
