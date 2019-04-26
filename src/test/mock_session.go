@@ -27,7 +27,7 @@ func (s *MockSession) MockDatabase(name string, callCount int) *MockDatabase {
 	db, ok := s.databases[name]
 	if !ok {
 		db = new(MockDatabase)
-		s.On("DB", name).Return(db).Times(callCount)
+		s.On("DB", name).Return(db)
 		if s.databases == nil {
 			s.databases = make(map[string]*MockDatabase)
 		}

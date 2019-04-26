@@ -18,7 +18,7 @@ func Test_configCollector_GetEntity(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, e)
 	assert.Equal(t, "testConfig", e.Metadata.Name)
-	assert.Equal(t, "config", e.Metadata.Namespace)
+	assert.Equal(t, "mo-config", e.Metadata.Namespace)
 }
 
 func Test_configCollector_GetEntity_Error(t *testing.T) {
@@ -156,6 +156,7 @@ func getTestConfigCollector() *configCollector {
 				"testConfig",
 				i,
 				test.FakeSession{},
+				nil,
 			},
 		},
 	}
@@ -166,6 +167,7 @@ func getBadTestConfigCollector() *configCollector {
 		hostCollector{
 			defaultCollector{
 				"testConfig",
+				nil,
 				nil,
 				nil,
 			},

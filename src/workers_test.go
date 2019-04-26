@@ -134,7 +134,7 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-	adminDB := mockSession.MockDatabase("admin", 3)
+	adminDB := mockSession.MockDatabase("admin", 8)
 
 	adminDB.On("Run", entities.Cmd{"isMaster": 1}, mock.Anything).
 		Return(nil).
@@ -146,8 +146,7 @@ func TestFeedWorkerPool(t *testing.T) {
 				"ok": 1
 			}`), result)
 			assert.NoError(t, err)
-		}).
-		Once()
+		})
 
 	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
 		Return(nil).
@@ -182,6 +181,8 @@ func TestFeedWorkerPool(t *testing.T) {
 		Return([]string{"collection1"}, nil).
 		Once()
 
+	entities.ClusterName = "testClusterName"
+
 	collChan := make(chan entities.Collector)
 	i, _ := integration.New("test", "0.0.0")
 
@@ -202,12 +203,12 @@ func TestFeedWorkerPool(t *testing.T) {
 	}()
 
 	expectedCollectorNames := map[string]bool{
-		"database1":     true,
-		"config1:27017": true,
-		"mongos1:27017": true,
-		"mongos1":       true,
-		"shard1:27017":  true,
-		"collection1":   true,
+		"database1":       true,
+		"config1:27017":   true,
+		"mongos1:27017":   true,
+		"testClusterName": true,
+		"shard1:27017":    true,
+		"collection1":     true,
 	}
 
 	select {

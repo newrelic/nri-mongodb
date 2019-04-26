@@ -18,7 +18,7 @@ func Test_mongosCollector_GetEntity(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, e)
 	assert.Equal(t, "testMongos", e.Metadata.Name)
-	assert.Equal(t, "mongos", e.Metadata.Namespace)
+	assert.Equal(t, "mo-mongos", e.Metadata.Namespace)
 }
 
 func Test_mongosCollector_GetEntity_Error(t *testing.T) {
@@ -122,6 +122,7 @@ func getTestMongosCollector() *mongosCollector {
 				"testMongos",
 				i,
 				test.FakeSession{},
+				nil,
 			},
 		},
 	}
@@ -132,6 +133,7 @@ func getBadTestMongosCollector() *mongosCollector {
 		hostCollector{
 			defaultCollector{
 				"testMongos",
+				nil,
 				nil,
 				nil,
 			},

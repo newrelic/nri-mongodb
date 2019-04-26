@@ -14,7 +14,7 @@ func Test_mongodCollector_GetEntity(t *testing.T) {
 	e, err := mc.GetEntity()
 	assert.NoError(t, err)
 	assert.Equal(t, "testMongod", e.Metadata.Name)
-	assert.Equal(t, "mongod", e.Metadata.Namespace)
+	assert.Equal(t, "mo-mongod", e.Metadata.Namespace)
 }
 
 func Test_mongodCollector_GetEntity_Error(t *testing.T) {
@@ -86,6 +86,7 @@ func getTestMongodCollector() *mongodCollector {
 				"testMongod",
 				i,
 				test.FakeSession{},
+				nil,
 			},
 		},
 	}
@@ -96,6 +97,7 @@ func getBadTestMongodCollector() *mongodCollector {
 		hostCollector{
 			defaultCollector{
 				"testMongod",
+				nil,
 				nil,
 				nil,
 			},

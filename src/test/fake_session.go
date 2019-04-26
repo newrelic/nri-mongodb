@@ -28,7 +28,10 @@ func (t FakeSession) New(host, port string) (connection.Session, error) {
 
 // Info returns the session info
 func (t FakeSession) Info() *connection.Info {
-	return &connection.Info{}
+	return &connection.Info{
+		Host: "testhost",
+		Port: "1234",
+	}
 }
 
 // FakeDB is a mocked database

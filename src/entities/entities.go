@@ -2,11 +2,17 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
+)
+
+var (
+	// ClusterName is an identifier for the cluster
+	ClusterName string
 )
 
 // Cmd is an aliasi for map[string]interface{}
@@ -29,6 +35,40 @@ type hostPort struct {
 	Port string
 }
 
+func (d *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) {
+	session, err := d.GetSession()
+	if err != nil {
+		return "", err
+	}
+
+	host := session.Info().Host
+	port := session.Info().Port
+
+	i := d.GetIntegration()
+	clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
+	var namespace string
+
+	ok, err := IsStandaloneInstance(session)
+	if err != nil {
+		return "", err
+	}
+
+	if ok {
+		namespace = "mo-mongod"
+	} else {
+		namespace = "mo-mongos"
+	}
+	e, err := i.Entity(fmt.Sprintf("%s:%s", host, port), namespace, clusterNameIDAttr)
+	if err != nil {
+		return "", err
+	}
+	key, err := e.Key()
+	if err != nil {
+		return "", err
+	}
+	return key, nil
+}
+
 // defaultCollector is the most basic implementation of the
 // Collector interface, and can be inherited to create a minimal
 // running version which creates no metrics or inventory
@@ -36,6 +76,7 @@ type defaultCollector struct {
 	name        string
 	integration *integration.Integration
 	session     connection.Session
+	entity      *integration.Entity
 }
 
 func (d *defaultCollector) GetName() string {
