@@ -86,7 +86,7 @@ func Test_addSSL(t *testing.T) {
 		ReadTimeout: time.Duration(1) * time.Second,
 	}
 
-	addSSL(dialInfo, false, "")
+	addSSL(dialInfo, false, "", "", "")
 
 	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
 }
@@ -103,7 +103,7 @@ func Test_addSSL_EmptyPEM(t *testing.T) {
 		ReadTimeout: time.Duration(1) * time.Second,
 	}
 
-	addSSL(dialInfo, false, filepath.Join("testdata", "empty.pem"))
+	addSSL(dialInfo, false, filepath.Join("testdata", "empty.pem"), "", "")
 
 	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
 }

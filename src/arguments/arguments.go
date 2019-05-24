@@ -21,6 +21,8 @@ type ArgumentList struct {
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`
+	PEMKeyFile            string `default:"" help:"PEM file contains Private Key and Client Certificate"`
+	Passphrase            string `default:"" help:"Passphrase for decrypting Private Key"`
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to man-in-the-middle attacks, and should only be used for testing."`
 	Filters               string `default:"" help:"JSON data defining database and collection filters."`
 }

@@ -45,6 +45,8 @@ func main() {
 		Port:                  args.Port,
 		Ssl:                   args.Ssl,
 		SslCaCerts:            args.SslCaCerts,
+		PEMKeyFile:            args.PEMKeyFile,
+		Passphrase:            args.Passphrase,
 		SslInsecureSkipVerify: args.SslInsecureSkipVerify,
 		Username:              args.Username,
 	}
