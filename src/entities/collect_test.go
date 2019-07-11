@@ -26,9 +26,9 @@ func Test_collectServerStatus(t *testing.T) {
 		"asserts.messagesPerSecond":  float64(0),
 		"asserts.userPerSecond":      float64(0),
 		"asserts.rolloversPerSecond": float64(0),
-		"key":                "value",
-		"event_type":         "testmetricset",
-		"reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
+		"key":                        "value",
+		"event_type":                 "testmetricset",
+		"reportingEntityKey":         "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -230,6 +230,7 @@ func Test_collectTop(t *testing.T) {
 		"event_type":                             "MongodTopSample",
 		"displayName":                            "testMongod",
 		"database":                               "records",
+		"clusterName":                            "",
 		"collection":                             "users",
 		"entityName":                             "mo-mongod:testMongod",
 		"usage.readLockInMillisecondsPerSecond":  float64(0),

@@ -55,6 +55,7 @@ func (c *mongodCollector) CollectMetrics() {
 	ms := e.NewMetricSet("MongodSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+		metric.Attribute{Key: "clusterName", Value: ClusterName},
 	)
 
 	isReplSet, err := collectIsMaster(c, ms)

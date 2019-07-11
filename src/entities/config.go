@@ -55,6 +55,7 @@ func (c *configCollector) CollectMetrics() {
 	ms := e.NewMetricSet("MongoConfigServerSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+		metric.Attribute{Key: "clusterName", Value: ClusterName},
 	)
 
 	isReplSet, err := collectIsMaster(c, ms)

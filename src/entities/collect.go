@@ -185,6 +185,7 @@ func collectTop(c Collector) error {
 			metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
 			metric.Attribute{Key: "database", Value: databaseName},
 			metric.Attribute{Key: "collection", Value: collectionName},
+			metric.Attribute{Key: "clusterName", Value: ClusterName},
 		)
 
 		logError(ms.MarshalMetrics(collectionStats), "Marshal metrics on top failed: %v")
@@ -239,6 +240,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 				metric.Attribute{Key: "database", Value: c.db},
 				metric.Attribute{Key: "collection", Value: c.name},
 				metric.Attribute{Key: "index", Value: indexName},
+				metric.Attribute{Key: "clusterName", Value: ClusterName},
 			)
 
 			if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {

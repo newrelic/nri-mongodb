@@ -51,6 +51,7 @@ func (c *databaseCollector) CollectMetrics() {
 	ms := e.NewMetricSet("MongoDatabaseSample",
 		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
 		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+		metric.Attribute{Key: "clusterName", Value: ClusterName},
 	)
 
 	logError(collectDbStats(c, ms), "Collect failed: %v")
