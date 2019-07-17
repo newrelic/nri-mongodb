@@ -66,19 +66,22 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 	// Create a wait group for each of the get*Collectors calls
 	getWg := new(sync.WaitGroup)
 
-	isStandaloneInstance, err := entities.IsStandaloneInstance(session)
+  instanceType, err := entities.DetermineInstanceType(session)
 	if err != nil {
-		log.Error("Failed to determine whether the monitored instance is a standalone instance or a sharded instance: %s", err.Error())
+		log.Error("Failed to determine whether the monitored instance is a standalone instance, a replica set, or a sharded cluster: %s", err.Error())
 		return
 	}
 
-	if isStandaloneInstance {
+  log.Debug("Determined we are collecting from a %s", instanceType)
+
+
+	if instanceType == "standalone" {
 		getWg.Add(1)
 		go createStandaloneMongodCollector(getWg, session, collectorChan, integration)
-
+  } else if instanceType == "replica_set" {
 		getWg.Add(1)
-		go createDatabaseCollectors(getWg, session, collectorChan, integration)
-	} else {
+		go createReplicaSetCollectors(getWg, session, collectorChan, integration)
+	} else if instanceType == "sharded_cluster"{
 		getWg.Add(1)
 		go createClusterCollectors(getWg, session, collectorChan, integration)
 
@@ -90,10 +93,10 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 
 		getWg.Add(1)
 		go createShardCollectors(getWg, session, collectorChan, integration)
-
-		getWg.Add(1)
-		go createDatabaseCollectors(getWg, session, collectorChan, integration)
 	}
+
+  getWg.Add(1)
+  go createDatabaseCollectors(getWg, session, collectorChan, integration)
 
 	getWg.Wait()
 }
@@ -166,6 +169,18 @@ func createShardCollectors(wg *sync.WaitGroup, session connection.Session, colle
 	}
 }
 
+func createReplicaSetCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+	defer wg.Done()
+
+  mongods, err := entities.GetReplSetMongods(session, integration)
+  if err != nil {
+    log.Error("Failed to collect list of mongods for replica set")
+  }
+  for _, mongod := range mongods {
+    collectorChan <- mongod
+  }
+}
+
 func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
 	defer wg.Done()
 
@@ -174,6 +189,7 @@ func createDatabaseCollectors(wg *sync.WaitGroup, session connection.Session, co
 	databases, err := entities.GetDatabases(session, integration, databaseFilter)
 	if err != nil {
 		log.Error("Failed to collect list of databases: %v", err)
+    return
 	}
 	for _, database := range databases {
 		collectorChan <- database

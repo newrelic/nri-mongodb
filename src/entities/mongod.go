@@ -3,11 +3,13 @@ package entities
 import (
 	"errors"
 	"fmt"
+  "strings"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
+	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 // mongodCollector is a storage struct with all the information needed
@@ -102,6 +104,45 @@ func GetMongods(session connection.Session, shardHostString string, integration 
 			hostCollector{
 				defaultCollector{
 					hostPort.Host + ":" + hostPort.Port,
+					integration,
+					mongodSession,
+					nil,
+				},
+			},
+		}
+		mongodCollectors = append(mongodCollectors, newMongodCollector)
+	}
+
+	return mongodCollectors, nil
+}
+
+func GetReplSetMongods(session connection.Session, integration *integration.Integration) ([]Collector, error) {
+	var replSetConfig metrics.ReplSetGetConfig
+	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+    return nil, fmt.Errorf("run replSetGetConfig failed: %s", err)
+	}
+
+	mongodCollectors := make([]Collector, 0, len(replSetConfig.Config.Members))
+	for _, member := range replSetConfig.Config.Members {
+    var host, port string
+    hostPort := strings.Split(*member.Host, ":")
+    if len(hostPort) == 2 {
+      host = hostPort[0]
+      port = hostPort[1]
+    } else {
+      host = hostPort[0]
+      port = "27017"
+    }
+		mongodSession, err := session.New(host, port)
+		if err != nil {
+			log.Error("Failed to connected to mongod server %s: %v", host, err)
+			continue
+		}
+
+		newMongodCollector := &mongodCollector{
+			hostCollector{
+				defaultCollector{
+          *member.Host,
 					integration,
 					mongodSession,
 					nil,

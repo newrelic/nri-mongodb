@@ -48,12 +48,12 @@ func (d *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) 
 	clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
 	var namespace string
 
-	ok, err := IsStandaloneInstance(session)
+	t, err := DetermineInstanceType(session)
 	if err != nil {
 		return "", err
 	}
 
-	if ok {
+	if t == "standalone" || t == "replica_set" {
 		namespace = "mo-mongod"
 	} else {
 		namespace = "mo-mongos"
