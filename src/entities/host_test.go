@@ -66,6 +66,9 @@ func Test_hostCollector_collectInventory(t *testing.T) {
 	}
 	collector.collectInventory(e)
 
+	expected := test.ExpectedInventory
+	expected["deploymentType"] = inventory.Item{"value": ""}
+
 	mockSession.AssertExpectations(t)
 	assert.Equal(t, test.ExpectedInventory, e.Inventory.Items())
 }
@@ -91,6 +94,7 @@ func Test_hostCollector_collectInventory_Errors(t *testing.T) {
 	}
 	collector.collectInventory(e)
 	expectedInventory := inventory.Items{}
+	expectedInventory["deploymentType"] = inventory.Item{"value": ""}
 
 	mockSession.AssertExpectations(t)
 	assert.Equal(t, expectedInventory, e.Inventory.Items())

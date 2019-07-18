@@ -26,6 +26,7 @@ type cmdLineOpts struct {
 func (hc *hostCollector) collectInventory(e *integration.Entity) {
 	hc.populateParameters(e)
 	hc.populateCmdLineOpts(e)
+	hc.populateDeploymentType(e)
 }
 
 func (hc *hostCollector) populateCmdLineOpts(entity *integration.Entity) {
@@ -53,6 +54,12 @@ func (hc *hostCollector) populateParameters(entity *integration.Entity) {
 	ok, exists := params["ok"]
 	if exists && ok.(float64) == 1 {
 		addInventoryMap(entity, "parameter", params, true)
+	}
+}
+
+func (hc *hostCollector) populateDeploymentType(entity *integration.Entity) {
+	if err := entity.SetInventoryItem("deploymentType", "value", DeploymentType); err != nil {
+		log.Error("Failed to set deploymentType inventory item: %s", err)
 	}
 }
 

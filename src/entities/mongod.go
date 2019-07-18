@@ -3,7 +3,7 @@ package entities
 import (
 	"errors"
 	"fmt"
-  "strings"
+	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -88,61 +88,59 @@ func GetStandaloneMongod(session connection.Session, integration *integration.In
 	return standaloneMongodCollector
 }
 
-// GetMongods returns an array of MongodCollectors to collect
-func GetMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]Collector, error) {
+// GetShardMongods attempts to connect to a member of the shard to retrieve shard configuration information
+func GetShardMongods(session connection.Session, shardHostString string, integration *integration.Integration) ([]Collector, error) {
 	hostPorts, _ := parseReplicaSetString(shardHostString)
 
-	mongodCollectors := make([]Collector, 0, len(hostPorts))
+	// For each host in the shard, attempt to get the connection info for all hosts in the shard
 	for _, hostPort := range hostPorts {
-		mongodSession, err := session.New(hostPort.Host, hostPort.Port)
+		session, err := session.New(hostPort.Host, hostPort.Port)
 		if err != nil {
-			log.Error("Failed to connected to mongod server %s: %v", hostPort.Host, err)
+			log.Warn("Failed to connect to mongod server %s:%s: %v", hostPort.Host, hostPort.Port, err)
 			continue
 		}
 
-		newMongodCollector := &mongodCollector{
-			hostCollector{
-				defaultCollector{
-					hostPort.Host + ":" + hostPort.Port,
-					integration,
-					mongodSession,
-					nil,
-				},
-			},
+		mongods, err := GetReplSetMongods(session, integration)
+		if err != nil {
+			log.Warn("Failed to retrieve mongod collectors for replica set from %s: %s", hostPort.Host, err)
+			continue
 		}
-		mongodCollectors = append(mongodCollectors, newMongodCollector)
+
+		return mongods, nil
+
 	}
 
-	return mongodCollectors, nil
+	return nil, fmt.Errorf("failed to connect any mongods in shard %s", shardHostString)
 }
 
+// GetReplSetMongods attempts to connect to a member of a rreplica set to eplica set to
 func GetReplSetMongods(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	var replSetConfig metrics.ReplSetGetConfig
 	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
-    return nil, fmt.Errorf("run replSetGetConfig failed: %s", err)
+		return nil, fmt.Errorf("run replSetGetConfig failed: %s", err)
 	}
 
 	mongodCollectors := make([]Collector, 0, len(replSetConfig.Config.Members))
 	for _, member := range replSetConfig.Config.Members {
-    var host, port string
-    hostPort := strings.Split(*member.Host, ":")
-    if len(hostPort) == 2 {
-      host = hostPort[0]
-      port = hostPort[1]
-    } else {
-      host = hostPort[0]
-      port = "27017"
-    }
+		var host, port string
+		hostPort := strings.Split(*member.Host, ":")
+		if len(hostPort) == 2 {
+			host = hostPort[0]
+			port = hostPort[1]
+		} else {
+			host = hostPort[0]
+			port = "27017"
+		}
 		mongodSession, err := session.New(host, port)
 		if err != nil {
-			log.Error("Failed to connected to mongod server %s: %v", host, err)
+			log.Error("Failed to connected to mongod server %s. Skipping entity creation: %v", host, err)
 			continue
 		}
 
 		newMongodCollector := &mongodCollector{
 			hostCollector{
 				defaultCollector{
-          *member.Host,
+					fmt.Sprintf("%s:%s", host, port),
 					integration,
 					mongodSession,
 					nil,

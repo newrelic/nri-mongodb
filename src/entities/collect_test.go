@@ -26,9 +26,9 @@ func Test_collectServerStatus(t *testing.T) {
 		"asserts.messagesPerSecond":  float64(0),
 		"asserts.userPerSecond":      float64(0),
 		"asserts.rolloversPerSecond": float64(0),
-		"key":                        "value",
-		"event_type":                 "testmetricset",
-		"reportingEntityKey":         "mo-mongod:testhost:1234:clustername=",
+		"key":                "value",
+		"event_type":         "testmetricset",
+		"reportingEntityKey": "mo-mongod:testhost:1234:clustername=",
 	}
 	actual := ms.Metrics
 	assert.Equal(t, expected, actual)
@@ -64,6 +64,31 @@ func Test_collectServerStatus_CommandError(t *testing.T) {
 			assert.NoError(t, err)
 		}).
 		Once()
+	mockSession.MockDatabase("admin", 1).
+		On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+        "config" : {
+            "_id" : "rs2",
+            "members" : [
+                {
+                    "_id" : 0,
+                    "host" : "testmongod1:27018",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                }
+            ],
+        },
+        "ok" : 1,
+			}`), result)
+			assert.NoError(t, err)
+		})
 
 	c := getTestMongodCollector()
 	c.session = mockSession
@@ -99,7 +124,7 @@ func Test_collectIsMaster(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestIsStandaloneInstance_True(t *testing.T) {
+func TestDetectDeploymentType_ShardedCluster(t *testing.T) {
 	mockSession := new(test.MockSession)
 	adminDB := mockSession.MockDatabase("admin", 1)
 	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
@@ -108,21 +133,46 @@ func TestIsStandaloneInstance_True(t *testing.T) {
 			result := args.Get(1)
 			err := bson.UnmarshalJSON([]byte(`{
 				"isMaster": true,
+        "msg": "isdbgrid",
 				"ok": 1
 			}`), result)
 			assert.NoError(t, err)
 		}).
 		Once()
+	adminDB.On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+        "config" : {
+            "_id" : "rs2",
+            "members" : [
+                {
+                    "_id" : 0,
+                    "host" : "testmongod1:27018",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                }
+            ],
+        },
+        "ok" : 1,
+			}`), result)
+			assert.NoError(t, err)
+		})
 
-	result, err := IsStandaloneInstance(mockSession)
+	result, err := DetectDeploymentType(mockSession)
 	if err != nil {
 		t.Error(err)
 	}
 
-	assert.True(t, result)
+	assert.Equal(t, "sharded_cluster", result)
 }
 
-func TestIsStandaloneInstance_False(t *testing.T) {
+func TestDetectDeploymentType_ReplicaSet(t *testing.T) {
 	mockSession := new(test.MockSession)
 	adminDB := mockSession.MockDatabase("admin", 1)
 	adminDB.On("Run", Cmd{"isMaster": 1}, mock.Anything).
@@ -131,19 +181,42 @@ func TestIsStandaloneInstance_False(t *testing.T) {
 			result := args.Get(1)
 			err := bson.UnmarshalJSON([]byte(`{
 				"isMaster": true,
-				"msg": "isdbgrid",
+				"msg": "",
 				"ok": 1
 			}`), result)
 			assert.NoError(t, err)
 		}).
 		Once()
-
-	result, err := IsStandaloneInstance(mockSession)
+	adminDB.On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+        "config" : {
+            "_id" : "rs2",
+            "members" : [
+                {
+                    "_id" : 0,
+                    "host" : "testmongod1:27018",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                }
+            ],
+        },
+        "ok" : 1,
+			}`), result)
+			assert.NoError(t, err)
+		})
+	result, err := DetectDeploymentType(mockSession)
 	if err != nil {
 		t.Error(err)
 	}
 
-	assert.False(t, result)
+	assert.Equal(t, "replica_set", result)
 }
 
 func Test_collectIsMaster_MissingSession(t *testing.T) {

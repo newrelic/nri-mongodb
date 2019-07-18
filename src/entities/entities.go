@@ -48,7 +48,7 @@ func (d *defaultCollector) GetSessionEntityKey() (integration.EntityKey, error) 
 	clusterNameIDAttr := integration.IDAttribute{Key: "clusterName", Value: ClusterName}
 	var namespace string
 
-	t, err := DetermineInstanceType(session)
+	t, err := DetectDeploymentType(session)
 	if err != nil {
 		return "", err
 	}

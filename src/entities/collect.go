@@ -12,6 +12,9 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
+// DeploymentType is either sharded_cluster, replica_set, or standalone
+var DeploymentType string
+
 // collectServerStatus collects serverStatus metrics
 func collectServerStatus(c Collector, ms *metric.Set) error {
 
@@ -35,28 +38,27 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 	return nil
 }
 
-// DetermineInstanceType tries to detect what type of mongo deployment is being monitored
-func DetermineInstanceType(session connection.Session) (string, error) {
+// DetectDeploymentType tries to detect what type of mongo deployment is being monitored
+func DetectDeploymentType(session connection.Session) (string, error) {
 	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
 	if err := session.DB("admin").Run(Cmd{"isMaster": 1}, &isMaster); err != nil {
 		return "", fmt.Errorf("run isMaster failed: %s", err)
 	}
-  
+
 	if isMaster.Msg != nil {
 		if *isMaster.Msg == "isdbgrid" {
-      return "sharded_cluster", nil
+			return "sharded_cluster", nil
 		}
 	}
 
 	// Collect and unmarshal the metrics
 	var replSetConfig metrics.ReplSetGetConfig
 	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
-    return "standalone", nil
+		return "standalone", nil
 	}
 
-  return "replica_set", nil
-
+	return "replica_set", nil
 
 }
 

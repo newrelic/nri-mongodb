@@ -6,6 +6,9 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/globalsign/mgo/bson"
+	"github.com/stretchr/testify/mock"
 )
 
 func Test_mongodCollector_GetEntity(t *testing.T) {
@@ -58,12 +61,57 @@ func Test_mongodCollector_CollectMetrics_Error(t *testing.T) {
 func TestGetMongods(t *testing.T) {
 	testIntegration, _ := integration.New("test", "0.0.1")
 	mockSession := new(test.MockSession)
-	mockSession.On("New", "host1", "1234").Return(mockSession, nil).Once()
-	mockSession.On("New", "host2", "4321").Return(mockSession, nil).Once()
-	mockSession.On("New", "host3", "666").Return(nil, assert.AnError).Once()
+	mockSession.On("New", "host1", "1234").Return(mockSession, nil)
+	mockSession.On("New", "host2", "4321").Return(mockSession, nil)
+	mockSession.On("New", "host3", "666").Return(nil, assert.AnError)
+	adminDB := mockSession.MockDatabase("admin", 2)
+	adminDB.On("Run", Cmd{"replSetGetConfig": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+        "config" : {
+            "_id" : "rs2",
+            "members" : [
+                {
+                    "_id" : 0,
+                    "host" : "host1:1234",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                },
+                {
+                    "_id" : 0,
+                    "host" : "host2:4321",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                },
+                {
+                    "_id" : 0,
+                    "host" : "host3:666",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                }
+            ],
+        },
+        "ok" : 1,
+			}`), result)
+			assert.NoError(t, err)
+		})
 
 	expectedHosts := []string{"host1:1234", "host2:4321"}
-	collectors, err := GetMongods(mockSession, "rs1/host1:1234,host2:4321,host3:666", testIntegration)
+	collectors, err := GetShardMongods(mockSession, "rs1/host1:1234,host2:4321,host3:666", testIntegration)
 
 	mockSession.AssertExpectations(t)
 	assert.NoError(t, err)

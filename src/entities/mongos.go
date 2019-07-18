@@ -64,7 +64,7 @@ func (c *mongosCollector) CollectMetrics() {
 
 // GetMongoses returns an array of MongosCollectors which will be collected
 func GetMongoses(session connection.Session, integration *integration.Integration) ([]Collector, error) {
-  log.Debug("Determining which mongoses to collect")
+	log.Debug("Determining which mongoses to collect")
 	type MongosUnmarshaller []struct {
 		ID string `bson:"_id" json:"_id"`
 	}

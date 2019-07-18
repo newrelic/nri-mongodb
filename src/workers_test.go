@@ -109,6 +109,7 @@ func Test_collectorWorker(t *testing.T) {
 func TestFeedWorkerPool(t *testing.T) {
 	mockSession := new(test.MockSession)
 	mockSession.On("New", "config1", "27017").Return(mockSession, nil).Once()
+	mockSession.On("New", "testmongod1", "27018").Return(mockSession, nil).Once()
 	mockSession.On("New", "mongos1", "27017").Return(mockSession, nil).Once()
 	mockSession.On("New", "shard1", "27017").Return(mockSession, nil).Once()
 
@@ -144,6 +145,31 @@ func TestFeedWorkerPool(t *testing.T) {
 				"isMaster": true,
 				"msg": "isdbgrid",
 				"ok": 1
+			}`), result)
+			assert.NoError(t, err)
+		})
+
+	adminDB.On("Run", entities.Cmd{"replSetGetConfig": 1}, mock.Anything).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			result := args.Get(1)
+			err := bson.UnmarshalJSON([]byte(`{
+        "config" : {
+            "_id" : "rs2",
+            "members" : [
+                {
+                    "_id" : 0,
+                    "host" : "testmongod1:27018",
+                    "arbiterOnly" : false,
+                    "buildIndexes" : true,
+                    "hidden" : false,
+                    "priority" : 1,
+                    "slaveDelay" : NumberLong(0),
+                    "votes" : 1
+                }
+            ],
+        },
+        "ok" : 1,
 			}`), result)
 			assert.NoError(t, err)
 		})
@@ -203,12 +229,12 @@ func TestFeedWorkerPool(t *testing.T) {
 	}()
 
 	expectedCollectorNames := map[string]bool{
-		"database1":       true,
-		"config1:27017":   true,
-		"mongos1:27017":   true,
-		"testClusterName": true,
-		"shard1:27017":    true,
-		"collection1":     true,
+		"database1":         true,
+		"config1:27017":     true,
+		"testmongod1:27018": true,
+		"mongos1:27017":     true,
+		"testClusterName":   true,
+		"collection1":       true,
 	}
 
 	select {
