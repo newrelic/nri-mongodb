@@ -5,12 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.1.0 - 2019-07-18
+## 2.2.0 - 2019-07-18
 ### Changed
 - Name mongods by replica set config instead of shard config
 ### Added
 - Support for non-sharded replica set deployments
 - deploymentType inventory item (sharded_cluster, replica_set, or standalone)
+
+## 2.1.0 - 2019-06-30
+### Added
+- PEM key support
 
 ## 2.0.0 - 2019-04-26
 ### Changed
