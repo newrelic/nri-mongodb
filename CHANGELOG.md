@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.1 - 2019-09-13
+### Fixed
+- Fix a bug where replication lag was not calculated when the oplog was in timestamp-only format
+
 ## 2.2.0 - 2019-07-18
 ### Changed
 - Name mongods by replica set config instead of shard config
