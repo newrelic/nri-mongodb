@@ -1,4 +1,4 @@
-DOCKER_IMAGE := golang:1.9
+DOCKER_IMAGE := golang:1.10
 INTEGRATION_DIR := nri-$(INTEGRATION)
 docker-fmt:
 	@echo "=== $(INTEGRATION) === [ docker-fmt ]: Running gofmt in Docker..."
