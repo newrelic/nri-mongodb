@@ -2,6 +2,7 @@ package test
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/inventory"
@@ -72,12 +73,33 @@ func unmarshalCommand(cmd string, result interface{}) error {
 		})
 		return bson.Unmarshal(marshalled, result)
 	case "replSetGetStatus":
+		ts1, _ := bson.NewMongoTimestamp(time.Unix(1568401602, 0), 1)
+		ts2, _ := bson.NewMongoTimestamp(time.Unix(1568401600, 0), 1)
 		marshalled, _ := bson.Marshal(map[string]interface{}{
 			"members": []map[string]interface{}{
 				{
-					"name":     "mdb-rh7-rs1-a1.bluemedora.localnet:27017",
+					"name":     "testhost1:27017",
+					"health":   1,
+					"stateStr": "PRIMARY",
+					"optime": map[string]interface{}{
+						"ts": ts1,
+					},
+					"uptime": 758657,
+				},
+				{
+					"name":     "testhost2:27017",
+					"health":   2,
+					"stateStr": "SECONDARY",
+					"optime": map[string]interface{}{
+						"ts": ts2,
+					},
+					"uptime": 758657,
+				},
+				{
+					"name":     "testhost3:27017",
 					"health":   1,
 					"stateStr": "SECONDARY",
+					"optime":   ts2,
 					"uptime":   758657,
 				},
 			},

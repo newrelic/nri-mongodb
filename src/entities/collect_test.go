@@ -241,13 +241,59 @@ func Test_collectIsMaster_CommandError(t *testing.T) {
 	assert.Nil(t, e)
 }
 
-func Test_collectReplGetStatus(t *testing.T) {
+func Test_collectReplGetStatus_Primary(t *testing.T) {
 	c := getTestMongodCollector()
 
 	e, _ := c.GetEntity()
 	ms := e.NewMetricSet("testmetricset")
 
-	err := collectReplGetStatus(c, "mdb-rh7-rs1-a1.bluemedora.localnet:27017", ms)
+	err := collectReplGetStatus(c, "testhost1:27017", ms)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := map[string]interface{}{
+		"replset.health":               float64(1),
+		"replset.state":                "PRIMARY",
+		"replset.uptimeInMilliseconds": float64(758657),
+		"replset.replicationLag":       float64(0),
+		"event_type":                   "testmetricset",
+		"reportingEntityKey":           "mo-mongod:testhost:1234:clustername=",
+	}
+	actual := ms.Metrics
+	assert.Equal(t, expected, actual)
+}
+
+func Test_collectReplGetStatus_SecondaryOptimeStruct(t *testing.T) {
+	c := getTestMongodCollector()
+
+	e, _ := c.GetEntity()
+	ms := e.NewMetricSet("testmetricset")
+
+	err := collectReplGetStatus(c, "testhost2:27017", ms)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := map[string]interface{}{
+		"replset.health":               float64(2),
+		"replset.state":                "SECONDARY",
+		"replset.uptimeInMilliseconds": float64(758657),
+		"replset.replicationLag":       float64(2),
+		"event_type":                   "testmetricset",
+		"reportingEntityKey":           "mo-mongod:testhost:1234:clustername=",
+	}
+	actual := ms.Metrics
+	assert.Equal(t, expected, actual)
+}
+
+func Test_collectReplGetStatus_SecondaryOptimeTimestamp(t *testing.T) {
+	c := getTestMongodCollector()
+
+	e, _ := c.GetEntity()
+	ms := e.NewMetricSet("testmetricset")
+
+	err := collectReplGetStatus(c, "testhost3:27017", ms)
 	if err != nil {
 		t.Error(err)
 	}
@@ -256,6 +302,7 @@ func Test_collectReplGetStatus(t *testing.T) {
 		"replset.health":               float64(1),
 		"replset.state":                "SECONDARY",
 		"replset.uptimeInMilliseconds": float64(758657),
+		"replset.replicationLag":       float64(2),
 		"event_type":                   "testmetricset",
 		"reportingEntityKey":           "mo-mongod:testhost:1234:clustername=",
 	}

@@ -1,9 +1,5 @@
 package metrics
 
-import (
-	"github.com/globalsign/mgo/bson"
-)
-
 // ReplSetGetStatus is a storage struct
 type ReplSetGetStatus struct {
 	Members []ReplSetGetStatusMember `bson:"members"`
@@ -11,14 +7,12 @@ type ReplSetGetStatus struct {
 
 // ReplSetGetStatusMember is a storage struct
 type ReplSetGetStatusMember struct {
-	Name     *string `bson:"name"`
-	Health   *int    `bson:"health"   metric_name:"replset.health"               source_type:"gauge"`
-	StateStr *string `bson:"stateStr" metric_name:"replset.state"                source_type:"attribute"`
-	Uptime   *int    `bson:"uptime"   metric_name:"replset.uptimeInMilliseconds" source_type:"gauge"`
-	Optime   struct {
-		Timestamp      *bson.MongoTimestamp `bson:"ts"`
-		ReplicationLag *int64               `metric_name:"replset.replicationLag" source_type:"gauge"`
-	} `bson:"optime"`
+	Name           *string     `bson:"name"`
+	Health         *int        `bson:"health"   metric_name:"replset.health"               source_type:"gauge"`
+	StateStr       *string     `bson:"stateStr" metric_name:"replset.state"                source_type:"attribute"`
+	Uptime         *int        `bson:"uptime"   metric_name:"replset.uptimeInMilliseconds" source_type:"gauge"`
+	Optime         interface{} `bson:"optime"`
+	ReplicationLag *int64      `metric_name:"replset.replicationLag" source_type:"gauge"`
 }
 
 // IsMaster is a storage struct

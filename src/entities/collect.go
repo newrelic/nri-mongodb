@@ -102,22 +102,39 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 		return err
 	}
 
-	t := time.Now().Unix()
+	primaryTimestamp := time.Now().Unix()
 	for _, member := range replSetStatus.Members {
-		// Calculate the replication lag
-		if member.Optime.Timestamp != nil {
-			lag := t - member.Optime.Timestamp.Time().Unix()
-			member.Optime.ReplicationLag = &lag
+		if member.StateStr != nil && *member.StateStr == "PRIMARY" {
+			if timestamp, ok := member.Optime.(*bson.MongoTimestamp); ok {
+				primaryTimestamp = timestamp.Time().Unix()
+			} else if optime, ok := member.Optime.(bson.M); ok {
+				if timestamp, ok := optime["ts"]; ok {
+					primaryTimestamp = timestamp.(bson.MongoTimestamp).Time().Unix()
+				}
+			}
 		}
+	}
 
+	for _, member := range replSetStatus.Members {
 		if !strings.HasPrefix(*member.Name, hostname) {
 			continue
 		}
+
+		// Calculate the replication lag
+		if timestamp, ok := member.Optime.(bson.MongoTimestamp); ok {
+			lag := primaryTimestamp - timestamp.Time().Unix()
+			member.ReplicationLag = &lag
+		} else if optime, ok := member.Optime.(bson.M); ok {
+			if timestamp, ok := optime["ts"]; ok {
+				lag := primaryTimestamp - timestamp.(bson.MongoTimestamp).Time().Unix()
+				member.ReplicationLag = &lag
+			}
+		}
+
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetStatus failed: %v")
 	}
 
 	return nil
-
 }
 
 // collectReplGetConfig collects replica set metrics
