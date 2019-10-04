@@ -315,17 +315,46 @@ type ServerStatusWiredTiger struct {
 
 // ServerStatusWiredTigerCache is a storage struct
 type ServerStatusWiredTigerCache struct {
-	Size                   *int `bson:"bytes currently in the cache"                                 metric_name:"wiredtiger.cacheInBytes"                                 source_type:"gauge"`
-	FailedEvictions        *int `bson:"failed eviction of pages that exceeded the in-memory maximum count" metric_name:"wiredtiger.failedEvictionsPagesPerSecond"                source_type:"rate"`
-	PageSplits             *int `bson:"in-memory page splits"                                        metric_name:"wiredtiger.cacheInMemoryPageSplits"                      source_type:"gauge"`
-	MaxSize                *int `bson:"maximum bytes configured"                                     metric_name:"wiredtiger.cacheMaxInBytes"                              source_type:"gauge"`
-	MaxPageSize            *int `bson:"maximum page size at eviction"                                metric_name:"wiredtiger.cacheMaxPageSizeEvictionInBytes"              source_type:"gauge"`
-	ModifiedPagesEvicted   *int `bson:"modified pages evicted"                                       metric_name:"wiredtiger.cacheModifiedPagesEvicted"                    source_type:"gauge"`
-	PagesHeld              *int `bson:"pages currently held in the cache"                            metric_name:"wiredtiger.cachePagesHeld"                               source_type:"gauge"`
-	PagesEvictedThreads    *int `bson:"pages evicted by application threads"                         metric_name:"wiredtiger.cachePagesEvictedApplicationThreadsPerSecond" source_type:"gauge"`
-	PagesEvictedMax        *int `bson:"pages evicted because they exceeded the in-memory maximum count"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMaxPerSecond"        source_type:"rate"`
-	DirtyData              *int `bson:"tracked dirty bytes in the cache"                             metric_name:"wiredtiger.cacheDirtyDataInBytes"                        source_type:"gauge"`
-	UnmodifiedPagesEvicted *int `bson:"unmodified pages evicted"                                     metric_name:"wiredtiger.cacheUnmodifiedPagesEvicted"                  source_type:"gauge"`
+	DirtyData                                     *int `bson:"tracked dirty bytes in the cache"                             metric_name:"wiredtiger.cacheDirtyDataInBytes"                        source_type:"gauge"`
+	DirtyDataInternal                             *int `bson:"tracked bytes belonging to internal pages in the cache"       metric_name:"wiredtiger.cacheDirtyDataInternalInBytes"                        source_type:"gauge"`
+	Size                                          *int `bson:"bytes currently in the cache"                                 metric_name:"wiredtiger.cacheInBytes"                                 source_type:"gauge"`
+	TrackedBytesLeafPages                         *int `bson:"tracked bytes belonging to leaf pages in the cache"           metric_name:"wiredtiger.cacheTrackedDataLeafPagesInBytes"                        source_type:"gauge"`
+	MaxSize                                       *int `bson:"maximum bytes configured"                                     metric_name:"wiredtiger.cacheMaxInBytes"                              source_type:"gauge"`
+	TrackedBytesOverflowPages                     *int `bson:"tracked bytes belonging to overflow pages in the cache"       metric_name:"wiredtiger.cacheTrackedDataOverflowPagesInBytes"                        source_type:"gauge"`
+	BytesRead                                     *int `bson:"bytes read into cache"                                        metric_name:"wiredtiger.cacheReadInBytes"                        source_type:"gauge"`
+	BytesWritten                                  *int `bson:"bytes written from cache"                                     metric_name:"wiredtiger.cacheWriteInBytes"                        source_type:"gauge"`
+	PagesEvictedThreads                           *int `bson:"pages evicted by application threads"                         metric_name:"wiredtiger.cachePagesEvictedApplicationThreads" source_type:"gauge"`
+	CheckpointBlockedPageEviction                 *int `bson:"checkpoint blocked page eviction"                             metric_name:"wiredtiger.cacheCheckpointBlockedPageEviction" source_type:"gauge"`
+	UnmodifiedPagesEvicted                        *int `bson:"unmodified pages evicted"                                     metric_name:"wiredtiger.cacheUnmodifiedPagesEvicted"                  source_type:"gauge"`
+	PageSplitDuringEvictionDeepenedTree           *int `bson:"page split during eviction deepened the tree"                 metric_name:"wiredtiger.cachePageSplitDeepenedTree"                  source_type:"gauge"`
+	ModifiedPagesEvicted                          *int `bson:"modified pages evicted"                                       metric_name:"wiredtiger.cacheModifiedPagesEvicted"                    source_type:"gauge"`
+	PagesSelectedUnableToBeEvicted                *int `bson:"pages selected for eviction unable to be evicted"             metric_name:"wiredtiger.cachePagesEvictionFailed"                    source_type:"gauge"`
+	PagesEvictedMax                               *int `bson:"pages evicted because they exceeded the in-memory maximum"    metric_name:"wiredtiger.cachePagesEvictedInMemoryMax"        source_type:"gauge"`
+	PagesEvictedChains                            *int `bson:"pages evicted because they had chains of deleted items"       metric_name:"wiredtiger.cachePagesEvictedChainsOfDeletedItems"        source_type:"gauge"`
+	FailedEvictions                               *int `bson:"failed eviction of pages that exceeded the in-memory maximum" metric_name:"wiredtiger.cachePagesEvictionInMemoryMaxFailed"                source_type:"gauge"`
+	HazardPointerBlocked                          *int `bson:"hazard pointer blocked page eviction"                         metric_name:"wiredtiger.cachePageEvictionsBlockedHazardPointer"                source_type:"gauge"`
+	InternalPagesEvicted                          *int `bson:"internal pages evicted"                                       metric_name:"wiredtiger.cacheInternalPagesEvicted"                source_type:"gauge"`
+	MaxPageSize                                   *int `bson:"maximum page size at eviction"                                metric_name:"wiredtiger.cacheMaxPageSizeEvictionInBytes"              source_type:"gauge"`
+	EvictionServerCandidateQueueEmptyToppingUp    *int `bson:"eviction server candidate queue empty when topping up"        metric_name:"wiredtiger.cacheEvictionServerCandidateQueueEmptyToppingUp"              source_type:"gauge"`
+	EvictionServerCandidateQueueNotEmptyToppingUp *int `bson:"eviction server candidate queue not empty when topping up"    metric_name:"wiredtiger.cacheEvictionServerCandidateQueueNotEmptyToppingUp"              source_type:"gauge"`
+	EvictionServerEvictingPages                   *int `bson:"eviction server evicting pages"                               metric_name:"wiredtiger.cacheEvictionServerEvictingPages"              source_type:"gauge"`
+	EvictionServerUnableToReachEvictionGoal       *int `bson:"eviction server unable to reach eviction goal"                metric_name:"wiredtiger.cacheEvictionServerUnableToReachEvictionGoal"              source_type:"gauge"`
+	InternalPagesSplitEviction                    *int `bson:"internal pages split during eviction"                         metric_name:"wiredtiger.cacheInternalPagesSplitDuringEviction"              source_type:"gauge"`
+	LeafPageSplits                                *int `bson:"leaf pages split during eviction"                             metric_name:"wiredtiger.cacheLeafPageSplits"                      source_type:"gauge"`
+	PagesWalkedForEviction                        *int `bson:"pages walked for eviction"                                    metric_name:"wiredtiger.cachePagesWalkedForEviction"                      source_type:"gauge"`
+	EvictionWorkerThreadEvictingPages             *int `bson:"eviction worker thread evicting pages"                        metric_name:"wiredtiger.cacheEvictionWorkerThreadEvictingPages"                      source_type:"gauge"`
+	InMemoryPagesSplit                            *int `bson:"in-memory page splits"                                        metric_name:"wiredtiger.cacheInMemoryPageSplits"      source_type:"gauge"`
+	InMemoryPagePassedCriteria                    *int `bson:"in-memory page passed criteria to be split"                   metric_name:"wiredtiger.cacheInMemoryPagePassesSplitCriteria"      source_type:"gauge"`
+	LookasideTableInsertCalls                     *int `bson:"lookaside table insert calls"                                 metric_name:"wiredtiger.cacheLookasideTableInsertCalls"      source_type:"gauge"`
+	LookasideTableRemoveCalls                     *int `bson:"lookaside table remove calls"                                 metric_name:"wiredtiger.cacheLookasideTableRemoveCalls"      source_type:"gauge"`
+	PercentageOverhead                            *int `bson:"percentage overhead"                                          metric_name:"wiredtiger.cachePercentageOverhead"      source_type:"gauge"`
+	TrackedDirtyPages                             *int `bson:"tracked dirty pages in the cache"                             metric_name:"wiredtiger.cacheTrackedDirtyPages"      source_type:"gauge"`
+	PagesHeldInCache                              *int `bson:"pages currently held in the cache"                            metric_name:"wiredtiger.cachePagesHeld"      source_type:"gauge"`
+	PagesReadIntoCache                            *int `bson:"pages read into cache"                                        metric_name:"wiredtiger.cachePagesRead"      source_type:"gauge"`
+	PagesReadIntoCacheRequiringLookaside          *int `bson:"pages read into cache requiring lookaside entries"            metric_name:"wiredtiger.cachePagesReadRequiringLookaside"      source_type:"gauge"`
+	PagesWritten                                  *int `bson:"pages written from cache"                                     metric_name:"wiredtiger.cachePagesWritten"      source_type:"gauge"`
+	PagesWrittenRequiringLookaside                *int `bson:"pages written from cache requiring lookaside entries"         metric_name:"wiredtiger.cachePagesWrittenRequiringLookaside"      source_type:"gauge"`
+	PagesWrittenRequiringInMemoryRestoration      *int `bson:"pages written requiring in-memory restoration"                metric_name:"wiredtiger.cachePagesWrittenRequiringInMemoryRestoration"      source_type:"gauge"`
 }
 
 // ServerStatusWiredTigerConcurrentTransactions is a storage struct
