@@ -196,7 +196,7 @@ type ServerStatusMetricsOperation struct {
 // ServerStatusMetricsQueryExecutor is a storage struct
 type ServerStatusMetricsQueryExecutor struct {
 	Scanned        *int `bson:"scanned" metric_name:"queryexecutor.scannedPerSecond" source_type:"rate"`
-	ScannedObjects *int `bson:"scanned" metric_name:"queryexecutor.scannedObjectsPerSecond" source_type:"rate"`
+	ScannedObjects *int `bson:"scannedObjects" metric_name:"queryexecutor.scannedObjectsPerSecond" source_type:"rate"`
 }
 
 // ServerStatusMetricsRecord is a storage struct
