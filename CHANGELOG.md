@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.1 - 2019-10-07
+### Added
+- A number of serverStatus wiredTiger cache statistics
+- queryexecutor.scannedObjects
+
 ## 2.2.1 - 2019-09-13
 ### Fixed
 - Fix a bug where replication lag was not calculated when the oplog was in timestamp-only format
