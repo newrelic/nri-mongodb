@@ -182,23 +182,48 @@ MongoDB,locks.oplogAcquireWaitIntentExclusive,Gauge,true,The number of times the
 MongoDB,locks.oplogAcquireWaitShared,Gauge,true,The number of times the oplog lock type acquisition in the Shared (S) mode encountered waits because the locks were held in a conflicting mode.
 MongoDB,locks.oplogTimeAcquiringMicrosIntentExclusive,Gauge,true,The wait time for the oplog lock type acquisitions in the Intent Exclusive (IX) mode.
 MongoDB,locks.oplogTimeAcquiringMicrosIntentShared,Gauge,true,The wait time for the oplog lock type acquisitions in the Shared (S) mode.
-MongoDB,wiredtiger.cacheInBytes,Gauge,true,The size of the data currently in cache.
-MongoDB,wiredtiger.failedEvictionsPagesPerSecond,Rate,true,"The number of failed eviction of pages that exceeded the in-memory maximum, per second."
-MongoDB,wiredtiger.cacheInMemoryPageSplits,Gauge,true,The In-memory page splits.
-MongoDB,wiredtiger.cacheMaxInBytes,Gauge,true,The maximum cache size.
-MongoDB,wiredtiger.cacheMaxPageSizeEvictionInBytes,Gauge,true,The maximum page size at eviction.
-MongoDB,wiredtiger.cacheModifiedPagesEvicted,Gauge,true,"The number of pages, that have been modified, evicted from the cache."
-MongoDB,wiredtiger.cachePagesHeld,Gauge,true,The number of pages currently held in the cache.
-MongoDB,wiredtiger.cachePagesEvictedApplicationThreadsPerSecond,Gauge,true,The number of page evicted by application threads per second.
-MongoDB,wiredtiger.cachePagesEvictedInMemoryMaxPerSecond,Gauge,true,"The number of pages evicted because they exceeded the cache in-memory maximum, per second."
-MongoDB,wiredtiger.cacheDirtyDataInBytes,Gauge,true,The size of the dirty data in the cache.
-MongoDB,wiredtiger.cacheUnmodifiedPagesEvicted,Gauge,true,"The number of pages, that were not modified, evicted from the cache."
-MongoDB,wiredtiger.concurrentTransactions.ReadAvailable,Gauge,true,The number of available read tickets (concurrent transactions) remaining.
-MongoDB,wiredtiger.concurrentTransactions.ReadRemaining,Gauge,true,The number of read tickets (concurrent transactions) in use.
-MongoDB,wiredtiger.concurrentTransactions.ReadTotal,Gauge,true,The total number of read tickets (concurrent transactions) available.
-MongoDB,wiredtiger.concurrentTransactions.WriteAvailable,Gauge,true,The number of available write tickets (concurrent transactions) remaining.
-MongoDB,wiredtiger.concurrentTransactions.WriteRemaining,Gauge,true,The number of write tickets (concurrent transactions) in use.
-MongoDB,wiredtiger.concurrentTransactions.WriteTotal,Gauge,true,The total number of write tickets (concurrent transactions) available.
+MongoDB,queryexecutor.scannedPerSecond,Rate,true,The total number of index items scanned during queries and query-plan evaluation.
+MongoDB,queryexecutor.scannedObjectsPerSecond,Rate,true,The total number of documents scanned during queries and query-plan evaluation
+MongoDB,wiredtiger.cacheDirtyDataInBytes,Gauge,true,Tracked dirty bytes in the cache
+MongoDB,wiredtiger.cacheDirtyDataInternalInBytes,Gauge,true,Tracked bytes belonging to internal pages in the cache
+MongoDB,wiredtiger.cacheInBytes,Gauge,true,Bytes currently in the cache
+MongoDB,wiredtiger.cacheTrackedDataLeafPagesInBytes,Gauge,true,Tracked bytes belonging to leaf pages in the cache
+MongoDB,wiredtiger.cacheMaxInBytes,Gauge,true,Maximum cache bytes configured
+MongoDB,wiredtiger.cacheTrackedDataOverflowPagesInBytes,Gauge,true,Tracked bytes belonging to overflow pages in the cache
+MongoDB,wiredtiger.cacheReadInBytes,Gauge,true,Bytes read into the cache
+MongoDB,wiredtiger.cacheWriteInBytes,Gauge,true,Bytes written from the cache
+MongoDB,wiredtiger.cachePagesEvictedApplicationThreads,Gauge,true,Cache pages evicted by application threads
+MongoDB,wiredtiger.cacheCheckpointBlockedPageEviction,Gauge,true,Cache checkpoint blocked page eviction
+MongoDB,wiredtiger.cacheUnmodifiedPagesEvicted,Gauge,true,Unmodified pages evicted
+MongoDB,wiredtiger.cachePageSplitDeepenedTree,Gauge,true,Page split during eviction deepened the tree
+MongoDB,wiredtiger.cacheModifiedPagesEvicted,Gauge,true,Modified pages evicted
+MongoDB,wiredtiger.cachePagesEvictionFailed,Gauge,true,Pages selected for eviction unable to be evicted
+MongoDB,wiredtiger.cachePagesEvictedInMemoryMax,Gauge,true,Pages evicted because they exceeded in-memory maximum
+MongoDB,wiredtiger.cachePagesEvictedChainsOfDeletedItems,Gauge,true,Pages evicted because they had chains of deleted items
+MongoDB,wiredtiger.cachePagesEvictionInMemoryMaxFailed,Gauge,true,Failed eviction of pages that exceeded the in-memory maximum
+MongoDB,wiredtiger.cachePageEvictionsBlockedHazardPointer,Gauge,true,Hazard pointer blocked page eviction
+MongoDB,wiredtiger.cacheInternalPagesEvicted,Gauge,true,Internal pages evicted
+MongoDB,wiredtiger.cacheMaxPageSizeEvictionInBytes,Gauge,true,Maximum page size at eviction
+MongoDB,wiredtiger.cacheEvictionServerCandidateQueueEmptyToppingUp,Gauge,true,Eviction server candidate queue empty when topping up
+MongoDB,wiredtiger.cacheEvictionServerCandidateQueueNotEmptyToppingUp,Gauge,true,Eviction server candidate queue not empty when topping up
+MongoDB,wiredtiger.cacheEvictionServerEvictingPages,Gauge,true,Eviction server evicting pages
+MongoDB,wiredtiger.cacheEvictionServerUnableToReachEvictionGoal,Gauge,true,Eviction server unable to reach eviction goal
+MongoDB,wiredtiger.cacheInternalPagesSplitDuringEviction,Gauge,true,Internal pages split during eviction
+MongoDB,wiredtiger.cacheLeafPageSplits,Gauge,true,Leaf pages split during eviction
+MongoDB,wiredtiger.cachePagesWalkedForEviction,Gauge,true,Pages walked for eviction
+MongoDB,wiredtiger.cacheEvictionWorkerThreadEvictingPages,Gauge,true,Eviction worker thread evicting pages
+MongoDB,wiredtiger.cacheInMemoryPageSplits,Gauge,true,In-memory page splits
+MongoDB,wiredtiger.cacheInMemoryPagePassesSplitCriteria,Gauge,true,In-memory page passed criteria to be split
+MongoDB,wiredtiger.cacheLookasideTableInsertCalls,Gauge,true,Lookaside table insert calls
+MongoDB,wiredtiger.cacheLookasideTableRemoveCalls,Gauge,true,Lookaside table remove calls
+MongoDB,wiredtiger.cachePercentageOverhead,Gauge,true,Percentage overhead
+MongoDB,wiredtiger.cacheTrackedDirtyPages,Gauge,true,Tracked dirty pages in the cache
+MongoDB,wiredtiger.cachePagesHeld,Gauge,true,Pages currently held in the cache
+MongoDB,wiredtiger.cachePagesRead,Gauge,true,Pages read into the cache
+MongoDB,wiredtiger.cachePagesReadRequiringLookaside,Gauge,true,Pages read into the cache requiring lookaside entries
+MongoDB,wiredtiger.cachePagesWritten,Gauge,true,Pages written from the cache
+MongoDB,wiredtiger.cachePagesWrittenRequiringLookaside,Gauge,true,Pages written from the cache requiring lookaside entries
+MongoDB,wiredtiger.cachePagesWrittenRequiringInMemoryRestoration,Gauge,true,Pages written from the cache requiring in-memory restoration
 MongoDB,network.bytesOutPerSecond,Gauge,true,The number of bytes that reflects the amount of network traffic sent from this database.
 MongoDB,network.bytesInPerSecond,Gauge,true,The number of bytes that reflects the amount of network traffic into this database.
 MongoDB,network.requestsPerSecond,Gauge,true,The number of distinct requests that the server has received.
@@ -209,7 +234,6 @@ MongoDB,operation.fastmodPerSecond,Rate,true,The number of update operations  th
 MongoDB,operation.idhackPerSecond,Rate,true,The number of queries  that contain the _id fieldper second.
 MongoDB,operation.writeConflictsPerSecond,Rate,true,The number of times  that write concern operations has encounter a conflictper second.
 MongoDB,operation.scanAndOrderPerSecond,Rate,true,The number of queries  that return sorted numbers that cannot perform the sort operation using an indexper second.
-MongoDB,queryexecutor.scannedPerSecond,Rate,true,The number of index items scanned  during queries and query-plan evaluationper second.
 MongoDB,record.movesPerSecond,Rate,true,The number of times  documents move within the on-disk representation of the MongoDB data setper second.
 MongoDB,repl.apply.batchesPerSecond,Rate,true,The number of batches applied across all databases per second.
 MongoDB,repl.apply.batchesFractionPerSecond,Gauge,true,The fraction of time (ms/s) the mongod has spent applying operations from the oplog.
