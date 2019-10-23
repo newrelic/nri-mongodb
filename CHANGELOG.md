@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.1 - 2019-10-23
+### Added
+- Windows MSI packaging
+
 ## 2.3.0 - 2019-10-07
 ### Added
 - A number of serverStatus wiredTiger cache statistics
