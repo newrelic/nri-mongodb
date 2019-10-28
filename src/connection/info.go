@@ -134,12 +134,14 @@ func addSSL(d *mgo.DialInfo, SslInsecureSkipVerify bool, SslCaCerts string, pemK
 		} else {
 			tlsConfig.Certificates = append([]tls.Certificate{}, clientCert)
 		}
-
 	}
 
 	// Use TLS to dial the server
 	d.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		if err != nil {
+			log.Error("Failed to dial server: %s", err)
+		}
 		return conn, err
 	}
 }
@@ -182,7 +184,6 @@ func parsePEMKeyFile(pemKeyFile string, passphrase string) (tls.Certificate, err
 		return tls.Certificate{}, errors.New("no Private Key found in PEM key file")
 	}
 
-	cert := tls.Certificate{}
 	if x509.IsEncryptedPEMBlock(pvtKeyBlock) {
 		decPemBytes, err := x509.DecryptPEMBlock(pvtKeyBlock, []byte(passphrase))
 		if err != nil {
@@ -196,5 +197,5 @@ func parsePEMKeyFile(pemKeyFile string, passphrase string) (tls.Certificate, err
 		return tls.X509KeyPair(pem.EncodeToMemory(clientCertBlock), pem.EncodeToMemory(&decBlock))
 	}
 
-	return cert, err
+	return tls.X509KeyPair(pem.EncodeToMemory(clientCertBlock), pem.EncodeToMemory(pvtKeyBlock))
 }
