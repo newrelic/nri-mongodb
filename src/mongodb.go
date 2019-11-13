@@ -1,3 +1,4 @@
+//go:generate goversioninfo
 package main
 
 import (
@@ -13,7 +14,7 @@ import (
 
 const (
 	integrationName    = "com.newrelic.mongodb"
-	integrationVersion = "2.3.1"
+	integrationVersion = "2.3.2"
 )
 
 var (
