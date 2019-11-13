@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.3.1 - 2019-10-23
+## 2.3.2 - 2019-11-13
 ### Added
 - Windows MSI packaging
+ 
+## 2.3.1 - 2019-10-28
+### Fixed
+- Using SSL certificates with unencrypted private key now works
 
 ## 2.3.0 - 2019-10-07
 ### Added
