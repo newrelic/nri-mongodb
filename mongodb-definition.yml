@@ -6,17 +6,17 @@ os: linux
 commands:
   all:
     command:
-      - ./bin/nr-mongodb
+      - ./bin/nri-mongodb
     prefix: config/mongodb
     interval: 15
   metrics:
     command:
-      - ./bin/nr-mongodb
+      - ./bin/nri-mongodb
       - --metrics
     interval: 15
   inventory:
     command:
-      - ./bin/nr-mongodb
+      - ./bin/nri-mongodb
       - --inventory
     prefix: config/mongodb
     interval: 15
