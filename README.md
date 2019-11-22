@@ -12,7 +12,7 @@ None
 
 * Download an archive file for the `MongoDB` Integration
 * Extract `mongodb-definition.yml` and the `bin` directory into `/var/db/newrelic-infra/newrelic-integrations`
-* Add execute permissions for the binary file `nr-mongodb` (if required)
+* Add execute permissions for the binary file `nri-mongodb` (if required)
 * Extract `mongodb-config.yml.sample` into `/etc/newrelic-infra/integrations.d`
 
 ## Usage
@@ -38,9 +38,9 @@ Assuming you have the source code, you can build and run the MongoDB integration
 $ make
 ```
 
-* The command above will execute tests for the MongoDB integration and build an executable file called `nr-mongodb` in the `bin` directory
+* The command above will execute tests for the MongoDB integration and build an executable file called `nri-mongodb` in the `bin` directory
 ```
-$ ./bin/nr-mongodb --help
+$ ./bin/nri-mongodb --help
 ```
 
 For managing external dependencies, the [govendor tool](https://github.com/kardianos/govendor) is used. It is required to lock all external dependencies to a specific version (if possible) in the vendor directory.

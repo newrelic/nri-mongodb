@@ -6,17 +6,17 @@ os: windows
 commands:
   all:
     command:
-      - .\bin\nr-mongodb.exe
+      - .\bin\nri-mongodb.exe
     prefix: config/mongodb
     interval: 15
   metrics:
     command:
-      - .\bin\nr-mongodb.exe
+      - .\bin\nri-mongodb.exe
       - --metrics
     interval: 15
   inventory:
     command:
-      - .\bin\nr-mongodb.exe
+      - .\bin\nri-mongodb.exe
       - --inventory
     prefix: config/mongodb
     interval: 15
