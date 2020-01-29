@@ -1,0 +1,46 @@
+  mongodb-config.yml: |
+    ---
+    # Run auto discovery to find pods with label "app=mongodb"
+    # https://docs.newrelic.com/docs/integrations/host-integrations/installation/container-auto-discovery
+    discovery:
+      command:
+        # Run NRI Discovery for Kubernetes
+        # https://github.com/newrelic/nri-discovery-kubernetes
+        exec: /var/db/newrelic-infra/nri-discovery-kubernetes
+        match:
+          label.app: mongodb
+    integrations:
+      - name: nri-mongodb
+        env:
+          # The mongos to connect to. Using the discovered IP as the host address
+          HOST: ${discovery-ip}
+          # The port the mongos is running on
+          PORT: 27017
+          # The username of the user created to monitor the cluster.
+          # This user should exist on the cluster as a whole as well
+          # as on each of the individual mongods.
+          USERNAME: <monitor>
+          # The password for the monitoring user
+          PASSWORD: <password>
+          # The database on which the monitoring user is stored
+          AUTH_SOURCE: <admin>
+          # A user-defined cluster name. Required.
+          CLUSTER_NAME: <my_cluster>
+          # Connect using SSL
+          SSL: true
+          # Skip verification of the certificate sent by the host.
+          # This can make the connection susceptible to man-in-the-middle attacks, 
+          # and should only be used for testing
+          SSL_INSECURE_SKIP_VERIFY: true
+          # Path to the CA certs file
+          SSL_CA_CERTS:: /sample/path/to/ca_certs
+          # Client Certificate to present to the server (optional)
+          PEM_KEY_FILE: /sample/file.pem
+          # Passphrase to decrypt PEMKeyFile file (optional)
+          PASSPHRASE: <my_secret>
+          # A JSON map of database names to an array of collection names. If empty, 
+          # defaults to all databases and collections. If the list of collections is null,
+          # collects all collections for the database. 
+          FILTERS: '{"db1":null,"db2":["collection1","collection2"],"db3":[]}'
+        labels:
+          env: production
