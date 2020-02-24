@@ -5,9 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.0 (2020-02-24)
+### Added
+- `concurrent_collections` argument to limit resource usage
+
+
 ## 2.4.0 (2019-11-18)
 ### Changed
 - Renamed the integration executable from nr-mongodb to nri-mongodb in order to be consistent with the package naming. **Important Note:** if you have any security module rules (eg. SELinux), alerts or automation that depends on the name of this binary, these will have to be updated.
+
 ## 2.3.3 - 2019-11-15
 ### Fixed
 - Remove windows definition file from linux packages
@@ -15,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 2.3.2 - 2019-11-13
 ### Added
 - Windows MSI packaging
- 
+
 ## 2.3.1 - 2019-10-28
 ### Fixed
 - Using SSL certificates with unencrypted private key now works
@@ -46,24 +52,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Made entity keys more unique
 
 ## 1.1.3 - 2019-02-25
-### Fixed 
+### Fixed
 - Fix prefix for inventory on all_data
 
 ## 1.1.2 - 2019-02-12
-### Fixed 
+### Fixed
 - Don't panic on invalid mongo top response
 
 ## 1.1.1 - 2019-02-04
-### Fixed 
+### Fixed
 - Use correct protocol version
 
 ## 1.1.0 - 2019-01-09
-### Fixed 
+### Fixed
 - Detect if the monitored instance is a standalone instance, and collect the proper subset of metrics
 
 ## 1.0.0 - 2018-11-29
 ### Changes
-- Bumped version for GA release 
+- Bumped version for GA release
 
 ## 0.2.0 - 2018-11-12
 ### Changed
