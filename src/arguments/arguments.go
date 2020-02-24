@@ -25,6 +25,7 @@ type ArgumentList struct {
 	Passphrase            string `default:"" help:"Passphrase for decrypting Private Key"`
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to man-in-the-middle attacks, and should only be used for testing."`
 	Filters               string `default:"" help:"JSON data defining database and collection filters."`
+	ConcurrentCollections int    `default:"50" help:"The number of entities to collect metrics for concurrently. This is tunable to reduce CPU and memory requirements."`
 }
 
 // Validate validates an argument list and returns an error if something is wrong
@@ -47,6 +48,10 @@ func (args *ArgumentList) Validate() error {
 
 	if _, err := strconv.Atoi(args.Port); err != nil {
 		return fmt.Errorf("invalid port %s", args.Port)
+	}
+
+	if args.ConcurrentCollections <= 0 {
+		return fmt.Errorf("concurrent_collections must be greater than zero")
 	}
 
 	if args.SslInsecureSkipVerify {

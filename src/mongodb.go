@@ -59,7 +59,7 @@ func main() {
 
 	// Start workers
 	var wg sync.WaitGroup
-	collectorChan := StartCollectorWorkerPool(100, &wg)
+	collectorChan := StartCollectorWorkerPool(args.ConcurrentCollections, &wg)
 
 	// Set a global cluster name for identity attributes
 	entities.ClusterName = args.ClusterName
