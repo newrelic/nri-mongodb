@@ -13,7 +13,7 @@
       - name: nri-mongodb
         env:
           # The mongos to connect to. Using the discovered IP as the host address
-          HOST: ${discovery-ip}
+          HOST: ${discovery.ip}
           # The port the mongos is running on
           PORT: 27017
           # The username of the user created to monitor the cluster.
