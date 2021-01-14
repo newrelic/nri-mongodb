@@ -11,19 +11,18 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GO_VERSION: '1.9.7'
   GPG_MAIL: 'infrastructure-eng@newrelic.com'
-  GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-  GPG_PRIVATE_KEY_BASE64: ${{ secrets.GPG_PRIVATE_KEY_BASE64 }} # base64 encoded
+  GPG_PASSPHRASE: ${{ secrets.OHAI_GPG_PASSPHRASE }}
+  GPG_PRIVATE_KEY_BASE64: ${{ secrets.OHAI_GPG_PRIVATE_KEY_BASE64 }} # base64 encoded
   INTEGRATION: "mongodb"
   ORIGINAL_REPO_NAME: 'newrelic/nri-mongodb'
-  PFX_CERTIFICATE_BASE64: ${{ secrets.PFX_CERTIFICATE_BASE64 }} # base64 encoded
+  PFX_CERTIFICATE_BASE64: ${{ secrets.OHAI_PFX_CERTIFICATE_BASE64 }} # base64 encoded
   PFX_CERTIFICATE_DESCRIPTION: 'New Relic'
-  PFX_PASSPHRASE:  ${{ secrets.PFX_PASSPHRASE }}
+  PFX_PASSPHRASE:  ${{ secrets.OHAI_PFX_PASSPHRASE }}
   REPO_FULL_NAME: ${{ github.event.repository.full_name }}
-  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SNYK_TOKEN: ${{ secrets.COREINT_SNYK_TOKEN }}
   TAG: ${{ github.event.release.tag_name }}
 
 jobs:
-
   validate:
     name: Validate code via linters
     runs-on: ubuntu-20.04
