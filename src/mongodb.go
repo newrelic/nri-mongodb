@@ -2,7 +2,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"runtime"
+	"strings"
 	"sync"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -13,12 +16,14 @@ import (
 )
 
 const (
-	integrationName    = "com.newrelic.mongodb"
-	integrationVersion = "2.5.0"
+	integrationName = "com.newrelic.mongodb"
 )
 
 var (
-	args arguments.ArgumentList
+	args               arguments.ArgumentList
+	integrationVersion = "0.0.0"
+	gitCommit          = ""
+	buildDate          = ""
 )
 
 func main() {
@@ -27,6 +32,18 @@ func main() {
 	if err != nil {
 		log.Error("Failed to create integration")
 		os.Exit(1)
+	}
+
+	if args.ShowVersion {
+		fmt.Printf(
+			"New Relic %s integration Version: %s, Platform: %s, GoVersion: %s, GitCommit: %s, BuildDate: %s\n",
+			strings.Title(strings.Replace(integrationName, "com.newrelic.", "", 1)),
+			integrationVersion,
+			fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+			runtime.Version(),
+			gitCommit,
+			buildDate)
+		os.Exit(0)
 	}
 
 	// Set verbose level

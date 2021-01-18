@@ -26,6 +26,7 @@ type ArgumentList struct {
 	SslInsecureSkipVerify bool   `default:"false" help:"Skip verification of the certificate sent by the host. This can make the connection susceptible to man-in-the-middle attacks, and should only be used for testing."`
 	Filters               string `default:"" help:"JSON data defining database and collection filters."`
 	ConcurrentCollections int    `default:"50" help:"The number of entities to collect metrics for concurrently. This is tunable to reduce CPU and memory requirements."`
+	ShowVersion           bool   `default:"false" help:"Print build information and exit"`
 }
 
 // Validate validates an argument list and returns an error if something is wrong
