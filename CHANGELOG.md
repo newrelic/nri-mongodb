@@ -5,10 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.1 (2021-02-09)
+### Changed
+- `username` and `password` arguments are now optional
+  + This allows connecting to passwordless mongoDB instances
+
 ## 2.5.0 (2020-02-24)
 ### Added
 - `concurrent_collections` argument to limit resource usage
-
 
 ## 2.4.0 (2019-11-18)
 ### Changed
