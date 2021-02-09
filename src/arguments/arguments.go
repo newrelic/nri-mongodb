@@ -31,14 +31,6 @@ type ArgumentList struct {
 
 // Validate validates an argument list and returns an error if something is wrong
 func (args *ArgumentList) Validate() error {
-	if args.Username == "" {
-		return errors.New("must provide a username argument")
-	}
-
-	if args.Password == "" {
-		return errors.New("must provide a password argument")
-	}
-
 	if args.Host == "" {
 		return errors.New("must provide a host argument")
 	}
