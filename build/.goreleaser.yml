@@ -107,7 +107,7 @@ archives:
       - nri-win
     name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
     files:
-      - mongodb-win-config.yml.sample
+      - mongodb-config.yml.sample
       - mongodb-win-definition.yml
     format: zip
 
