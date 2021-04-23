@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -14,7 +14,7 @@ func Test_collectServerStatus(t *testing.T) {
 	c := getTestMongodCollector()
 
 	e, _ := c.GetEntity()
-	ms := e.NewMetricSet("testmetricset", metric.Attribute{Key: "key", Value: "value"})
+	ms := e.NewMetricSet("testmetricset", attribute.Attribute{Key: "key", Value: "value"})
 
 	err := collectServerStatus(c, ms)
 	if err != nil {

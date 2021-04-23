@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/filter"
@@ -49,9 +49,9 @@ func (c *collectionCollector) CollectMetrics() {
 	}
 
 	ms := e.NewMetricSet("MongoCollectionSample",
-		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
-		metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
-		metric.Attribute{Key: "database", Value: c.db},
+		attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
+		attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+		attribute.Attribute{Key: "database", Value: c.db},
 	)
 
 	logError(collectCollStats(c, ms), "Collect failed: %v")
