@@ -1,0 +1,2482 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "pattern": "^com.newrelic.mongodb$"
+      },
+      "protocol_version": {
+        "minLength": 1,
+        "pattern": "^3$",
+        "type": "string"
+      },
+      "integration_version": {
+        "minLength": 1,
+        "pattern": "^[0-9]+.[0-9]+.[0-9]+$",
+        "type": "string"
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "entity": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "id_attributes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Key": {
+                        "type": "string"
+                      },
+                      "Value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "Key",
+                      "Value"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "type",
+                "id_attributes"
+              ]
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "items": {}
+              }
+            },
+            "inventory": {
+              "type": "object",
+              "properties": {
+                "commandline/argv": {
+                  "type": "object",
+                  "properties": {
+                    "0": {
+                      "type": "string"
+                    },
+                    "1": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "0",
+                    "1"
+                  ]
+                },
+                "configuration/config": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/net.bindIpAll": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/net.ipv6": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/net.port": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/net.unixDomainSocket.enabled": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/net.unixDomainSocket.pathPrefix": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/processManagement.fork": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/processManagement.pidFilePath": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/replication.enableMajorityReadConcern": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/replication.replSetName": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/security.authorization": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/security.keyFile": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/setParameter.enableLocalhostAuthBypass": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/sharding.clusterRole": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/storage.dbPath": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/storage.directoryPerDB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/storage.journal.enabled": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.destination": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.logAppend": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.logRotate": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.path": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.quiet": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/systemLog.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "deploymentType": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/KeysRotationIntervalSec": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolHostTimeoutMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolMaxConnecting": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolMaxSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolMinSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolRefreshRequirementMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ShardingTaskExecutorPoolRefreshTimeoutMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/TransactionRecordMinimumLifetimeMinutes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorIdlePctThreshold": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorMaxQueueLatencyMicros": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorRecursionLimit": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorReservedThreads": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorRunTimeJitterMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorRunTimeMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/adaptiveServiceExecutorStuckThreadTimeoutMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/allowRolesFromX509Certificates": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/allowUnsafeRenamesDuringInitialSync": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/authSchemaVersion": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/authenticationMechanisms": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/bgSyncOplogFetcherBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/clientCursorMonitorFrequencySecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/clusterAuthMode": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/collectionClonerBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/connPoolMaxConnsPerHost": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/connPoolMaxInUseConnsPerHost": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/connPoolMaxShardedConnsPerHost": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/connPoolMaxShardedInUseConnsPerHost": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/cursorTimeoutMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/debugCollectionUUIDs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionDirectorySizeMB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionEnabled": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionFileSizeMB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionPeriodMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionSamplesPerChunk": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionSamplesPerInterimUpdate": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/disableJavaScriptJIT": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/disableLogicalSessionCacheRefresh": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/disableNonSSLConnectionLogging": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/enableElectionHandoff": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/enableLocalhostAuthBypass": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/enableTestCommands": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/failIndexKeyTooLong": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/featureCompatibilityVersion.version": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/globalConnPoolIdleTimeoutMinutes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/heapProfilingEnabled": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/heapProfilingSampleIntervalBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/honorSystemUmask": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/incrementChunkMajorVersionOnChunkSplits": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/initialSyncOplogBuffer": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/initialSyncOplogBufferPeekCacheSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/initialSyncOplogFetcherBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalDocumentSourceCursorBatchSizeBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalDocumentSourceLookupCacheSizeBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalGeoNearQuery2DMaxCoveringCells": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalGeoPredicateQuery2DMaxCoveringCells": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalInsertMaxBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalLookupStageIntermediateDocumentMaxSizeBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalProhibitShardOperationRetry": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryAlwaysMergeOnPrimaryShard": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryCacheEvictionRatio": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryCacheFeedbacksStored": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryCacheMaxSizeBytesBeforeStripDebugInfo": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryCacheSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryEnumerationMaxIntersectPerAnd": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryEnumerationMaxOrSolutions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryExecMaxBlockingSortBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryExecYieldIterations": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryExecYieldPeriodMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryFacetBufferSizeBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryFacetMaxOutputDocSizeBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryForceIntersectionPlans": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryIgnoreUnknownJSONSchemaKeywords": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryMaxAddToSetBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryMaxPushBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryMaxScansToExplode": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlanEvaluationCollFraction": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlanEvaluationMaxResults": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlanEvaluationWorks": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlanOrChildrenIndependently": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlannerEnableHashIntersection": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlannerEnableIndexIntersection": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlannerGenerateCoveredWholeIndexScans": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryPlannerMaxIndexedSolutions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryProhibitBlockingMergeOnMongoS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryProhibitMergingOnMongoS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryS2GeoCoarsestLevel": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryS2GeoFinestLevel": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalQueryS2GeoMaxCells": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/internalValidateFeaturesAsMaster": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/javascriptProtection": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/journalCommitInterval": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/jsHeapLimitMB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/localLogicalSessionTimeoutMinutes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.accessControl.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.command.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.control.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.executor.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.ftdc.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.geo.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.index.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.network.asio.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.network.bridge.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.network.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.query.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.replication.heartbeats.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.replication.rollback.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.replication.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.sharding.shardingCatalogRefresh.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.sharding.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.storage.journal.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.storage.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.tracking.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logComponentVerbosity.write.verbosity": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logLevel": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logUserIds": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/logicalSessionRefreshMillis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxAcceptableLogicalClockDriftSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxBSONDepth": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxIndexBuildMemoryUsageMegabytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxLogSizeKB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxNumInitialSyncCollectionClonerCursors": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxSessions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/maxSyncSourceLagSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/migrateCloneInsertionBatchDelayMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/migrateCloneInsertionBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/minNumChunksForSessionsCollection": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/newCollectionsUsePowerOf2Sizes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/notablescan": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncCollectionCountAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncCollectionFindAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncConnectAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncListCollectionsAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncListDatabasesAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncListIndexesAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/numInitialSyncOplogFindAttempts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/oplogFetcherInitialSyncMaxFetcherRestarts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/oplogFetcherSteadyStateMaxFetcherRestarts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/oplogInitialFindMaxSeconds": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/oplogRetriedFindMaxSeconds": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/orphanCleanupDelaySecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/periodicNoopIntervalSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/priorityTakeoverFreshnessWindowSeconds": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/quiet": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/rangeDeleterBatchDelayMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/rangeDeleterBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/replApplyBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/replBatchLimitOperations": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/replElectionTimeoutOffsetLimitFraction": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/replIndexPrefetch": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/replWriterThreadCount": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/reportOpWriteConcernCountersInServerStatus": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/reservedServiceExecutorRecursionLimit": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/rollbackRemoteOplogQueryBatchSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/saslHostName": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/saslServiceName": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/scramIterationCount": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/scriptingEngineInterruptIntervalMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/shardedConnPoolIdleTimeoutMinutes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/skipCorruptDocumentsWhenCloning": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/skipShardingConfigurationChecks": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/sslMode": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/sslWithholdClientCertificate": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/startupAuthSchemaValidation": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/suppressNoTLSPeerCertificateWarning": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/syncdelay": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/synchronousServiceExecutorRecursionLimit": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/taskExecutorPoolSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/tcmallocAggressiveMemoryDecommit": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/tcmallocEnableMarkThreadTemporarilyIdle": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/tcmallocMaxTotalThreadCacheBytes": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/tcmallocReleaseRate": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/testingSnapshotBehaviorInIsolation": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/tlsCATrusts": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/traceExceptions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/traceWriteConflictExceptions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ttlMonitorEnabled": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/ttlMonitorSleepSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/waitForSecondaryBeforeNoopWriteMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/waitForStepDownOnNonCommandShutdown": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/wiredTigerConcurrentReadTransactions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/wiredTigerConcurrentWriteTransactions": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/wiredTigerCursorCacheSize": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/wiredTigerMaxCacheOverflowSizeGB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/wiredTigerSessionCloseIdleTimeSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/writePeriodicNoops": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "configuration/sharding.configDB": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/KillSessionsMaxConcurrency": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/KillSessionsPerHostTimeoutMS": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/diagnosticDataCollectionDirectoryPath": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                },
+                "parameter/userCacheInvalidationIntervalSecs": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ]
+                }
+              }
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "items": {}
+              }
+            }
+          },
+          "required": [
+            "entity",
+            "metrics",
+            "inventory",
+            "events"
+          ]
+        }
+      }
+    },
+    "required": [
+      "name",
+      "protocol_version",
+      "integration_version",
+      "data"
+    ]
+  }

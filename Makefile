@@ -8,7 +8,6 @@ GO_FILES     := ./src/
 GOTOOLS       = github.com/kardianos/govendor \
 		gopkg.in/alecthomas/gometalinter.v2 \
 		github.com/axw/gocov/gocov \
-		github.com/stretchr/testify/assert \
 		github.com/AlekSi/gocov-xml \
 
 all: build
@@ -54,6 +53,11 @@ compile-only: deps-only
 test: deps
 	@echo "=== $(INTEGRATION) === [ test ]: Running unit tests..."
 	@gocov test -race $(GO_FILES)... | gocov-xml > coverage.xml
+
+integration-test:
+	@echo "=== $(INTEGRATION) === [ test ]: running integration tests..."
+	@docker-compose -f tests/integration/docker-compose.yml up -d --build
+	@go test -v -tags=integration ./tests/integration/. ; (ret=$$?; docker-compose -f tests/integration/docker-compose.yml down && exit $$ret)
 
 # Include thematic Makefiles
 include $(CURDIR)/build/ci.mk

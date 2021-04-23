@@ -1,0 +1,681 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "pattern": "^com.newrelic.mongodb$"
+      },
+      "protocol_version": {
+        "minLength": 1,
+        "pattern": "^3$",
+        "type": "string"
+      },
+      "integration_version": {
+        "minLength": 1,
+        "pattern": "^[0-9]+.[0-9]+.[0-9]+$",
+        "type": "string"
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "entity": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "mo-mongos",
+                    "mo-database",
+                    "mo-cluster",
+                    "mo-collection",
+                    "mo-mongod",
+                    "mo-config"
+                  ]
+                },
+                "id_attributes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Key": {
+                        "type": "string",
+                        "enum": [
+                          "clusterName",
+                          "databaseName"
+                        ]
+                      },
+                      "Value": {
+                        "type": "string",
+                        "enum": [
+                          "test-cluster",
+                          "config",
+                          "admin"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "Key",
+                      "Value"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "type",
+                "id_attributes"
+              ]
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "clusterName": {
+                    "type": "string",
+                    "enum": [
+                      "test-cluster"
+                    ]
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "entityName": {
+                    "type": "string"
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "MongoDatabaseSample",
+                      "MongoSample",
+                      "MongoCollectionSample",
+                      "MongodSample",
+                      "MongodTopSample",
+                      "MongoConfigServerSample",
+                      "MongosSample"
+                    ]
+                  },
+                  "reportingEntityKey": {
+                    "type": "string"
+                  },
+                  "stats.dataInBytes": {
+                    "type": "integer"
+                  },
+                  "stats.indexInBytes": {
+                    "type": "integer"
+                  },
+                  "stats.indexes": {
+                    "type": "integer"
+                  },
+                  "stats.objects": {
+                    "type": "integer"
+                  },
+                  "stats.storageInBytes": {
+                    "type": "integer"
+                  },
+                  "totalDatabases": {
+                    "type": "integer"
+                  },
+                  "collection.avgObjSizeInBytes": {
+                    "type": "integer"
+                  },
+                  "collection.capped": {
+                    "type": "integer"
+                  },
+                  "collection.count": {
+                    "type": "integer"
+                  },
+                  "collection.nindexes": {
+                    "type": "integer"
+                  },
+                  "collection.sizeInBytes": {
+                    "type": "integer"
+                  },
+                  "collection.storageSizeInBytes": {
+                    "type": "integer"
+                  },
+                  "database": {
+                    "type": "string"
+                  },
+                  "collection": {
+                    "type": "string"
+                  },
+                  "collection.indexAccesses": {
+                    "type": "integer"
+                  },
+                  "collection.indexSizeInBytes": {
+                    "type": "integer"
+                  },
+                  "index": {
+                    "type": "string"
+                  },
+                  "collection.max": {
+                    "type": "integer"
+                  },
+                  "collection.maxSizeInBytes": {
+                    "type": "integer"
+                  },
+                  "asserts.messagesPerSecond": {
+                    "type": "integer"
+                  },
+                  "asserts.regularPerSecond": {
+                    "type": "integer"
+                  },
+                  "asserts.rolloversPerSecond": {
+                    "type": "integer"
+                  },
+                  "asserts.userPerSecond": {
+                    "type": "integer"
+                  },
+                  "asserts.warningPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.countFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.countPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.createIndexesFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.createIndexesPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.deleteFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.deletePerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.evalFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.evalPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.findAndModifyFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.findAndModifyPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.insertFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.insertPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.updateFailedPerSecond": {
+                    "type": "integer"
+                  },
+                  "commands.updatePerSecond": {
+                    "type": "integer"
+                  },
+                  "connections.available": {
+                    "type": "integer"
+                  },
+                  "connections.current": {
+                    "type": "integer"
+                  },
+                  "connections.totalCreated": {
+                    "type": "integer"
+                  },
+                  "cursor.openNoTimeout": {
+                    "type": "integer"
+                  },
+                  "cursor.openPinned": {
+                    "type": "integer"
+                  },
+                  "cursor.openTotal": {
+                    "type": "integer"
+                  },
+                  "cursor.timedOutPerSecond": {
+                    "type": "integer"
+                  },
+                  "document.deletedPerSecond": {
+                    "type": "integer"
+                  },
+                  "document.insertedPerSecond": {
+                    "type": "integer"
+                  },
+                  "document.returnedPerSecond": {
+                    "type": "integer"
+                  },
+                  "document.updatedPerSecond": {
+                    "type": "integer"
+                  },
+                  "getlasterror.wtimeMillisPerSecond": {
+                    "type": "integer"
+                  },
+                  "getlasterror.wtimeoutsPerSecond": {
+                    "type": "integer"
+                  },
+                  "globallock.activeClientsReaders": {
+                    "type": "integer"
+                  },
+                  "globallock.activeClientsTotal": {
+                    "type": "integer"
+                  },
+                  "globallock.activeClientsWriters": {
+                    "type": "integer"
+                  },
+                  "globallock.currentQueueReaders": {
+                    "type": "integer"
+                  },
+                  "globallock.currentQueueTotal": {
+                    "type": "integer"
+                  },
+                  "globallock.currentQueueWriters": {
+                    "type": "integer"
+                  },
+                  "globallock.totaltime": {
+                    "type": "integer"
+                  },
+                  "locks.collectionAcquireExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.collectionAcquireIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.collectionAcquireIntentShared": {
+                    "type": "integer"
+                  },
+                  "locks.databaseAcquireExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.databaseAcquireIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.databaseAcquireIntentShared": {
+                    "type": "integer"
+                  },
+                  "locks.databaseAcquireShared": {
+                    "type": "integer"
+                  },
+                  "locks.globalAcquireExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.globalAcquireIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.globalAcquireIntentShared": {
+                    "type": "integer"
+                  },
+                  "locks.globalAcquireWaitIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.globalTimeAcquiringMicrosIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.oplogAcquireIntentExclusive": {
+                    "type": "integer"
+                  },
+                  "locks.oplogAcquireIntentShared": {
+                    "type": "integer"
+                  },
+                  "mem.bits": {
+                    "type": "integer"
+                  },
+                  "mem.mappedInBytes": {
+                    "type": "integer"
+                  },
+                  "mem.mappedWithJournalInBytes": {
+                    "type": "integer"
+                  },
+                  "mem.residentInBytes": {
+                    "type": "integer"
+                  },
+                  "mem.virtualInBytes": {
+                    "type": "integer"
+                  },
+                  "network.bytesInPerSecond": {
+                    "type": "integer"
+                  },
+                  "network.bytesOutPerSecond": {
+                    "type": "integer"
+                  },
+                  "network.requestsPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.commandPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.deletePerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.getmorePerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.insertPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.queryPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcounters.updatePerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.commandPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.deletePerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.getmorePerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.insertPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.queryPerSecond": {
+                    "type": "integer"
+                  },
+                  "opcountersrepl.updatePerSecond": {
+                    "type": "integer"
+                  },
+                  "operation.scanAndOrderPerSecond": {
+                    "type": "integer"
+                  },
+                  "operation.writeConflictsPerSecond": {
+                    "type": "integer"
+                  },
+                  "pageFaultsPerSecond": {
+                    "type": "integer"
+                  },
+                  "queryexecutor.scannedObjectsPerSecond": {
+                    "type": "integer"
+                  },
+                  "queryexecutor.scannedPerSecond": {
+                    "type": "integer"
+                  },
+                  "record.movesPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.apply.batchesPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.apply.operationsPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.buffer.count": {
+                    "type": "integer"
+                  },
+                  "repl.buffer.maxSizeInBytes": {
+                    "type": "integer"
+                  },
+                  "repl.buffer.sizeInBytes": {
+                    "type": "integer"
+                  },
+                  "repl.docsLoadedPrefetch": {
+                    "type": "integer"
+                  },
+                  "repl.docsPreloadInMilliseconds": {
+                    "type": "integer"
+                  },
+                  "repl.indexLoadedPrefetch": {
+                    "type": "integer"
+                  },
+                  "repl.indexPreloadInMilliseconds": {
+                    "type": "integer"
+                  },
+                  "repl.network.bytesPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.network.getmoresPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.network.operationPerSecond": {
+                    "type": "integer"
+                  },
+                  "repl.network.readersCreatedPerSecond": {
+                    "type": "integer"
+                  },
+                  "replset.health": {
+                    "type": "integer"
+                  },
+                  "replset.isArbiter": {
+                    "type": "integer"
+                  },
+                  "replset.isHidden": {
+                    "type": "integer"
+                  },
+                  "replset.isMaster": {
+                    "type": "integer"
+                  },
+                  "replset.isSecondary": {
+                    "type": "integer"
+                  },
+                  "replset.priority": {
+                    "type": "integer"
+                  },
+                  "replset.replicationLag": {
+                    "type": "integer"
+                  },
+                  "replset.state": {
+                    "type": "string"
+                  },
+                  "replset.uptimeInMilliseconds": {
+                    "type": "integer"
+                  },
+                  "replset.voteFraction": {
+                    "type": "integer"
+                  },
+                  "replset.votes": {
+                    "type": "integer"
+                  },
+                  "ttl.deleteDocumentsPerSecond": {
+                    "type": "integer"
+                  },
+                  "ttl.removeDocumentPerSecond": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheCheckpointBlockedPageEviction": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheDirtyDataInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheDirtyDataInternalInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheEvictionServerCandidateQueueEmptyToppingUp": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheEvictionServerCandidateQueueNotEmptyToppingUp": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheEvictionServerEvictingPages": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheEvictionServerUnableToReachEvictionGoal": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheEvictionWorkerThreadEvictingPages": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheInMemoryPagePassesSplitCriteria": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheInMemoryPageSplits": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheInternalPagesEvicted": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheInternalPagesSplitDuringEviction": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheLeafPageSplits": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheMaxInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheMaxPageSizeEvictionInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheModifiedPagesEvicted": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePageEvictionsBlockedHazardPointer": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePageSplitDeepenedTree": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesEvictedApplicationThreads": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesEvictionFailed": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesHeld": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesRead": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesWalkedForEviction": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesWritten": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePagesWrittenRequiringInMemoryRestoration": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cachePercentageOverhead": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheReadInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheTrackedDataLeafPagesInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheTrackedDirtyPages": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheUnmodifiedPagesEvicted": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.cacheWriteInBytes": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.ReadAvailable": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.ReadRemaining": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.ReadTotal": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.WriteAvailable": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.WriteRemaining": {
+                    "type": "integer"
+                  },
+                  "wiredtiger.concurrentTransactions.WriteTotal": {
+                    "type": "integer"
+                  },
+                  "usage.commandsInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.commandsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.getmoreInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.getmorePerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.insertInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.insertPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.queriesInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.queriesPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.readLockInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.readLockPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.removeInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.removePerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.totalInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.totalPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.updateInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.updatePerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.writeLockInMillisecondsPerSecond": {
+                    "type": "integer"
+                  },
+                  "usage.writeLockPerSecond": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "displayName",
+                  "entityName",
+                  "event_type",
+                  "reportingEntityKey"
+                ]
+              }
+            },
+            "inventory": {
+              "type": "object"
+            },
+            "events": {
+              "type": "array",
+              "items": {
+                "items": {}
+              }
+            }
+          },
+          "required": [
+            "entity",
+            "metrics",
+            "inventory",
+            "events"
+          ]
+        }
+      }
+    },
+    "required": [
+      "name",
+      "protocol_version",
+      "integration_version",
+      "data"
+    ]
+  }
