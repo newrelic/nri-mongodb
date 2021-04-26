@@ -18,7 +18,7 @@ instances:
       # The database on which the monitoring user is stored
       auth_source: admin
       # A user-defined cluster name. Required.
-      cluster_name: testcluster
+      mongodb_cluster_name: testcluster
       # Connect using SSL
       ssl: true
       # Skip verification of the certificate sent by the host.

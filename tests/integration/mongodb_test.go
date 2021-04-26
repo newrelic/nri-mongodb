@@ -71,7 +71,7 @@ func runIntegration(t *testing.T, envVars ...string) (string, string, error) {
 		command = append(command, "--host", *host)
 	}
 	if !hasEnvClusterName && clusterName != nil {
-		command = append(command, "--cluster_name", *clusterName)
+		command = append(command, "--mongodb_cluster_name", *clusterName)
 	}
 	if !hasEnvUserName && username != nil {
 		command = append(command, "--username", *username)
@@ -111,6 +111,17 @@ func TestIntegrationMetrics(t *testing.T) {
 func TestIntegrationInventory(t *testing.T) {
 	testName := helpers.GetTestName(t)
 	stdout, stderr, err := runIntegration(t, "INVENTORY=true", fmt.Sprintf("NRIA_CACHE_PATH=/tmp/%v.json", testName))
+
+	assert.NotNil(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+	schemaPath := filepath.Join("json-schema-files", "inventory-schema.json")
+
+	err = jsonschema.Validate(schemaPath, stdout)
+	assert.NoError(t, err, "The output of integration doesn't have expected format.")
+}
+func TestIntegrationClusterName(t *testing.T) {
+	testName := helpers.GetTestName(t)
+	stdout, stderr, err := runIntegration(t, "METRICS=true", "MONGODB_CLUSTER_NAME=", "CLUSTER_NAME=test-cluster", fmt.Sprintf("NRIA_CACHE_PATH=/tmp/%v.json", testName))
 
 	assert.NotNil(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
