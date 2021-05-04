@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 2.6.0 (2021-04-26)
 ### Changed
 - Decorate metrics with `mongodbClusterName`
-  `clusterName` (deprecated) attribute might get overwritten by the Kubernetes integration when running inside kubernetes.
+  `clusterName` (deprecated) attribute might get overwritten by the Agent when running inside kubernetes.
   This change allows Mongodb entities to be uniquely identified when multiple Mongodb clusters are located in the same Kubernetes cluster.
 - removing obsolete win-config file
 - Use go 1.16 and go mod

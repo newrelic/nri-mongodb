@@ -31,11 +31,11 @@ deps: tools
 
 validate: deps
 	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json $(GO_FILES)...
+	@gometalinter.v2 --config=.gometalinter.json --deadline=5m $(GO_FILES)...
 
 validate-all: deps
 	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json --enable=interfacer --enable=gosimple $(GO_FILES)...
+	@gometalinter.v2 --config=.gometalinter.json --deadline=5m --enable=interfacer --enable=gosimple $(GO_FILES)...
 
 compile: deps
 	@echo "=== $(INTEGRATION) === [ compile ]: Building $(BINARY_NAME)..."
