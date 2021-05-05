@@ -79,7 +79,7 @@ func main() {
 	collectorChan := StartCollectorWorkerPool(args.ConcurrentCollections, &wg)
 
 	// Set a global cluster name for identity attributes
-	entities.ClusterName = args.ClusterName
+	entities.ClusterName = args.MongodbClusterName
 
 	// Feed the worker pool with entities to be collected
 	go FeedWorkerPool(session, collectorChan, mongoIntegration)

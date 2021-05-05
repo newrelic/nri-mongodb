@@ -27,7 +27,7 @@
           # The database on which the monitoring user is stored
           AUTH_SOURCE: <admin>
           # A user-defined cluster name. Required.
-          CLUSTER_NAME: <my_cluster>
+          MONGODB_CLUSTER_NAME: <my_cluster>
           # Connect using SSL
           SSL: true
           # Skip verification of the certificate sent by the host.

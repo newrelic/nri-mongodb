@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/globalsign/mgo/bson"
+	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
@@ -207,11 +208,11 @@ func collectTop(c Collector) error {
 		collectionName := splitKey[1]
 
 		ms := e.NewMetricSet("MongodTopSample",
-			metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
-			metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
-			metric.Attribute{Key: "database", Value: databaseName},
-			metric.Attribute{Key: "collection", Value: collectionName},
-			metric.Attribute{Key: "clusterName", Value: ClusterName},
+			attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
+			attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+			attribute.Attribute{Key: "database", Value: databaseName},
+			attribute.Attribute{Key: "collection", Value: collectionName},
+			attribute.Attribute{Key: "clusterName", Value: ClusterName},
 		)
 
 		logError(ms.MarshalMetrics(collectionStats), "Marshal metrics on top failed: %v")
@@ -261,12 +262,12 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 			}
 
 			ms := e.NewMetricSet("MongoCollectionSample",
-				metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
-				metric.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
-				metric.Attribute{Key: "database", Value: c.db},
-				metric.Attribute{Key: "collection", Value: c.name},
-				metric.Attribute{Key: "index", Value: indexName},
-				metric.Attribute{Key: "clusterName", Value: ClusterName},
+				attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
+				attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+				attribute.Attribute{Key: "database", Value: c.db},
+				attribute.Attribute{Key: "collection", Value: c.name},
+				attribute.Attribute{Key: "index", Value: indexName},
+				attribute.Attribute{Key: "clusterName", Value: ClusterName},
 			)
 
 			if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {

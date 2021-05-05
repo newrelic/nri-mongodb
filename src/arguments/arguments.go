@@ -17,7 +17,8 @@ type ArgumentList struct {
 	Password              string `default:"" help:"Password for the MongoDB connection"`
 	Host                  string `default:"localhost" help:"MongoDB host to connect to for monitoring"`
 	Port                  string `default:"27017" help:"Port on which MongoDB is running"`
-	ClusterName           string `default:"" help:"A unique, user-defined name to identify the cluster"`
+	ClusterName           string `default:"" help:"(Deprecated in favor of MongodbClusterName)"`
+	MongodbClusterName    string `default:"" help:"Cluster name to identify this Mongodb instance."`
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`
@@ -35,8 +36,14 @@ func (args *ArgumentList) Validate() error {
 		return errors.New("must provide a host argument")
 	}
 
-	if args.ClusterName == "" {
-		return errors.New("must provide a cluster_name argument")
+	// ClusterName is being deprecated to avoid the collision with the nri-kubernetes integration.
+	// For backward compatibility reasons the following fallback logic has been implemented to avoid breaking existant config.
+	if args.MongodbClusterName == "" {
+		if args.ClusterName == "" {
+			return errors.New("Must supply a cluster name to identify this Mongodb cluster. Use MongodbClusterName config parameter")
+		}
+		args.MongodbClusterName = args.ClusterName
+		log.Warn("Using the deprecated config ClusterName instead of MongodbClusterName")
 	}
 
 	if _, err := strconv.Atoi(args.Port); err != nil {

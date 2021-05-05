@@ -2,7 +2,6 @@ builds:
   - id: nri-nix
     main: ./src
     binary: nri-mongodb
-    gobinary: "go1.9.7"
     ldflags:
       - -s -w -X main.integrationVersion={{.Version}} -X main.gitCommit={{.Commit}} -X main.buildDate={{.Date}}
     goos:
@@ -20,7 +19,6 @@ builds:
   - id: nri-win
     main: ./src
     binary: nri-mongodb
-    gobinary: "go1.9.7"
     ldflags:
       - -s -w -X main.integrationVersion={{.Version}} -X main.gitCommit={{.Commit}} -X main.buildDate={{.Date}}
     goos:
@@ -107,7 +105,7 @@ archives:
       - nri-win
     name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
     files:
-      - mongodb-win-config.yml.sample
+      - mongodb-config.yml.sample
       - mongodb-win-definition.yml
     format: zip
 

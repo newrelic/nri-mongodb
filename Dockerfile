@@ -1,4 +1,4 @@
-FROM golang:1.9 as builder
+FROM golang:1.16 as builder
 COPY . /go/src/github.com/newrelic/nri-mongodb/
 RUN cd /go/src/github.com/newrelic/nri-mongodb && \
     make && \
