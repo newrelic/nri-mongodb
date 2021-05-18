@@ -5,49 +5,31 @@ INTEGRATION  := mongodb
 BINARY_NAME   = nri-$(INTEGRATION)
 GO_PKGS      := $(shell go list ./... | grep -v "/vendor/")
 GO_FILES     := ./src/
-GOTOOLS       = gopkg.in/alecthomas/gometalinter.v2 \
-		github.com/axw/gocov/gocov \
-		github.com/AlekSi/gocov-xml \
+GOFLAGS			= -mod=readonly
+GOLANGCI_LINT	= github.com/golangci/golangci-lint/cmd/golangci-lint
+
 
 all: build
 
-build: check-version clean validate test compile
+build: clean validate test compile
 
 clean:
 	@echo "=== $(INTEGRATION) === [ clean ]: Removing binaries and coverage file..."
 	@rm -rfv bin coverage.xml
 
-tools: check-version
-	@echo "=== $(INTEGRATION) === [ tools ]: Installing tools required by the project..."
-	@GO111MODULE=off go get $(GOTOOLS)
-	@GO111MODULE=off gometalinter.v2 --install
+validate:
+	@printf "=== $(INTEGRATION) === [ validate ]: running golangci-lint & semgrep... "
+	@go run  $(GOFLAGS) $(GOLANGCI_LINT) run --verbose
+	@[ -f .semgrep.yml ] && semgrep_config=".semgrep.yml" || semgrep_config="p/golang" ; \
+	docker run --rm -v "${PWD}:/src:ro" --workdir /src returntocorp/semgrep -c "$$semgrep_config"
 
-tools-update: check-version
-	@echo "=== $(INTEGRATION) === [ tools-update ]: Updating tools required by the project..."
-	@GO111MODULE=off go get -u $(GOTOOLS)
-	@GO111MODULE=off gometalinter.v2 --install
-
-deps: tools
-
-validate: deps
-	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json --deadline=5m $(GO_FILES)...
-
-validate-all: deps
-	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json --deadline=5m --enable=interfacer --enable=gosimple $(GO_FILES)...
-
-compile: deps
+compile:
 	@echo "=== $(INTEGRATION) === [ compile ]: Building $(BINARY_NAME)..."
 	@go build -o bin/$(BINARY_NAME) $(GO_FILES)
 
-compile-only: 
-	@echo "=== $(INTEGRATION) === [ compile ]: Building $(BINARY_NAME)..."
-	@go build -o bin/$(BINARY_NAME) $(GO_FILES)
-
-test: deps
+test:
 	@echo "=== $(INTEGRATION) === [ test ]: Running unit tests..."
-	@gocov test -race $(GO_FILES)... | gocov-xml > coverage.xml
+	@go test -race ./... -count=1
 
 integration-test:
 	@echo "=== $(INTEGRATION) === [ test ]: running integration tests..."
@@ -58,16 +40,4 @@ integration-test:
 include $(CURDIR)/build/ci.mk
 include $(CURDIR)/build/release.mk
 
-check-version:
-ifdef GOOS
-ifneq "$(GOOS)" "$(NATIVEOS)"
-	$(error GOOS is not $(NATIVEOS). Cross-compiling is only allowed for 'clean' and 'compile-only' targets)
-endif
-endif
-ifdef GOARCH
-ifneq "$(GOARCH)" "$(NATIVEARCH)"
-	$(error GOARCH variable is not $(NATIVEARCH). Cross-compiling is only allowed for 'clean' and 'compile-only' targets)
-endif
-endif
-
-.PHONY: all build clean tools tools-update deps validate compile test check-version
+.PHONY: all build clean validate compile test
