@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## 2.6.1 (2021-06-09)
+### Changed
+- Added support for ARM
+
 ## 2.6.0 (2021-05-05)
 ### Changed
 - Decorate metrics with `mongodbClusterName`
