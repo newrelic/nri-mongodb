@@ -1,5 +1,5 @@
 name: com.newrelic.mongodb
-description: Reports status and metrics for mongodb service. Legacy file kept for compatibility.
+description: Reports status and metrics for mongodb service
 protocol_version: 2
 os: windows
 
