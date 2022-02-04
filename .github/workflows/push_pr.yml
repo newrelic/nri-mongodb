@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - gsanchez/fix-mongo5
   pull_request:
 
 env:

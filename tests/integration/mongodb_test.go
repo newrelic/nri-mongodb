@@ -97,6 +97,14 @@ func TestMain(m *testing.M) {
 	os.Exit(result)
 }
 
+func TestIntegrationConnectsToMongoV5(t *testing.T) {
+	testName := helpers.GetTestName(t)
+	_, stderr, err := runIntegration(t, "HOST=mongo5", "METRICS=true", fmt.Sprintf("NRIA_CACHE_PATH=/tmp/%v.json", testName))
+
+	assert.Nil(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+}
+
 func TestIntegrationMetrics(t *testing.T) {
 	testName := helpers.GetTestName(t)
 	stdout, stderr, err := runIntegration(t, "METRICS=true", fmt.Sprintf("NRIA_CACHE_PATH=/tmp/%v.json", testName))

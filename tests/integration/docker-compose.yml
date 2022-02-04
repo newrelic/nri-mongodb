@@ -39,6 +39,13 @@ services:
     ports:
       - "27017:27017"
 
+  mongo5:
+    image: mongo:5.0
+    # restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
   nri-mongodb:
     container_name: integration_nri-mongodb
     build:
