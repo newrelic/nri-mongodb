@@ -1,0 +1,11 @@
+integrations:
+  - name: nri-mongodb
+    env:
+      CLUSTER_NAME: foo123
+      HOST: foo123-shard-00-03-a1b2c.mongodb.net
+      PORT: 27017
+      USERNAME: 'Atlas_UI_Username'
+      PASSWORD: 'Atlas_UI_password'
+      AUTH_SOURCE: admin
+      SSL: true
+    interval: 15s
