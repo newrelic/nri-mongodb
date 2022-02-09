@@ -1,16 +1,15 @@
 # This file shows an example config targeting a MongoDB Atlas shard. Please note that:
 # - An instance of the integration is required to monitor each shard individually. 
-# - Although, the primary shard has all reads and writes and should be used as the default for the integration.
 # - Direct shard access is only available on tier M10 or above, so tiers M9 and below are not supported for this configuration.
 # - https://docs.atlas.mongodb.com/cluster-tier/
 integrations:
-  - name: nri-mongodb
-    env:
-      CLUSTER_NAME: foo123
-      HOST: foo123-shard-00-03-a1b2c.mongodb.net
-      PORT: 27017
-      USERNAME: 'Atlas_UI_Username'
-      PASSWORD: 'Atlas_UI_password'
-      AUTH_SOURCE: admin
-      SSL: true
-    interval: 15s
+- name: nri-mongodb
+  env:
+    CLUSTER_NAME: foo123
+    HOST: foo123-shard-00-03-a1b2c.mongodb.net
+    PORT: 27017
+    USERNAME: 'Atlas_UI_Username'
+    PASSWORD: 'Atlas_UI_password'
+    AUTH_SOURCE: admin
+    SSL: true
+  interval: 15s
