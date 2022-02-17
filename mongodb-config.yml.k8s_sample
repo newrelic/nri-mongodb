@@ -35,7 +35,7 @@
           # and should only be used for testing
           SSL_INSECURE_SKIP_VERIFY: true
           # Path to the CA certs file
-          SSL_CA_CERTS:: /sample/path/to/ca_certs
+          SSL_CA_CERTS: /sample/path/to/ca_certs
           # Client Certificate to present to the server (optional)
           PEM_KEY_FILE: /sample/file.pem
           # Passphrase to decrypt PEMKeyFile file (optional)
