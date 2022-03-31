@@ -60,7 +60,7 @@ func collectorWorker(collectorChan chan entities.Collector, wg *sync.WaitGroup) 
 }
 
 // FeedWorkerPool feeds the workers with the collectors that contain the info needed to collect each entity
-func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration) {
+func FeedWorkerPool(session connection.Session, collectorChan chan entities.Collector, integration *integration.Integration, noDbSample bool) {
 	defer close(collectorChan)
 
 	// Create a wait group for each of the get*Collectors calls
@@ -95,8 +95,10 @@ func FeedWorkerPool(session connection.Session, collectorChan chan entities.Coll
 		go createShardCollectors(getWg, session, collectorChan, integration)
 	}
 
-	getWg.Add(1)
-	go createDatabaseCollectors(getWg, session, collectorChan, integration)
+	if !noDbSample {
+		getWg.Add(1)
+		go createDatabaseCollectors(getWg, session, collectorChan, integration)
+	}
 
 	getWg.Wait()
 }
