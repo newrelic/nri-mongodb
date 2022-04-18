@@ -49,6 +49,8 @@ nfpms:
     contents:
       - src: "mongodb-config.yml.sample"
         dst: "/etc/newrelic-infra/integrations.d/mongodb-config.yml.sample"
+      - src: "mongodb-log.yml.example"
+        dst: "/etc/newrelic-infra/logging.d/mongodb-log.yml.example"
       - src: "CHANGELOG.md"
         dst: "/usr/share/doc/nri-mongodb/CHANGELOG.md"
       - src: "README.md"

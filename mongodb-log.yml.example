@@ -1,0 +1,7 @@
+logs:
+# This sample file will forward mongodb error logs to NR once it's renamed to mongodb-log.yml
+# On Linux systems no restart is needed
+  - name: "mongodblog"
+    file: /var/log/mongodb/mongodb.log
+    attributes:
+      logtype: mongodb
