@@ -20,6 +20,7 @@ type ArgumentList struct {
 	ClusterName           string `default:"" help:"(Deprecated in favor of MongodbClusterName)"`
 	MongodbClusterName    string `default:"" help:"Cluster name to identify this Mongodb instance."`
 	AuthSource            string `default:"admin" help:"Database to authenticate against"`
+	Mechanism             string `default:"SCRAM-SHA-256" help:"Database authentication mechanism"`
 	Ssl                   bool   `default:"false" help:"Enable SSL"`
 	SslCaCerts            string `default:"" help:"Path to the ca_certs file"`
 	PEMKeyFile            string `default:"" help:"PEM file contains Private Key and Client Certificate"`

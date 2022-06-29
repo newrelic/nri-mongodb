@@ -58,6 +58,7 @@ func main() {
 	// Connect to Mongo
 	connectionInfo := connection.Info{
 		AuthSource:            args.AuthSource,
+		Mechanism:             args.Mechanism,
 		Host:                  args.Host,
 		Password:              args.Password,
 		Port:                  args.Port,

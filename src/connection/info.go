@@ -21,6 +21,7 @@ type Info struct {
 	Username              string
 	Password              string
 	AuthSource            string
+	Mechanism             string
 	Host                  string
 	Port                  string
 	Ssl                   bool
@@ -90,6 +91,7 @@ func (c *Info) generateDialInfo() *mgo.DialInfo {
 		Username:    c.Username,
 		Password:    c.Password,
 		Source:      c.AuthSource,
+		Mechanism:   c.Mechanism,
 		Direct:      true,
 		FailFast:    true,
 		Timeout:     time.Duration(10) * time.Second,

@@ -55,6 +55,7 @@ func TestInfo_generateDialInfo(t *testing.T) {
 		Host:       "localhost",
 		Port:       "27017",
 		AuthSource: "admin",
+		Mechanism:  "SCRAM-SHA-256",
 	}
 	dialInfo := info.generateDialInfo()
 
@@ -63,6 +64,7 @@ func TestInfo_generateDialInfo(t *testing.T) {
 		Username:       "",
 		Password:       "",
 		Source:         "admin",
+		Mechanism:      "SCRAM-SHA-256",
 		Direct:         true,
 		FailFast:       true,
 		Timeout:        time.Duration(10) * time.Second,
