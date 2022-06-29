@@ -42,6 +42,7 @@ func (c *Info) clone(host, port string) *Info {
 		Username:              c.Username,
 		Password:              c.Password,
 		AuthSource:            c.AuthSource,
+		Mechanism:             c.Mechanism,
 		Host:                  host,
 		Port:                  port,
 		Ssl:                   c.Ssl,
