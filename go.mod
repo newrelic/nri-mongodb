@@ -9,7 +9,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.2.0
 )
 
-replace github.com/globalsign/mgo => github.com/pyrotechnics-io/mgo v0.0.2-0.20190116155901-0d5878c1bace
+replace github.com/globalsign/mgo => github.com/mhill-anynines/mgo v0.0.0-20190116155901-0d5878c1bace
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
