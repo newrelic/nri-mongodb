@@ -7,12 +7,14 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
+	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 const (
@@ -50,10 +52,31 @@ func main() {
 	log.SetupLogging(args.Verbose)
 
 	// Validate arguments
-	if err := args.Validate(); err != nil {
-		log.Error("Invalid arguments: %v", err)
-		os.Exit(1)
+	// if err := args.Validate(); err != nil {
+	// log.Error("Invalid arguments: %v", err)
+	// os.Exit(1)
+	//}
+
+	var context MongoContext
+	context.Connect("mongodb://root:password123@localhost:27017")
+	dblist := context.DB("admin").ListDatabases()
+	for _, itm := range dblist {
+		log.Info(itm)
 	}
+
+	cmd := context.DB("admin").Run(Cmd{{"getCmdLineOpts", 1}})
+	log.Info(cmd)
+
+	var ss metrics.ServerStatus
+	if err := context.DB("admin").RunUnmarshal(Cmd{{"serverStatus", 1}}, &ss); err != nil {
+		log.Error("run SS failed: %s", err)
+	} else {
+		log.Info("It worked?")
+		log.Info("PID : %d", *ss.PID)
+	}
+
+	time.Sleep(30 * time.Second)
+	os.Exit(0)
 
 	// Connect to Mongo
 	connectionInfo := connection.Info{

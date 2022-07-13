@@ -50,6 +50,19 @@ func (this *MongoContext) Run(command Cmd) string {
 	return string(output)
 }
 
+func (this *MongoContext) RunUnmarshal(command Cmd, output interface{}) error {
+	var result bson.Raw
+	err := this.database.RunCommand(context.TODO(), command).Decode(&result)
+	if err != nil {
+		return err
+	}
+
+	if err = bson.Unmarshal(result, output); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (this *MongoContext) ListDatabases() []string {
 	result, err := this.connection.ListDatabaseNames(context.TODO(), Cmd{})
 	if err != nil {
