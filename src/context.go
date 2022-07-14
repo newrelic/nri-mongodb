@@ -36,6 +36,21 @@ func (this *MongoContext) C(colname string) *MongoContext {
 	return this
 }
 
+func (this *MongoContext) FindAll(output interface{}) error {
+	cur, err := this.collection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		return err
+	}
+
+	defer cur.Close(context.TODO())
+
+	if err = cur.All(context.TODO(), output); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (this *MongoContext) Run(command Cmd) string {
 	var result bson.M
 	err := this.database.RunCommand(context.TODO(), command).Decode(&result)

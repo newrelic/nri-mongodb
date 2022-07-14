@@ -75,6 +75,17 @@ func main() {
 		log.Info("PID : %d", *ss.PID)
 	}
 
+	type MongosUnmarshaller []struct {
+		ID string `bson:"_id" json:"_id"`
+	}
+
+	var mu MongosUnmarshaller
+	if err := context.DB("config").C("mongos").FindAll(&mu); err != nil {
+		log.Error("FindAll failed: %s", err)
+	} else {
+		log.Info("FindAll worked?")
+	}
+
 	time.Sleep(30 * time.Second)
 	os.Exit(0)
 
