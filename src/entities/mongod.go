@@ -12,6 +12,8 @@ import (
 	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
+type Cmd = connection.Cmd
+
 // mongodCollector is a storage struct with all the information needed
 // to collect metrics and inventory for a mongod
 type mongodCollector struct {
@@ -116,7 +118,7 @@ func GetShardMongods(session connection.Session, shardHostString string, integra
 // GetReplSetMongods attempts to connect to a member of a rreplica set to eplica set to
 func GetReplSetMongods(session connection.Session, integration *integration.Integration) ([]Collector, error) {
 	var replSetConfig metrics.ReplSetGetConfig
-	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"replSetGetConfig", 1}}, &replSetConfig); err != nil {
 		return nil, fmt.Errorf("run replSetGetConfig failed: %s", err)
 	}
 

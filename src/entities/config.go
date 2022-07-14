@@ -79,7 +79,8 @@ func GetConfigServers(session connection.Session, integration *integration.Integ
 	}
 
 	var cu ConfigUnmarshaller
-	if err := session.DB("admin").Run("getShardMap", &cu); err != nil {
+	// TODO: Verify this works with MongoDB Driver Port (it was not a Cmd before)
+	if err := session.DB("admin").Run(Cmd{{"getShardMap", 1}}, &cu); err != nil {
 		return nil, err
 	}
 

@@ -1,11 +1,8 @@
 package connection
 
 import (
-	"path/filepath"
 	"testing"
-	"time"
 
-	"github.com/globalsign/mgo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,78 +31,52 @@ func TestInfo_clone(t *testing.T) {
 	assert.Equal(t, info, info5, "Bad clone info5")
 }
 
-func TestInfo_CreateSession(t *testing.T) {
-	info := &Info{
-		Username:              "",
-		Password:              "",
-		Host:                  "localhost",
-		Port:                  "27017",
-		AuthSource:            "admin",
-		Ssl:                   true,
-		SslCaCerts:            "test",
-		SslInsecureSkipVerify: false,
-	}
+// func TestInfo_CreateSession(t *testing.T) {
+// 	info := &Info{
+// 		Username:              "",
+// 		Password:              "",
+// 		Host:                  "localhost",
+// 		Port:                  "27017",
+// 		AuthSource:            "admin",
+// 		Ssl:                   true,
+// 		SslCaCerts:            "test",
+// 		SslInsecureSkipVerify: false,
+// 	}
 
-	_, err := info.CreateSession()
-	assert.Error(t, err, "Expected connection to fail")
-}
+// 	_, err := info.CreateSession()
+// 	assert.Error(t, err, "Expected connection to fail")
+// }
 
-func TestInfo_generateDialInfo(t *testing.T) {
-	info := &Info{
-		Host:       "localhost",
-		Port:       "27017",
-		AuthSource: "admin",
-		Mechanism:  "SCRAM-SHA-256",
-	}
-	dialInfo := info.generateDialInfo()
+// func Test_addSSL(t *testing.T) {
+// 	dialInfo := &mgo.DialInfo{
+// 		Addrs:       []string{"localhost"},
+// 		Username:    "",
+// 		Password:    "",
+// 		Source:      "admin",
+// 		FailFast:    true,
+// 		Timeout:     time.Duration(1) * time.Second,
+// 		PoolTimeout: time.Duration(1) * time.Second,
+// 		ReadTimeout: time.Duration(1) * time.Second,
+// 	}
 
-	expectedDialInfo := &mgo.DialInfo{
-		Addrs:          []string{"localhost:27017"},
-		Username:       "",
-		Password:       "",
-		Source:         "admin",
-		Mechanism:      "SCRAM-SHA-256",
-		Direct:         true,
-		FailFast:       true,
-		Timeout:        time.Duration(10) * time.Second,
-		PoolTimeout:    time.Duration(10) * time.Second,
-		ReadTimeout:    time.Duration(10) * time.Second,
-		ReadPreference: &mgo.ReadPreference{Mode: mgo.PrimaryPreferred},
-	}
+// 	addSSL(dialInfo, false, "", "", "")
 
-	assert.Equal(t, expectedDialInfo, dialInfo, "Bad dial info")
-}
+// 	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
+// }
 
-func Test_addSSL(t *testing.T) {
-	dialInfo := &mgo.DialInfo{
-		Addrs:       []string{"localhost"},
-		Username:    "",
-		Password:    "",
-		Source:      "admin",
-		FailFast:    true,
-		Timeout:     time.Duration(1) * time.Second,
-		PoolTimeout: time.Duration(1) * time.Second,
-		ReadTimeout: time.Duration(1) * time.Second,
-	}
+// func Test_addSSL_EmptyPEM(t *testing.T) {
+// 	dialInfo := &mgo.DialInfo{
+// 		Addrs:       []string{"localhost"},
+// 		Username:    "",
+// 		Password:    "",
+// 		Source:      "admin",
+// 		FailFast:    true,
+// 		Timeout:     time.Duration(1) * time.Second,
+// 		PoolTimeout: time.Duration(1) * time.Second,
+// 		ReadTimeout: time.Duration(1) * time.Second,
+// 	}
 
-	addSSL(dialInfo, false, "", "", "")
+// 	addSSL(dialInfo, false, filepath.Join("testdata", "empty.pem"), "", "")
 
-	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
-}
-
-func Test_addSSL_EmptyPEM(t *testing.T) {
-	dialInfo := &mgo.DialInfo{
-		Addrs:       []string{"localhost"},
-		Username:    "",
-		Password:    "",
-		Source:      "admin",
-		FailFast:    true,
-		Timeout:     time.Duration(1) * time.Second,
-		PoolTimeout: time.Duration(1) * time.Second,
-		ReadTimeout: time.Duration(1) * time.Second,
-	}
-
-	addSSL(dialInfo, false, filepath.Join("testdata", "empty.pem"), "", "")
-
-	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
-}
+// 	assert.NotNil(t, dialInfo.DialServer, "Nil dialServer")
+// }

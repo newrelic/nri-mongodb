@@ -27,7 +27,7 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 
 	// Collect and unmarshal the result
 	var ss metrics.ServerStatus
-	if err := session.DB("admin").Run(Cmd{"serverStatus": 1}, &ss); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"serverStatus", 1}}, &ss); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -41,9 +41,8 @@ func collectServerStatus(c Collector, ms *metric.Set) error {
 
 // DetectDeploymentType tries to detect what type of mongo deployment is being monitored
 func DetectDeploymentType(session connection.Session) (string, error) {
-	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
-	if err := session.DB("admin").Run(Cmd{"isMaster": 1}, &isMaster); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"isMaster", 1}}, &isMaster); err != nil {
 		return "", fmt.Errorf("run isMaster failed: %s", err)
 	}
 
@@ -55,7 +54,7 @@ func DetectDeploymentType(session connection.Session) (string, error) {
 
 	// Collect and unmarshal the metrics
 	var replSetConfig metrics.ReplSetGetConfig
-	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"replSetGetConfig", 1}}, &replSetConfig); err != nil {
 		return "standalone", nil
 	}
 
@@ -75,7 +74,7 @@ func collectIsMaster(c Collector, ms *metric.Set) (bool, error) {
 
 	// Collect and unmarshal the result
 	var isMaster metrics.IsMaster
-	if err := session.DB("admin").Run(Cmd{"isMaster": 1}, &isMaster); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"isMaster", 1}}, &isMaster); err != nil {
 		return false, fmt.Errorf("run isMaster failed: %v", err)
 	}
 
@@ -99,7 +98,7 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetStatus metrics.ReplSetGetStatus
-	if err := session.DB("admin").Run(Cmd{"replSetGetStatus": 1}, &replSetStatus); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"replSetGetStatus", 1}}, &replSetStatus); err != nil {
 		return err
 	}
 
@@ -149,7 +148,7 @@ func collectReplGetConfig(c Collector, hostname string, ms *metric.Set) error {
 
 	// Collect and unmarshal the metrics
 	var replSetConfig metrics.ReplSetGetConfig
-	if err := session.DB("admin").Run(Cmd{"replSetGetConfig": 1}, &replSetConfig); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"replSetGetConfig", 1}}, &replSetConfig); err != nil {
 		return err
 	}
 
@@ -194,7 +193,7 @@ func collectTop(c Collector) error {
 	}
 
 	var topMetrics metrics.Top
-	if err := session.DB("admin").Run(Cmd{"top": 1}, &topMetrics); err != nil {
+	if err := session.DB("admin").Run(Cmd{{"top", 1}}, &topMetrics); err != nil {
 		return fmt.Errorf("run serverStatus failed: %v", err)
 	}
 
@@ -236,48 +235,49 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 	}
 
 	var collStats metrics.CollStats
-	if err := session.DB(c.db).Run(Cmd{"collStats": c.name}, &collStats); err != nil {
+	if err := session.DB(c.db).Run(Cmd{{"collStats", c.name}}, &collStats); err != nil {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
-	e, err := c.GetEntity()
-	if err != nil {
-		return err
-	}
+	// FIXME: MongoDB Driver Port
+	// e, err := c.GetEntity()
+	// if err != nil {
+	// 	return err
+	// }
 
-	var indexStats []bson.M
-	col := session.DB(c.db).C(c.name)
-	query := []bson.M{{"$indexStats": bson.M{}}}
-	if err := col.PipeAll(query, &indexStats); err != nil {
-		return err
-	}
+	// var indexStats []bson.M
+	// col := session.DB(c.db).C(c.name)
+	// query := []bson.M{{"$indexStats": bson.M{}}}
+	// if err := col.PipeAll(query, &indexStats); err != nil {
+	// 	return err
+	// }
 
-	if collStats.IndexSizes != nil {
-		for indexName, indexSize := range *collStats.IndexSizes {
-			var indexAccesses int64
-			for _, index := range indexStats {
-				if index["name"] == indexName {
-					indexAccesses = index["accesses"].(bson.M)["ops"].(int64)
-				}
-			}
+	// if collStats.IndexSizes != nil {
+	// 	for indexName, indexSize := range *collStats.IndexSizes {
+	// 		var indexAccesses int64
+	// 		for _, index := range indexStats {
+	// 			if index["name"] == indexName {
+	// 				indexAccesses = index["accesses"].(bson.M)["ops"].(int64)
+	// 			}
+	// 		}
 
-			ms := e.NewMetricSet("MongoCollectionSample",
-				attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
-				attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
-				attribute.Attribute{Key: "database", Value: c.db},
-				attribute.Attribute{Key: "collection", Value: c.name},
-				attribute.Attribute{Key: "index", Value: indexName},
-				attribute.Attribute{Key: "clusterName", Value: ClusterName},
-			)
+	// 		ms := e.NewMetricSet("MongoCollectionSample",
+	// 			attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
+	// 			attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+	// 			attribute.Attribute{Key: "database", Value: c.db},
+	// 			attribute.Attribute{Key: "collection", Value: c.name},
+	// 			attribute.Attribute{Key: "index", Value: indexName},
+	// 			attribute.Attribute{Key: "clusterName", Value: ClusterName},
+	// 		)
 
-			if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {
-				log.Error("Unable to set indexSizeInBytes metric")
-			}
-			if err := ms.SetMetric("collection.indexAccesses", indexAccesses, metric.GAUGE); err != nil {
-				log.Error("Unable to set indexAccesses metric")
-			}
-		}
-	}
+	// 		if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {
+	// 			log.Error("Unable to set indexSizeInBytes metric")
+	// 		}
+	// 		if err := ms.SetMetric("collection.indexAccesses", indexAccesses, metric.GAUGE); err != nil {
+	// 			log.Error("Unable to set indexAccesses metric")
+	// 		}
+	// 	}
+	// }
 
 	return ms.MarshalMetrics(collStats)
 }
@@ -285,7 +285,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 // collectDbStats collects dbStats
 func collectDbStats(c *databaseCollector, ms *metric.Set) error {
 	var dbStats metrics.DbStats
-	if err := c.session.DB(c.name).Run(Cmd{"dbStats": 1}, &dbStats); err != nil {
+	if err := c.session.DB(c.name).Run(Cmd{{"dbStats", 1}}, &dbStats); err != nil {
 		return fmt.Errorf("run dbStats failed: %s", err)
 	}
 
@@ -299,7 +299,7 @@ func collectNumDatabases(c Collector, ms *metric.Set) error {
 		return err
 	}
 
-	if err := s.DB("admin").Run(Cmd{"listDatabases": 1}, &listDatabases); err != nil {
+	if err := s.DB("admin").Run(Cmd{{"listDatabases", 1}}, &listDatabases); err != nil {
 		return fmt.Errorf("run listDatabases failed: %s", err)
 	}
 

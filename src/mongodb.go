@@ -7,14 +7,12 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/arguments"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
-	"github.com/newrelic/nri-mongodb/src/metrics"
 )
 
 const (
@@ -57,37 +55,37 @@ func main() {
 	// os.Exit(1)
 	//}
 
-	var context MongoContext
-	context.Connect("mongodb://root:password123@localhost:27017")
-	dblist := context.DB("admin").ListDatabases()
-	for _, itm := range dblist {
-		log.Info(itm)
-	}
+	// var context MongoContext
+	// context.Connect("mongodb://root:password123@localhost:27017")
+	// dblist := context.DB("admin").ListDatabases()
+	// for _, itm := range dblist {
+	// 	log.Info(itm)
+	// }
 
-	cmd := context.DB("admin").Run(Cmd{{"getCmdLineOpts", 1}})
-	log.Info(cmd)
+	// cmd := context.DB("admin").Run(Cmd{{"ismaster", 1}})
+	// log.Info(cmd)
 
-	var ss metrics.ServerStatus
-	if err := context.DB("admin").RunUnmarshal(Cmd{{"serverStatus", 1}}, &ss); err != nil {
-		log.Error("run SS failed: %s", err)
-	} else {
-		log.Info("It worked?")
-		log.Info("PID : %d", *ss.PID)
-	}
+	// var ss metrics.ServerStatus
+	// if err := context.DB("admin").RunUnmarshal(Cmd{{"serverStatus", 1}}, &ss); err != nil {
+	// 	log.Error("run SS failed: %s", err)
+	// } else {
+	// 	log.Info("It worked?")
+	// 	log.Info("PID : %d", *ss.PID)
+	// }
 
-	type MongosUnmarshaller []struct {
-		ID string `bson:"_id" json:"_id"`
-	}
+	// type MongosUnmarshaller []struct {
+	// 	ID string `bson:"_id" json:"_id"`
+	// }
 
-	var mu MongosUnmarshaller
-	if err := context.DB("config").C("mongos").FindAll(&mu); err != nil {
-		log.Error("FindAll failed: %s", err)
-	} else {
-		log.Info("FindAll worked?")
-	}
+	// var mu MongosUnmarshaller
+	// if err := context.DB("config").C("mongos").FindAll(&mu); err != nil {
+	// 	log.Error("FindAll failed: %s", err)
+	// } else {
+	// 	log.Info("FindAll worked?")
+	// }
 
-	time.Sleep(30 * time.Second)
-	os.Exit(0)
+	// time.Sleep(30 * time.Second)
+	// os.Exit(0)
 
 	// Connect to Mongo
 	connectionInfo := connection.Info{

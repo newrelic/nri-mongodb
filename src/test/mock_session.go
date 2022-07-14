@@ -1,5 +1,7 @@
 package test
 
+// FIXME: MongoDB Driver Port
+
 import (
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/stretchr/testify/mock"
@@ -41,11 +43,12 @@ func (s *MockSession) Info() *connection.Info {
 	return &connection.Info{}
 }
 
+// FIXME: MongoDB Driver Port
 // DB is mocked via setup
-func (s *MockSession) DB(name string) connection.DataLayer {
-	args := s.Called(name)
-	return args.Get(0).(connection.DataLayer)
-}
+// func (s *MockSession) DB(name string) connection.DataLayer {
+// 	args := s.Called(name)
+// 	return args.Get(0).(connection.DataLayer)
+// }
 
 // New is mocked via setup
 func (s *MockSession) New(host, port string) (connection.Session, error) {
@@ -93,11 +96,12 @@ func (db *MockDatabase) MockCollection(name string, callCount int) *MockCollecti
 	return coll
 }
 
+// FIXME: MongoDB Driver Port
 // C is a mocked via setup
-func (db *MockDatabase) C(name string) connection.Collection {
-	args := db.Called(name)
-	return args.Get(0).(connection.Collection)
-}
+// func (db *MockDatabase) C(name string) connection.Collection {
+// 	args := db.Called(name)
+// 	return args.Get(0).(connection.Collection)
+// }
 
 // Run is mocked via setup
 func (db *MockDatabase) Run(cmd interface{}, result interface{}) error {
