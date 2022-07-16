@@ -5,12 +5,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/globalsign/mgo/bson"
 	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/metrics"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // DeploymentType is either sharded_cluster, replica_set, or standalone
@@ -105,13 +107,7 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 	primaryTimestamp := time.Now().Unix()
 	for _, member := range replSetStatus.Members {
 		if member.StateStr != nil && *member.StateStr == "PRIMARY" {
-			if timestamp, ok := member.Optime.(*bson.MongoTimestamp); ok {
-				primaryTimestamp = timestamp.Time().Unix()
-			} else if optime, ok := member.Optime.(bson.M); ok {
-				if timestamp, ok := optime["ts"]; ok {
-					primaryTimestamp = timestamp.(bson.MongoTimestamp).Time().Unix()
-				}
-			}
+			primaryTimestamp = int64(member.Optime.TS.T)
 		}
 	}
 
@@ -121,15 +117,8 @@ func collectReplGetStatus(c Collector, hostname string, ms *metric.Set) error {
 		}
 
 		// Calculate the replication lag
-		if timestamp, ok := member.Optime.(bson.MongoTimestamp); ok {
-			lag := primaryTimestamp - timestamp.Time().Unix()
-			member.ReplicationLag = &lag
-		} else if optime, ok := member.Optime.(bson.M); ok {
-			if timestamp, ok := optime["ts"]; ok {
-				lag := primaryTimestamp - timestamp.(bson.MongoTimestamp).Time().Unix()
-				member.ReplicationLag = &lag
-			}
-		}
+		lag := primaryTimestamp - int64(member.Optime.TS.T)
+		member.ReplicationLag = &lag
 
 		logError(ms.MarshalMetrics(member), "Marshal metrics on replSetGetStatus failed: %v")
 	}
@@ -239,45 +228,49 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 		return fmt.Errorf("run collStats failed: %v", err)
 	}
 
-	// FIXME: MongoDB Driver Port
-	// e, err := c.GetEntity()
-	// if err != nil {
-	// 	return err
-	// }
+	e, err := c.GetEntity()
+	if err != nil {
+		return err
+	}
 
-	// var indexStats []bson.M
-	// col := session.DB(c.db).C(c.name)
+	var indexStats []bson.M
 	// query := []bson.M{{"$indexStats": bson.M{}}}
-	// if err := col.PipeAll(query, &indexStats); err != nil {
-	// 	return err
-	// }
+	query := bson.D{{"$indexStats", bson.M{}}}
+	pipe := mongo.Pipeline{
+		{{"$match", query}},
+	}
 
-	// if collStats.IndexSizes != nil {
-	// 	for indexName, indexSize := range *collStats.IndexSizes {
-	// 		var indexAccesses int64
-	// 		for _, index := range indexStats {
-	// 			if index["name"] == indexName {
-	// 				indexAccesses = index["accesses"].(bson.M)["ops"].(int64)
-	// 			}
-	// 		}
+	opts := options.Aggregate()
+	if err := session.DB(c.db).C(c.name).Pipe(pipe, opts, &indexStats); err != nil {
+		return err
+	}
 
-	// 		ms := e.NewMetricSet("MongoCollectionSample",
-	// 			attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
-	// 			attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
-	// 			attribute.Attribute{Key: "database", Value: c.db},
-	// 			attribute.Attribute{Key: "collection", Value: c.name},
-	// 			attribute.Attribute{Key: "index", Value: indexName},
-	// 			attribute.Attribute{Key: "clusterName", Value: ClusterName},
-	// 		)
+	if collStats.IndexSizes != nil {
+		for indexName, indexSize := range *collStats.IndexSizes {
+			var indexAccesses int64
+			for _, index := range indexStats {
+				if index["name"] == indexName {
+					indexAccesses = index["accesses"].(bson.M)["ops"].(int64)
+				}
+			}
 
-	// 		if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {
-	// 			log.Error("Unable to set indexSizeInBytes metric")
-	// 		}
-	// 		if err := ms.SetMetric("collection.indexAccesses", indexAccesses, metric.GAUGE); err != nil {
-	// 			log.Error("Unable to set indexAccesses metric")
-	// 		}
-	// 	}
-	// }
+			ms := e.NewMetricSet("MongoCollectionSample",
+				attribute.Attribute{Key: "displayName", Value: e.Metadata.Name},
+				attribute.Attribute{Key: "entityName", Value: fmt.Sprintf("%s:%s", e.Metadata.Namespace, e.Metadata.Name)},
+				attribute.Attribute{Key: "database", Value: c.db},
+				attribute.Attribute{Key: "collection", Value: c.name},
+				attribute.Attribute{Key: "index", Value: indexName},
+				attribute.Attribute{Key: "clusterName", Value: ClusterName},
+			)
+
+			if err := ms.SetMetric("collection.indexSizeInBytes", indexSize, metric.GAUGE); err != nil {
+				log.Error("Unable to set indexSizeInBytes metric")
+			}
+			if err := ms.SetMetric("collection.indexAccesses", indexAccesses, metric.GAUGE); err != nil {
+				log.Error("Unable to set indexAccesses metric")
+			}
+		}
+	}
 
 	return ms.MarshalMetrics(collStats)
 }

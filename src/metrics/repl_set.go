@@ -1,18 +1,25 @@
 package metrics
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 // ReplSetGetStatus is a storage struct
 type ReplSetGetStatus struct {
 	Members []ReplSetGetStatusMember `bson:"members"`
 }
 
+type OpTime struct {
+	TS primitive.Timestamp `bson:"ts`
+	ts int64               `bson:"t`
+}
+
 // ReplSetGetStatusMember is a storage struct
 type ReplSetGetStatusMember struct {
-	Name           *string     `bson:"name"`
-	Health         *int        `bson:"health"   metric_name:"replset.health"               source_type:"gauge"`
-	StateStr       *string     `bson:"stateStr" metric_name:"replset.state"                source_type:"attribute"`
-	Uptime         *int        `bson:"uptime"   metric_name:"replset.uptimeInMilliseconds" source_type:"gauge"`
-	Optime         interface{} `bson:"optime"`
-	ReplicationLag *int64      `metric_name:"replset.replicationLag" source_type:"gauge"`
+	Name           *string `bson:"name"`
+	Health         *int    `bson:"health"   metric_name:"replset.health"               source_type:"gauge"`
+	StateStr       *string `bson:"stateStr" metric_name:"replset.state"                source_type:"attribute"`
+	Uptime         *int    `bson:"uptime"   metric_name:"replset.uptimeInMilliseconds" source_type:"gauge"`
+	Optime         *OpTime
+	ReplicationLag *int64 `metric_name:"replset.replicationLag" source_type:"gauge"`
 }
 
 // IsMaster is a storage struct

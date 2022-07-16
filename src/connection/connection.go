@@ -67,12 +67,23 @@ func (this *MongoConnection) FindAll(output interface{}) error {
 	return nil
 }
 
-func (this *MongoConnection) PipeAll(query []bson.M, output interface{}) error {
+func (this *MongoConnection) Pipe(query mongo.Pipeline, opts *options.AggregateOptions, output interface{}) error {
 	if this.collection == nil {
 		panic("FindAll needs a collection")
 	}
 
-	panic("Not implemented") // TODO: MongoDB Driver Port
+	var cur *mongo.Cursor
+	var err error
+	if cur, err = this.collection.Aggregate(context.TODO(), query, opts); err != nil {
+		return err
+	}
+
+	defer cur.Close(context.TODO())
+
+	if err := cur.All(context.TODO(), output); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (this *MongoConnection) RunString(command Cmd) string {
