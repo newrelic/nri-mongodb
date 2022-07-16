@@ -237,7 +237,7 @@ func collectCollStats(c *collectionCollector, ms *metric.Set) error {
 	// query := []bson.M{{"$indexStats": bson.M{}}}
 	query := bson.D{{"$indexStats", bson.M{}}}
 	pipe := mongo.Pipeline{
-		{{"$match", query}},
+		query,
 	}
 
 	opts := options.Aggregate()
