@@ -121,7 +121,7 @@ func (this *MongoConnection) Run(command Cmd, output interface{}) error {
 
 func (this *MongoConnection) ListDatabases() []string {
 	if this.connection == nil {
-		panic("ListDatabases needs a database")
+		panic("ListDatabases needs a connection")
 	}
 	result, err := this.connection.ListDatabaseNames(context.TODO(), Cmd{})
 	if err != nil {
