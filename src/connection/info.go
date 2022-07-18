@@ -67,5 +67,7 @@ func (c *Info) GetConnectionString() string {
 // a session connected to a Mongo host
 func (c *Info) CreateSession() (Session, error) {
 	var conn MongoConnection
+	conn.Host = c.Host
+	conn.Port = c.Port
 	return conn.Connect(c.GetConnectionString()), nil
 }
