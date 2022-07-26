@@ -336,16 +336,16 @@
                     "type": "integer"
                   },
                   "network.bytesInPerSecond": {
-                    "type": "integer"
+                    "type": "number"
                   },
                   "network.bytesOutPerSecond": {
-                    "type": "integer"
+                    "type": "number"
                   },
                   "network.requestsPerSecond": {
-                    "type": "integer"
+                    "type": "number"
                   },
                   "opcounters.commandPerSecond": {
-                    "type": "integer"
+                    "type": "number"
                   },
                   "opcounters.deletePerSecond": {
                     "type": "integer"
@@ -357,7 +357,7 @@
                     "type": "integer"
                   },
                   "opcounters.queryPerSecond": {
-                    "type": "integer"
+                    "type": "number"
                   },
                   "opcounters.updatePerSecond": {
                     "type": "integer"
