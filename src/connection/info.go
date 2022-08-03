@@ -51,7 +51,7 @@ func (c *Info) GetConnectionString() string {
 			c.ConnectionString += "&authMechanism=" + c.Mechanism
 		}
 		if c.Ssl {
-			c.ConnectionString += "&ssl=True"
+			c.ConnectionString += "&ssl=true"
 		}
 		if c.PEMKeyFile != "" {
 			c.ConnectionString += "&tlsCertificateKeyFile=" + c.PEMKeyFile
