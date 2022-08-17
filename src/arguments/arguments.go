@@ -15,6 +15,7 @@ type ArgumentList struct {
 	sdkArgs.DefaultArgumentList
 	Username              string `default:"" help:"Username for the MongoDB connection"`
 	Password              string `default:"" help:"Password for the MongoDB connection"`
+	Atlas                 bool   `default:"false" help:"Connect to an Atlas instance"`
 	Host                  string `default:"localhost" help:"MongoDB host to connect to for monitoring"`
 	Port                  string `default:"27017" help:"Port on which MongoDB is running"`
 	ClusterName           string `default:"" help:"(Deprecated in favor of MongodbClusterName)"`

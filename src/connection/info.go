@@ -1,5 +1,16 @@
 package connection
 
+import (
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
+	"errors"
+	"io/ioutil"
+	"strings"
+
+	"github.com/newrelic/infra-integrations-sdk/log"
+)
+
 // Info is a storage struct which holds all the
 // information needed to connect to a Mongo host.
 type Info struct {
@@ -13,6 +24,7 @@ type Info struct {
 	SslCaCerts            string
 	PEMKeyFile            string
 	Passphrase            string
+	Atlas                 bool
 	SslInsecureSkipVerify bool
 	ConnectionString      string
 }
@@ -29,6 +41,7 @@ func (c *Info) clone(host, port string) *Info {
 		Password:              c.Password,
 		AuthSource:            c.AuthSource,
 		Mechanism:             c.Mechanism,
+		Atlas:                 c.Atlas,
 		Host:                  host,
 		Port:                  port,
 		Ssl:                   c.Ssl,
@@ -43,7 +56,11 @@ func (c *Info) clone(host, port string) *Info {
 
 func (c *Info) GetConnectionString() string {
 	if c.ConnectionString == "" {
-		c.ConnectionString = "mongodb://" + c.Username + ":" + c.Password + "@" + c.Host + ":" + c.Port + "/"
+		c.ConnectionString = "mongodb"
+		if c.Atlas {
+			c.ConnectionString += "+srv"
+		}
+		c.ConnectionString += "://" + c.Username + ":" + c.Password + "@" + c.Host + ":" + c.Port + "/"
 		if c.AuthSource != "" {
 			c.ConnectionString += "?authSource=" + c.AuthSource
 		}
@@ -51,16 +68,99 @@ func (c *Info) GetConnectionString() string {
 			c.ConnectionString += "&authMechanism=" + c.Mechanism
 		}
 		if c.Ssl {
-			c.ConnectionString += "&ssl=true"
-		}
-		if c.PEMKeyFile != "" {
-			c.ConnectionString += "&tlsCertificateKeyFile=" + c.PEMKeyFile
-		}
-		if c.SslInsecureSkipVerify {
-			c.ConnectionString += "&tlsInsecure=true"
+			if c.SslInsecureSkipVerify {
+				c.ConnectionString += "&tlsInsecure=true"
+			}
 		}
 	}
+
 	return c.ConnectionString
+}
+
+// addSSL adds SSL to a dialInfo struct
+func getSSL(SslInsecureSkipVerify bool, SslCaCerts string, pemKeyFile string, passPhrase string) *tls.Config {
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: SslInsecureSkipVerify,
+	}
+
+	// If the user has defined a CA certificate file
+	if SslCaCerts != "" {
+		roots := x509.NewCertPool()
+
+		if ca, err := ioutil.ReadFile(SslCaCerts); err != nil {
+			log.Error("Failed to open SSL CA Certs file: %v", err)
+		} else if !roots.AppendCertsFromPEM(ca) {
+			log.Warn("No certificates were found in SSL CA certs file: %s", SslCaCerts)
+		} else {
+			tlsConfig.RootCAs = roots
+		}
+	}
+
+	if pemKeyFile != "" {
+
+		clientCert, err := parsePEMKeyFile(pemKeyFile, passPhrase)
+		if err != nil {
+			log.Error("Failed to open SSL PEM Key File: %v", err)
+		} else {
+			tlsConfig.Certificates = append([]tls.Certificate{}, clientCert)
+		}
+	}
+
+	return tlsConfig
+}
+
+func parsePEMKeyFile(pemKeyFile string, passphrase string) (tls.Certificate, error) {
+
+	keyPemData, err := ioutil.ReadFile(pemKeyFile)
+	if err != nil {
+		return tls.Certificate{}, err
+	}
+
+	var pvtKeyBlock, clientCertBlock *pem.Block
+	for {
+
+		block, rest := pem.Decode(keyPemData)
+		if block == nil {
+			return tls.Certificate{}, errors.New("not a valid PEM file")
+		}
+
+		if strings.Contains(block.Type, "PRIVATE KEY") {
+			pvtKeyBlock = block
+		}
+
+		if block.Type == "CERTIFICATE" {
+			clientCertBlock = block
+		}
+
+		if len(rest) == 0 || (clientCertBlock != nil && pvtKeyBlock != nil) {
+			break
+		}
+
+		keyPemData = rest
+	}
+
+	if clientCertBlock == nil {
+		return tls.Certificate{}, errors.New("no Client Certificate found in PEM key file")
+	}
+
+	if pvtKeyBlock == nil {
+		return tls.Certificate{}, errors.New("no Private Key found in PEM key file")
+	}
+
+	if x509.IsEncryptedPEMBlock(pvtKeyBlock) {
+		decPemBytes, err := x509.DecryptPEMBlock(pvtKeyBlock, []byte(passphrase))
+		if err != nil {
+			return tls.Certificate{}, err
+		}
+
+		decBlock := pem.Block{}
+		decBlock.Bytes = decPemBytes
+		decBlock.Type = pvtKeyBlock.Type
+
+		return tls.X509KeyPair(pem.EncodeToMemory(clientCertBlock), pem.EncodeToMemory(&decBlock))
+	}
+
+	return tls.X509KeyPair(pem.EncodeToMemory(clientCertBlock), pem.EncodeToMemory(pvtKeyBlock))
 }
 
 // CreateSession uses the information in ConnectionInfo to return
@@ -69,5 +169,9 @@ func (c *Info) CreateSession() (Session, error) {
 	var conn MongoConnection
 	conn.Host = c.Host
 	conn.Port = c.Port
-	return conn.Connect(c.GetConnectionString()), nil
+	var tlsConf *tls.Config = nil
+	if c.Ssl {
+		tlsConf = getSSL(c.SslInsecureSkipVerify, c.SslCaCerts, c.PEMKeyFile, c.Passphrase)
+	}
+	return conn.Connect(c.GetConnectionString(), tlsConf), nil
 }

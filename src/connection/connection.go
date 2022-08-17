@@ -2,6 +2,7 @@ package connection
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"os"
@@ -141,7 +142,7 @@ func (this *MongoConnection) CollectionNames() ([]string, error) {
 	return result, nil
 }
 
-func (this *MongoConnection) Connect(uri string) *MongoConnection {
+func (this *MongoConnection) Connect(uri string, tlsconf *tls.Config) *MongoConnection {
 	if uri == "" {
 		uri := os.Getenv("MONGODB_URI")
 		if uri == "" {
@@ -150,7 +151,11 @@ func (this *MongoConnection) Connect(uri string) *MongoConnection {
 	}
 
 	var err error
-	this.connection, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	clientOpts := options.Client().ApplyURI(uri)
+	if tlsconf != nil {
+		clientOpts.SetTLSConfig(tlsconf)
+	}
+	this.connection, err = mongo.Connect(context.TODO(), clientOpts)
 	if err != nil {
 		panic(err)
 	}
