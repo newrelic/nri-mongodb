@@ -77,7 +77,6 @@ func (c *Info) GetConnectionString() string {
 	return c.ConnectionString
 }
 
-// addSSL adds SSL to a dialInfo struct
 func getSSL(SslInsecureSkipVerify bool, SslCaCerts string, pemKeyFile string, passPhrase string) *tls.Config {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: SslInsecureSkipVerify,
