@@ -82,7 +82,7 @@ func main() {
 	entities.ClusterName = args.MongodbClusterName
 
 	// Feed the worker pool with entities to be collected
-	go FeedWorkerPool(session, collectorChan, mongoIntegration)
+	go FeedWorkerPool(session, collectorChan, mongoIntegration, args.NoDatabaseSample)
 
 	// Wait for workers to finish
 	wg.Wait()
