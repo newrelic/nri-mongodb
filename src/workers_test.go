@@ -106,7 +106,31 @@ func Test_collectorWorker(t *testing.T) {
 	}
 }
 
-func TestFeedWorkerPool(t *testing.T) {
+func TestFeedWorkerPoolWithDB(t *testing.T) {
+	expectedCollectorNames := map[string]bool{
+		"database1":         true,
+		"config1:27017":     true,
+		"testmongod1:27018": true,
+		"mongos1:27017":     true,
+		"testClusterName":   true,
+		"collection1":       true,
+	}
+
+	testFeedWorkerPool(t, false, expectedCollectorNames)
+}
+
+func TestFeedWorkerPoolWithoutDB(t *testing.T) {
+	expectedCollectorNames := map[string]bool{
+		"config1:27017":     true,
+		"testmongod1:27018": true,
+		"mongos1:27017":     true,
+		"testClusterName":   true,
+	}
+
+	testFeedWorkerPool(t, true, expectedCollectorNames)
+}
+
+func testFeedWorkerPool(t *testing.T, testWithDB bool, expectedCollectorNames map[string]bool) {
 	mockSession := new(test.MockSession)
 	mockSession.On("New", "config1", "27017").Return(mockSession, nil).Once()
 	mockSession.On("New", "testmongod1", "27018").Return(mockSession, nil).Once()
@@ -174,20 +198,22 @@ func TestFeedWorkerPool(t *testing.T) {
 			assert.NoError(t, err)
 		})
 
-	adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
-		Return(nil).
-		Run(func(args mock.Arguments) {
-			result := args.Get(1)
-			err := bson.UnmarshalJSON([]byte(`{
+	if !testWithDB {
+		adminDB.On("Run", entities.Cmd{"listDatabases": 1}, mock.Anything).
+			Return(nil).
+			Run(func(args mock.Arguments) {
+				result := args.Get(1)
+				err := bson.UnmarshalJSON([]byte(`{
 				"databases": [
 					{
 						"name": "database1"
 					}
 				]
 			}`), result)
-			assert.NoError(t, err)
-		}).
-		Once()
+				assert.NoError(t, err)
+			}).
+			Once()
+	}
 
 	adminDB.On("Run", "getShardMap", mock.Anything).
 		Return(nil).
@@ -202,17 +228,19 @@ func TestFeedWorkerPool(t *testing.T) {
 		}).
 		Once()
 
-	mockSession.MockDatabase("database1", 1).
-		On("CollectionNames").
-		Return([]string{"collection1"}, nil).
-		Once()
+	if !testWithDB {
+		mockSession.MockDatabase("database1", 1).
+			On("CollectionNames").
+			Return([]string{"collection1"}, nil).
+			Once()
+	}
 
 	entities.ClusterName = "testClusterName"
 
 	collChan := make(chan entities.Collector)
 	i, _ := integration.New("test", "0.0.0")
 
-	go FeedWorkerPool(mockSession, collChan, i)
+	go FeedWorkerPool(mockSession, collChan, i, testWithDB)
 
 	wgDone := make(chan struct{})
 	var collectors []entities.Collector
@@ -227,15 +255,6 @@ func TestFeedWorkerPool(t *testing.T) {
 		}
 		close(wgDone)
 	}()
-
-	expectedCollectorNames := map[string]bool{
-		"database1":         true,
-		"config1:27017":     true,
-		"testmongod1:27018": true,
-		"mongos1:27017":     true,
-		"testClusterName":   true,
-		"collection1":       true,
-	}
 
 	select {
 	case <-wgDone:
