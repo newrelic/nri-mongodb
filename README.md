@@ -11,7 +11,10 @@ For installation and usage instructions, see our [documentation web site](https:
 ## Compatibility
 
 * Supported OS: No limitations
-* MongoDB versions: 3.0+
+* MongoDB versions: v3-v4
+
+**For support to MongoDB v5,v6 and Atlas you may need to install our [new MongoDB integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mongodb/mongodb-monitoring-integration-new/)  currently in Public Preview**
+
 
 ## Building
 
