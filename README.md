@@ -4,9 +4,13 @@
 
 This integration reports status and metrics for MongoDB service.
 
+## Support
+
+This legacy integration is set to reach end-of-life in 2024: we'll add a specific EOL date when we know it. We recommend using our newer [MongoDB integration](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mongodb/mongodb-monitoring-integration-new/). For information on switching from the legacy integration to the new one, see our [migration docs](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mongodb/mongodb-migration-guide).
+
 ## Installation and usage
 
-For installation and usage instructions, see our [documentation web site](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/mongodb-monitoring-integration).
+For installation and usage instructions, see our [documentation web site](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/mongodb/mongodb-monitoring-integration/).
 
 ## Compatibility
 
