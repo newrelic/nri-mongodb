@@ -18,7 +18,7 @@ jobs:
     name: Run all static analysis checks
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: newrelic/newrelic-infra-checkers@v1
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -34,7 +34,7 @@ jobs:
     env:
       SNYK_TOKEN: ${{ secrets.COREINT_SNYK_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Login to DockerHub
         if: ${{env.DOCKER_LOGIN_AVAILABLE}}
         uses: docker/login-action@v1
@@ -49,7 +49,7 @@ jobs:
     name: Run unit tests on *Nix
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Login to DockerHub
         if: ${{env.DOCKER_LOGIN_AVAILABLE}}
         uses: docker/login-action@v1
@@ -69,7 +69,7 @@ jobs:
         working-directory: src/github.com/${{ env.ORIGINAL_REPO_NAME }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
       - name: Install Go
@@ -89,7 +89,7 @@ jobs:
         working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
           path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
@@ -112,7 +112,7 @@ jobs:
     name: Test binary compilation for all platforms:arch
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Login to DockerHub
         if: ${{env.DOCKER_LOGIN_AVAILABLE}}
         uses: docker/login-action@v1
