@@ -202,6 +202,12 @@ jobs:
           packageLocation: repo
           stagingRepo: true
           upgrade: false
+      - uses: actions/checkout@v4
+      - name: Update title for successful pre-release
+        env:
+          GH_TOKEN: "${{ secrets.COREINT_BOT_TOKEN }}"
+        run: |
+          gh release edit ${{ github.event.release.tag_name  }} --title "${{ github.event.release.tag_name  }}"
 
   notify-failure:
     if: ${{ always() && failure() }}
@@ -214,3 +220,15 @@ jobs:
           slack-bot-user-oauth-access-token: ${{ secrets.COREINT_SLACK_TOKEN }}
           slack-channel: ${{ secrets.COREINT_SLACK_CHANNEL }}
           slack-text: "❌ `${{ env.ORIGINAL_REPO_NAME }}`: [prerelease pipeline failed](${{ github.server_url }}/${{ env.ORIGINAL_REPO_NAME }}/actions/runs/${{ github.run_id }})."
+
+  update-release-title-on-failure:
+    if: ${{ always() && failure() }}
+    needs: [ test-nix, test-windows, prerelease, package-win, publish-to-s3 ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reflect failure in pre-release title
+        env:
+          GH_TOKEN: "${{ secrets.COREINT_BOT_TOKEN }}"
+        run: |
+          gh release edit ${{ github.event.release.tag_name  }} --title "${{ github.event.release.tag_name }} (pre-release-failure)"
