@@ -1,0 +1,16 @@
+name: Push/PR pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - renovate/**
+  pull_request:
+
+jobs:
+  push-pr:
+    uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v2
+    with:
+      integration: mongodb
+    secrets: inherit
