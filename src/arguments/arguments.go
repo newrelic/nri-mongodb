@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
-	"github.com/newrelic/infra-integrations-sdk/log"
+	sdkArgs "github.com/newrelic/infra-integrations-sdk/v3/args"
+	"github.com/newrelic/infra-integrations-sdk/v3/log"
 	"github.com/newrelic/nri-mongodb/src/filter"
 )
 

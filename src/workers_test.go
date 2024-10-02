@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/newrelic/infra-integrations-sdk/data/metric"
-	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/v3/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/v3/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
 	"github.com/newrelic/nri-mongodb/src/entities"
 	"github.com/newrelic/nri-mongodb/src/test"
