@@ -3,7 +3,7 @@ version: '3.4'
 services:
 
   mongodb-shard0:
-    image: docker.io/bitnami/mongodb-sharded:3.6
+    image: docker.io/bitnami/mongodb-sharded:8.0
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard0
       - MONGODB_SHARDING_MODE=shardsvr
@@ -16,7 +16,7 @@ services:
       - 'shard0_data:/bitnami'
 
   mongodb-cfg:
-    image: docker.io/bitnami/mongodb-sharded:3.6
+    image: docker.io/bitnami/mongodb-sharded:8.0
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-cfg
       - MONGODB_SHARDING_MODE=configsvr
@@ -28,7 +28,7 @@ services:
       - 'cfg_data:/bitnami'
 
   mongodb-sharded:
-    image: docker.io/bitnami/mongodb-sharded:3.6
+    image: docker.io/bitnami/mongodb-sharded:8.0
     environment:
       - MONGODB_ADVERTISED_HOSTNAME=mongodb-sharded
       - MONGODB_SHARDING_MODE=mongos
