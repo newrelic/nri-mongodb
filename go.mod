@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
-	github.com/newrelic/infra-integrations-sdk/v3 v3.9.1
+	github.com/newrelic/infra-integrations-sdk/v4 v4.2.1
 	github.com/stretchr/testify v1.9.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 )
