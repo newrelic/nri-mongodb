@@ -4,7 +4,7 @@ package filter
 import (
 	"encoding/json"
 
-	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/infra-integrations-sdk/v3/log"
 )
 
 // DatabaseFilter represents a map of database and collection names to collect

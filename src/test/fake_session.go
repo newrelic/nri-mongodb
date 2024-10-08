@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/newrelic/infra-integrations-sdk/data/inventory"
+	"github.com/newrelic/infra-integrations-sdk/v3/data/inventory"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 

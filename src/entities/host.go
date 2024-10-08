@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/infra-integrations-sdk/v3/integration"
+	"github.com/newrelic/infra-integrations-sdk/v3/log"
 )
 
 // hostCollector is a base collector for any entity that represents a specific host

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/infra-integrations-sdk/v3/log"
 )
 
 // GetTestName returns the name of the running test.

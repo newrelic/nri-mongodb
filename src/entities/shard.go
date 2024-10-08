@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/v3/integration"
 	"github.com/newrelic/nri-mongodb/src/connection"
 )
 

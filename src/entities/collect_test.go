@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/globalsign/mgo/bson"
-	"github.com/newrelic/infra-integrations-sdk/data/attribute"
+	"github.com/newrelic/infra-integrations-sdk/v3/data/attribute"
 	"github.com/newrelic/nri-mongodb/src/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
