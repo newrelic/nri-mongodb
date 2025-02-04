@@ -166,7 +166,7 @@ archives:
   - id: nri-nix-fips
     builds:
       - nri-nix-fips
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Version }}_{{ .Arch }}_dirty"
+    name_template: "{{ .ProjectName }}-fips_{{ .Os }}_{{ .Version }}_{{ .Arch }}_dirty"
     files:
       - mongodb-config.yml.sample
       - src: 'legacy/mongodb-definition.yml'
