@@ -1,5 +1,5 @@
 module github.com/newrelic/nri-mongodb
-
+ 
 go 1.25.3
 
 require (
