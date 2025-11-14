@@ -55,7 +55,8 @@
                         "enum": [
                           "test-cluster",
                           "config",
-                          "admin"
+                          "admin",
+                          "local"
                         ]
                       }
                     },

@@ -23,7 +23,7 @@ var (
 	defaultContainer = "integration_nri-mongodb"
 
 	defaultBinPath     = "/nri-mongodb"
-	defaultHost        = "mongodb-sharded"
+	defaultHost        = "mongodb"
 	defaultClusterName = "test-cluster"
 	defaultUsername    = "root"
 	defaultPassword    = "password123"
