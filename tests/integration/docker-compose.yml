@@ -1,43 +1,15 @@
-version: '3.4'
-
 services:
 
-  mongodb-shard0:
-    image: docker.io/bitnami/mongodb-sharded:3.6
+  mongodb:
+    image: docker.io/library/mongo:4.4
     environment:
-      - MONGODB_ADVERTISED_HOSTNAME=mongodb-shard0
-      - MONGODB_SHARDING_MODE=shardsvr
-      - MONGODB_MONGOS_HOST=mongodb-sharded
-      - MONGODB_ROOT_PASSWORD=password123
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_REPLICA_SET_KEY=replicasetkey123
-      - MONGODB_REPLICA_SET_NAME=shard0
-    volumes:
-      - 'shard0_data:/bitnami'
-
-  mongodb-cfg:
-    image: docker.io/bitnami/mongodb-sharded:3.6
-    environment:
-      - MONGODB_ADVERTISED_HOSTNAME=mongodb-cfg
-      - MONGODB_SHARDING_MODE=configsvr
-      - MONGODB_ROOT_PASSWORD=password123
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_REPLICA_SET_KEY=replicasetkey123
-      - MONGODB_REPLICA_SET_NAME=cfgreplicaset
-    volumes:
-      - 'cfg_data:/bitnami'
-
-  mongodb-sharded:
-    image: docker.io/bitnami/mongodb-sharded:3.6
-    environment:
-      - MONGODB_ADVERTISED_HOSTNAME=mongodb-sharded
-      - MONGODB_SHARDING_MODE=mongos
-      - MONGODB_CFG_PRIMARY_HOST=mongodb-cfg
-      - MONGODB_CFG_REPLICA_SET_NAME=cfgreplicaset
-      - MONGODB_REPLICA_SET_KEY=replicasetkey123
-      - MONGODB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password123
     ports:
       - "27017:27017"
+    volumes:
+      - 'mongodb_data:/data/db'
+    command: mongod --bind_ip_all --auth
 
   nri-mongodb:
     container_name: integration_nri-mongodb
@@ -45,12 +17,8 @@ services:
       context: ../../
       dockerfile: tests/integration/Dockerfile
     depends_on: 
-      - mongodb-sharded
-      - mongodb-cfg
-      - mongodb-shard0
+      - mongodb
 
 volumes:
-  shard0_data:
-    driver: local
-  cfg_data:
+  mongodb_data:
     driver: local
