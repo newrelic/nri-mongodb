@@ -12,6 +12,16 @@ Unreleased section should follow [Release Toolkit](https://github.com/newrelic/r
 ### Security
 - Added explicit permissions to GitHub Actions workflows
 
+## v2.14.2 - 2026-07-14
+
+### ⛓️ Dependencies
+- Updated golang patch version to v1.26.5
+
+## v2.14.1 - 2026-06-16
+
+### ⛓️ Dependencies
+- Updated golang patch version to v1.26.4
+
 ## v2.14.0 - 2026-05-15
 
 ### 🛡️ Security notices
