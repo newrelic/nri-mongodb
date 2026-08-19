@@ -1,6 +1,6 @@
 module github.com/newrelic/nri-mongodb
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
